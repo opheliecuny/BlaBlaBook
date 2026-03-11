@@ -9,7 +9,7 @@ La majorité des documents du sprint 0 ont été validés, on peaufine les déta
 #### Infos individuelles
 
 - **Ophélie :** Maquettes desktop terminées (TODO: ajuster quelques détails de cohérence avec les wf), début des maquettes mobile
-- **Rémi :**
+- **Rémi :** Corrigé le diagramme des use-cases suite au retour d'Amo. Ajouté des user stories, comparé les wireframes et maquettes puis update du kanban.
 - **Paul :**
 - **Christopher :**
 - 
