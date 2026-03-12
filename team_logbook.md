@@ -20,7 +20,7 @@ La majorité des documents du sprint 0 ont été validés, on peaufine les déta
 
 #### Infos individuelles
 
-- **Ophélie :** 
+- **Ophélie :** Finalisation des maquettes version mobile et ajout d'une page type pour les mentions légales. Harmonisation entre les wf et les maquettes avec Chirstopher. Validation des maquettes.
 - **Rémi :** Mis à jour du kanban suite modifications de Paul prenant en compte les nouvelles user stories. Modifications finales du diagramme use-cases. Début de structure du dossier backend avec tests pour explorer l'API openlibrary et rédaction d'un bref résumé à son sujet. 
 - **Paul :**
 - **Christopher :**
