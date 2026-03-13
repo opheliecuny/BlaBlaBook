@@ -23,7 +23,7 @@ La majorité des documents du sprint 0 ont été validés, on peaufine les déta
 - **Ophélie :** Finalisation des maquettes version mobile et ajout d'une page type pour les mentions légales. Harmonisation entre les wf et les maquettes avec Chirstopher. Validation des maquettes.
 - **Rémi :** Mis à jour du kanban suite modifications de Paul prenant en compte les nouvelles user stories. Modifications finales du diagramme use-cases. Début de structure du dossier backend avec tests pour explorer l'API openlibrary et rédaction d'un bref résumé à son sujet.
 - **Paul :** Amélioration MVP | MAJ documentation de conception MCD à MPD | Guide Git et GitHub avec recap convention de nommage branches et commit.
-- **Christopher :**
+- **Christopher :** Initialisation du projet frontend, Mise en place de la structure du projet, Composants de base (Navbar, Footer, layout), Pages créées (6 routes MVP), ajustements UI homepage + navbar et Corrections wireframes MVP.
 
 ### 13/03/2026
 
