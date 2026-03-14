@@ -2,7 +2,7 @@
 
 **Fonctionnalité :** US-02 — Se connecter
 **Acteurs impliqués :** Utilisateur · Frontend (Next.js) · Rate Limiter · Backend (Express) · Base de données (PostgreSQL/Prisma)
-**Outils de sécurité :** Zod · bcrypt · JWT · express-rate-limit
+**Outils de sécurité :** Zod · argon2 · JWT · express-rate-limit
 
 ---
 
@@ -49,7 +49,7 @@ sequenceDiagram
                 else Utilisateur trouvé
                     DB-->>B: { id, email, hashedPassword, ... }
 
-                    Note over B: bcrypt.compare(<br/>  password,<br/>  hashedPassword<br/>)
+                    Note over B: argon2.compare(<br/>  password,<br/>  hashedPassword<br/>)
 
                     alt Mot de passe incorrect
                         Note over RL: Compteur incrémenté<br/>pour cet email
@@ -78,13 +78,13 @@ sequenceDiagram
 
 Chaque colonne verticale avec une ligne pointillée vers le bas s'appelle une **lifeline** (ligne de vie).
 
-| Acteur | Rôle |
-|--------|------|
-| **Utilisateur** | La vraie personne devant l'écran |
-| **Frontend (Next.js)** | Le code React qui s'exécute dans le navigateur |
-| **Rate Limiter** | Un middleware Express qui surveille le nombre de tentatives |
-| **Backend API (Express)** | Le serveur Node.js qui traite la logique métier |
-| **Base de données (PostgreSQL/Prisma)** | Là où les données sont stockées en permanence |
+| Acteur                                  | Rôle                                                        |
+| --------------------------------------- | ----------------------------------------------------------- |
+| **Utilisateur**                         | La vraie personne devant l'écran                            |
+| **Frontend (Next.js)**                  | Le code React qui s'exécute dans le navigateur              |
+| **Rate Limiter**                        | Un middleware Express qui surveille le nombre de tentatives |
+| **Backend API (Express)**               | Le serveur Node.js qui traite la logique métier             |
+| **Base de données (PostgreSQL/Prisma)** | Là où les données sont stockées en permanence               |
 
 ---
 

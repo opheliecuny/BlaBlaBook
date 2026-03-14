@@ -35,12 +35,12 @@ rectangle "Render — Backend" {
   }
 
   rectangle "Authentification" {
-    component "bcrypt\nHash mot de passe" as BCRYPT
+    component "argon2\nHash mot de passe" as ARGON2
     component "JWT Sign · Verify · 24h" as JWT
   }
 
   [Couche Sécurité] --> [Logique Métier]
-  AUTHCTRL --> BCRYPT
+  AUTHCTRL --> ARGON2
   AUTHCTRL --> JWT
 }
 
@@ -51,7 +51,7 @@ rectangle "Supabase — BDD" {
 }
 
 cloud "API Externe" {
-  component "Google Books API\nRecherche · Détail · Couverture" as GB
+  component "Open Library API\nRecherche · Détail · Couverture" as GB
 }
 
 U --> PAGES : HTTPS

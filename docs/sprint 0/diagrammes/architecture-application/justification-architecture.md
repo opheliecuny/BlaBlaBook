@@ -7,7 +7,7 @@ BlaBlaBook suit une architecture **fullstack découplée** en 3 couches indépen
 ```
 Utilisateur → Frontend (Next.js) → Backend API (Express) → Base de données (PostgreSQL)
                                           ↕
-                                  Google Books API
+                                  Open Library API
 ```
 
 Ce découplage permet à chaque couche d'évoluer, d'être testée et déployée **indépendamment**.
@@ -51,13 +51,13 @@ ORM moderne qui génère un **client TypeScript typé** à partir du schéma de 
 
 ---
 
-## Authentification — JWT + bcrypt + Zod
+## Authentification — JWT + argon2 + Zod
 
 ### JWT (JSON Web Token)
 Système d'authentification **stateless** : le serveur n'a pas besoin de stocker les sessions. Le token est signé, contient les infos utiles (userId, email) et est vérifié à chaque requête. Parfait pour une API REST découplée du frontend.
 
-### bcrypt
-Les mots de passe ne sont **jamais stockés en clair**. bcrypt les hash avec un salt aléatoire et un facteur de coût configurable, rendant les attaques par force brute extrêmement lentes même en cas de vol de la base.
+### argon2
+Les mots de passe ne sont **jamais stockés en clair**. argon2 les hash avec un salt aléatoire et un facteur de coût configurable, rendant les attaques par force brute extrêmement lentes même en cas de vol de la base. Argon2 est le standard recommandé par l'OWASP pour le hachage de mots de passe.
 
 ### Zod
 Bibliothèque de validation de schémas TypeScript. Valide toutes les entrées utilisateur **côté client ET côté serveur** (double validation). Protège contre les données malformées et les injections, et génère des messages d'erreur explicites pour l'UX.
@@ -92,13 +92,13 @@ Permet d'avoir un **environnement de développement identique** pour tous les me
 
 ## Synthèse des choix
 
-| Critère | Choix retenu | Alternative écartée |
-|---|---|---|
-| Framework frontend | Next.js | Create React App (pas de SSR) |
-| Styles | Tailwind CSS | CSS Modules (plus verbeux) |
-| Backend | Express | NestJS (trop complexe pour le MVP) |
-| Base de données | PostgreSQL | MongoDB (pas adapté aux données relationnelles) |
-| ORM | Prisma | Sequelize (typage moins fort) |
-| Auth | JWT | Sessions serveur (stateful, moins adapté à une API REST) |
-| Déploiement frontend | Vercel | Netlify |
-| Déploiement backend | Render | Railway |
+| Critère              | Choix retenu | Alternative écartée                                      |
+| -------------------- | ------------ | -------------------------------------------------------- |
+| Framework frontend   | Next.js      | Create React App (pas de SSR)                            |
+| Styles               | Tailwind CSS | CSS Modules (plus verbeux)                               |
+| Backend              | Express      | NestJS (trop complexe pour le MVP)                       |
+| Base de données      | PostgreSQL   | MongoDB (pas adapté aux données relationnelles)          |
+| ORM                  | Prisma       | Sequelize (typage moins fort)                            |
+| Auth                 | JWT          | Sessions serveur (stateful, moins adapté à une API REST) |
+| Déploiement frontend | Vercel       | Netlify                                                  |
+| Déploiement backend  | Render       | Railway                                                  |

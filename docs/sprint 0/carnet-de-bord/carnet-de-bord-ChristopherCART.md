@@ -24,7 +24,7 @@ Produire l'ensemble des livrables de conception avant le démarrage du développ
 - Identification des User Stories prioritaires pour le MVP :
   - US-01 : Inscription
   - US-02 : Connexion
-  - US-03 : Recherche de livres (Google Books API)
+  - US-03 : Recherche de livres (Open Library API)
   - US-04 : Consultation du détail d'un livre
   - US-05 : Ajout d'un livre à la bibliothèque
   - US-06 : Suppression d'un livre
@@ -36,7 +36,7 @@ Produire l'ensemble des livrables de conception avant le démarrage du développ
   - Frontend : Next.js + Tailwind CSS + shadcn/ui → Vercel
   - Backend : Node.js + Express → Render
   - BDD : PostgreSQL + Prisma ORM → Supabase
-  - Auth : JWT + bcrypt + Zod
+  - Auth : JWT + argon2 + Zod
   - Sécurité : Helmet, express-rate-limit
   - API externe : Open Library API
 
@@ -308,16 +308,16 @@ Mode sombre :
 
 ## Bilan Sprint 0
 
-| Livrable | Emplacement | Statut |
-|---|---|---|
-| Wireframes desktop (7 PNG) | `docs/sprint 0/wireframes/desktop/` | ✅ |
-| Wireframes mobile (7 PNG) | `docs/sprint 0/wireframes/mobile/` | ✅ |
-| Diagramme de séquence login (PNG) | `docs/sprint 0/10.APIProcessus-de-connexion.png` | ✅ |
-| Diagramme architecture détaillée (PNG) | `docs/sprint 0/4.architecture-technique.png` | ✅ |
-| Diagramme d'activité US-05 (PlantUML) | `docs/sprint 0/diagrammes/activite-ajout-bibliotheque.puml` | ✅ |
-| Sources PlantUML (4 `.puml`) | `docs/sprint 0/diagrammes/` | ✅ |
-| Schéma BDD (MCD/MLD/MPD + SQL) | `docs/sprint 0/database/` | ✅ |
-| Carnet de bord | `docs/sprint 0/carnet-de-bord/` | ✅ |
-| Config VS Code équipe | `.vscode/settings.json` | ✅ |
+| Livrable                               | Emplacement                                                 | Statut |
+| -------------------------------------- | ----------------------------------------------------------- | ------ |
+| Wireframes desktop (7 PNG)             | `docs/sprint 0/wireframes/desktop/`                         | ✅      |
+| Wireframes mobile (7 PNG)              | `docs/sprint 0/wireframes/mobile/`                          | ✅      |
+| Diagramme de séquence login (PNG)      | `docs/sprint 0/10.APIProcessus-de-connexion.png`            | ✅      |
+| Diagramme architecture détaillée (PNG) | `docs/sprint 0/4.architecture-technique.png`                | ✅      |
+| Diagramme d'activité US-05 (PlantUML)  | `docs/sprint 0/diagrammes/activite-ajout-bibliotheque.puml` | ✅      |
+| Sources PlantUML (4 `.puml`)           | `docs/sprint 0/diagrammes/`                                 | ✅      |
+| Schéma BDD (MCD/MLD/MPD + SQL)         | `docs/sprint 0/database/`                                   | ✅      |
+| Carnet de bord                         | `docs/sprint 0/carnet-de-bord/`                             | ✅      |
+| Config VS Code équipe                  | `.vscode/settings.json`                                     | ✅      |
 
 ---

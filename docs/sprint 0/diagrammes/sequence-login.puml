@@ -56,8 +56,8 @@ else Formulaire valide
                 DB --> B : { id, email, hashedPassword, ... }
 
                 note over B
-                  bcrypt.compare(
-                    password, hashedPassword
+                  argon2.verify(
+                    hashedPassword, password
                   )
                 end note
 
