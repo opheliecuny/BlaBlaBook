@@ -1,0 +1,39 @@
+@startuml
+left to right direction
+
+actor Visiteur as V
+actor Utilisateur as U
+U --|> V
+
+rectangle "Système BlablaBook" {
+
+V --> (Créer un compte)
+
+V --> (Voir une sélection aléatoire de livres)
+
+U --> (Se connecter) 
+(Se connecter)..> (Se déconnecter) : <<extends>>
+
+U --> (Accéder à son profil)
+(Accéder à son profil) ..> (Modifier son email) : <<extend>>
+(Accéder à son profil) ..> (Modifier son mot de passe) : <<extend>>
+(Accéder à son profil) ..> (Supprimer son compte) : <<extend>>
+(Supprimer son compte)
+
+(Ajouter un livre à sa collection) --> (Choisir le status de lecture) : <<include>>
+
+U --> (Chercher un livre par mot-clé)
+
+U --> (Voir sa collection)
+(Voir sa collection) ..> (Chercher un livre dans sa collection) : <<extend>>
+(Chercher un livre dans sa collection) ..> (Supprimer ce livre) : <<extend>>
+(Chercher un livre dans sa collection) ..> (Changer le status de lecture) : <<extend>>
+(Voir sa collection) ..> (Filtrer par genre et/ou auteur) : <<extend>>
+
+(Voir une sélection aléatoire de livres) ..> (Voir les détails d'un livre - visiteur) : <<extend>>
+(Chercher un livre par mot-clé) ..> (Voir les détails d'un livre - utilisateur) : <<extend>>
+(Voir sa collection) ..> (Voir les détails d'un livre - utilisateur) : <<extend>>
+
+(Voir les détails d'un livre - utilisateur) ..> (Ajouter un livre à sa collection) : <<extend>>
+}
+@enduml
