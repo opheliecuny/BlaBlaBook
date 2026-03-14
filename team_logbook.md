@@ -31,7 +31,7 @@ La majorité des documents du sprint 0 ont été validés, on peaufine les déta
 
 #### Infos individuelles
 
-- **Ophélie :** 
+- **Ophélie :**
 - **Rémi :**
 - **Paul :**
 - **Christopher :**

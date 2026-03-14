@@ -1,1 +1,18 @@
-Neon*
+CLAUDE.md
+
+# Fichiers temporaires
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+
+# Dépendances (Sprint 1+)
+node_modules/
+.env
+.env.local
+.env*.local
+
+# Build (Sprint 1+)
+.next/
+dist/
+build/

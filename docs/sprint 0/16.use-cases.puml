@@ -1,39 +1,45 @@
 @startuml
 left to right direction
 
-actor Visiteur as V
-actor Utilisateur as U
-U --|> V
+actor Visiteur
+actor Utilisateur
 
 rectangle "Système BlablaBook" {
 
-V --> (Créer un compte)
+Visiteur --> (Créer un compte)
+(Créer un compte) --> (Vérification de l'email) : <<include>>
+(Créer un compte) --> (Vérification du mot de passe) : <<include>>
 
-V --> (Voir une sélection aléatoire de livres)
+Visiteur --> (Voir une sélection aléatoire de livres)
 
-U --> (Se connecter) 
-(Se connecter)..> (Se déconnecter) : <<extends>>
+Utilisateur --> (Se déconnecter)
 
-U --> (Accéder à son profil)
+Utilisateur --> (Accéder à son profil)
 (Accéder à son profil) ..> (Modifier son email) : <<extend>>
 (Accéder à son profil) ..> (Modifier son mot de passe) : <<extend>>
 (Accéder à son profil) ..> (Supprimer son compte) : <<extend>>
-(Supprimer son compte)
+(Supprimer son compte) --> (Vérification du mot de passe) : <<include>>
+
+Utilisateur --> (Voir une sélection aléatoire de livres)
+Utilisateur --> (Ajouter un livre à sa collection)
 
 (Ajouter un livre à sa collection) --> (Choisir le status de lecture) : <<include>>
 
-U --> (Chercher un livre par mot-clé)
+Utilisateur --> (Chercher un livre par mot-clé)
+(Chercher un livre par mot-clé) ..> (Ajouter un livre à sa collection) : <<extend>>
 
-U --> (Voir sa collection)
+Utilisateur --> (Voir sa collection)
 (Voir sa collection) ..> (Chercher un livre dans sa collection) : <<extend>>
 (Chercher un livre dans sa collection) ..> (Supprimer ce livre) : <<extend>>
 (Chercher un livre dans sa collection) ..> (Changer le status de lecture) : <<extend>>
 (Voir sa collection) ..> (Filtrer par genre et/ou auteur) : <<extend>>
 
-(Voir une sélection aléatoire de livres) ..> (Voir les détails d'un livre - visiteur) : <<extend>>
-(Chercher un livre par mot-clé) ..> (Voir les détails d'un livre - utilisateur) : <<extend>>
-(Voir sa collection) ..> (Voir les détails d'un livre - utilisateur) : <<extend>>
+Visiteur --> (Voir les détails d'un livre)
+Utilisateur --> (Voir les détails d'un livre)
 
-(Voir les détails d'un livre - utilisateur) ..> (Ajouter un livre à sa collection) : <<extend>>
+(Voir une sélection aléatoire de livres) ..> (Voir les détails d'un livre) : <<extend>>
+(Chercher un livre par mot-clé) ..> (Voir les détails d'un livre) : <<extend>>
+(Voir sa collection) ..> (Voir les détails d'un livre) : <<extend>>
+
 }
 @enduml

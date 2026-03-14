@@ -1,0 +1,74 @@
+@startuml
+title Diagramme d'activité — Ajouter un livre à la bibliothèque (US-05)
+
+start
+
+partition "Frontend (Next.js)" {
+  :Saisit un terme de recherche;
+  :Envoie GET /api/books/search?q=...;
+}
+
+partition "Open Library API" {
+  :Appelle Open Library API;
+  :Retourne les résultats;
+  :Formate et retourne la liste de livres;
+}
+
+partition "Frontend (Next.js)" {
+  :Affiche les BookCards avec bouton "+ Bibliothèque";
+  :Clique sur "+ Ajouter à ma bibliothèque";
+
+  if (JWT présent dans localStorage ?) then (Non)
+    :Redirige vers /login avec returnUrl;
+    :Se connecte;
+    :Redirige vers la page précédente;
+  else (Oui)
+  endif
+
+  :POST /api/library\ngoogleBookId, title, author, cover;
+}
+
+partition "Backend (Express)" {
+  :authMiddleware — Vérifie le JWT;
+
+  if (JWT valide ?) then (Non)
+    :401 Unauthorized;
+    :Affiche "Session expirée" — Redirection /login;
+    stop
+  else (Oui)
+  endif
+
+  :Vérifie le doublon\nSELECT * FROM library\nWHERE userId = ? AND googleBookId = ?;
+
+  if (Livre déjà dans la bibliothèque ?) then (Oui)
+    :409 Conflict;
+    :Affiche "Livre déjà dans votre bibliothèque";
+    stop
+  else (Non)
+  endif
+}
+
+partition "Base de données (Prisma)" {
+  :INSERT INTO library\nuseId, googleBookId, status: 'à lire';
+  :Enregistrement créé en base;
+}
+
+partition "Backend (Express)" {
+  :201 Created — { id, status: 'à lire' };
+  :Notification "Livre ajouté !";
+  :Bouton mis à jour "Déjà dans ma bibliothèque";
+  :Sélectionne un statut (À lire / En cours / Lu);
+  :PATCH /api/library/:id { status: '...' };
+  :authMiddleware — Vérifie le JWT;
+}
+
+partition "Base de données (Prisma)" {
+  :UPDATE library SET status = ? WHERE id = ?;
+  :Enregistrement mis à jour;
+  :200 OK — { id, status: '...' };
+  :Affiche le nouveau statut;
+}
+
+stop
+
+@enduml

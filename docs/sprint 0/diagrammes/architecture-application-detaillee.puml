@@ -1,0 +1,63 @@
+@startuml
+title Architecture détaillée — BlaBlaBook
+
+actor "Utilisateur\nChrome · Firefox · Safari" as U
+
+rectangle "Vercel — Frontend" {
+  component "Tailwind CSS + shadcn/ui" as TW
+
+  rectangle "Next.js App Router" {
+    component "Pages\n/ /login /register\n/search /book/:id /library" as PAGES
+    component "AuthContext\nJWT en localStorage" as AUTH_CTX
+    component "Appels HTTP (fetch)" as FETCH
+    component "Composants\nNavbar · BookCard · LibraryItem · BookList" as COMP
+    component "Services\nauthService · bookService · libraryService" as SVC
+  }
+
+  TW --> PAGES : Styles
+  PAGES --> FETCH
+  FETCH --> SVC
+  AUTH_CTX --> SVC : Token JWT
+}
+
+rectangle "Render — Backend" {
+  rectangle "Couche Sécurité" {
+    component "Helmet\nHeaders HTTP sécurisés" as HLM
+    component "express-rate-limit\n5 essais / 15 min" as RRL
+    component "authMiddleware\nVérification JWT" as AUTHMW
+    component "Zod\nValidation des données" as ZOD
+  }
+
+  rectangle "Logique Métier" {
+    component "bookController\nRecherche · Détail" as BKCTRL
+    component "libraryController\nAjout · Suppression · Statut" as LIBCTRL
+    component "authController\nInscription · Connexion" as AUTHCTRL
+  }
+
+  rectangle "Authentification" {
+    component "bcrypt\nHash mot de passe" as BCRYPT
+    component "JWT Sign · Verify · 24h" as JWT
+  }
+
+  [Couche Sécurité] --> [Logique Métier]
+  AUTHCTRL --> BCRYPT
+  AUTHCTRL --> JWT
+}
+
+rectangle "Supabase — BDD" {
+  component "Prisma ORM\nMigrations · Type safety" as PRISMA
+  database "PostgreSQL\nUsers · Books · Library" as PG
+  PRISMA --> PG
+}
+
+cloud "API Externe" {
+  component "Google Books API\nRecherche · Détail · Couverture" as GB
+}
+
+U --> PAGES : HTTPS
+SVC --> AUTHMW : REST API — Authorization: Bearer JWT
+BKCTRL --> GB : HTTPS GET
+LIBCTRL --> PRISMA : Prisma Client
+AUTHCTRL --> PRISMA : Prisma Client
+
+@enduml

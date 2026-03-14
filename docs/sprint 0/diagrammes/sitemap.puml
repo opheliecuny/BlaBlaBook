@@ -1,0 +1,64 @@
+@startuml
+title Sitemap — BlaBlaBook (Frontend)
+
+skinparam backgroundColor #FAFAFA
+skinparam defaultFontName Arial
+skinparam defaultFontSize 13
+
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #555555
+  FontColor #333333
+}
+
+skinparam rectangle<<auth>> {
+  BackgroundColor #F0F0F0
+  BorderColor #888888
+  FontStyle italic
+}
+
+skinparam rectangle<<protected>> {
+  BackgroundColor #E8F0E8
+  BorderColor #557755
+}
+
+skinparam arrow {
+  Color #555555
+  FontSize 11
+  FontColor #777777
+}
+
+rectangle "/ \nAccueil" as home
+rectangle "/login\nConnexion" as login <<auth>>
+rectangle "/register\nInscription" as register <<auth>>
+rectangle "/search\nRecherche" as search
+rectangle "/book/:id\nDétail livre" as book
+rectangle "/library\nBibliothèque" as library <<protected>>
+rectangle "/profile\nProfil" as profile <<protected>>
+
+home --> login : Se connecter
+home --> register : S'inscrire
+home --> search : Rechercher
+
+login --> home : Connexion réussie
+login --> register : Pas de compte ?
+register --> library : Inscription réussie
+
+search --> book : Voir le détail
+book --> library : + Ajouter (auth requise)
+book --> login : Non connecté
+
+library --> book : Voir le détail
+library --> profile : Mon profil
+
+note bottom of library
+  Authentification requise
+  (redirection /login si non connecté)
+end note
+
+note bottom of profile
+  Authentification requise
+  (redirection /login si non connecté)
+end note
+
+@enduml
