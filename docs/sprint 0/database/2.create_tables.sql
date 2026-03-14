@@ -1,0 +1,57 @@
+BEGIN;
+
+-- 0. Suppression des tables et du type ENUM s'ils existent déjà (pour éviter les erreurs de duplication)
+DROP TABLE IF EXISTS "library_item" CASCADE;
+DROP TABLE IF EXISTS "book" CASCADE;
+DROP TABLE IF EXISTS "user" CASCADE;
+DROP TYPE IF EXISTS "ReadingStatus" CASCADE;
+
+-- 1. Création de l'énumération pour le statut de lecture
+CREATE TYPE "ReadingStatus" AS ENUM ('TO_READ', 'READING', 'READ');
+
+-- 2. Création de la table USER
+CREATE TABLE "user" (
+    "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "email" VARCHAR(255) UNIQUE NOT NULL,
+    "password" VARCHAR(255) NOT NULL,
+    "username" VARCHAR(100) NOT NULL,
+    "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. Création de la table BOOK
+CREATE TABLE "book" (
+    "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "isbn" VARCHAR(20),
+    "openLibraryId" VARCHAR(100) UNIQUE,
+    "title" VARCHAR(255) NOT NULL,
+    "author" VARCHAR(255),
+    "genre" VARCHAR(100),
+    "description" TEXT,
+    "thumbnail" VARCHAR(512),
+    "publisher" VARCHAR(512),
+    "pageCount" INTEGER,
+    "language" VARCHAR(10),
+    "publishedYear" INTEGER
+);
+
+-- 4. Création de la table de liaison LIBRARY_ITEM
+CREATE TABLE "library_item" (
+    "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    "userId" UUID NOT NULL,
+    "bookId" UUID NOT NULL,
+    "status" "ReadingStatus" NOT NULL DEFAULT 'TO_READ',
+    "rating" INTEGER CHECK ("rating" BETWEEN 1 AND 5),
+    "review" TEXT,
+    "createdAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    -- Contraintes de clés étrangères
+    CONSTRAINT fk_user FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE,
+    CONSTRAINT fk_book FOREIGN KEY ("bookId") REFERENCES "book"("id") ON DELETE CASCADE,
+
+    -- Empêche un utilisateur d'ajouter deux fois le même livre
+    CONSTRAINT unique_user_book UNIQUE ("userId", "bookId")
+);
+
+COMMIT;
