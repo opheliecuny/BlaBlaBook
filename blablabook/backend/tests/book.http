@@ -1,0 +1,16 @@
+@baseUrl = http://localhost:3000
+
+### Get random books to display on home
+GET {{baseUrl}}/books
+
+### Get books with a specific query
+GET {{baseUrl}}/books/search?q=mishima
+
+### Get books
+GET {{baseUrl}}/books/search?q=king
+
+### Get book by openLibraryId
+GET {{baseUrl}}/books/OL1845211W
+
+
+# !! TODO : implémenter des tests après avoir mis en place la gestion d'erreur
