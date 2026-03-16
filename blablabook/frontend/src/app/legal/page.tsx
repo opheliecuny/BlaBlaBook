@@ -3,22 +3,22 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Mentions Légales - BlaBlaBook",
-  description: "Politique de confidentialité et mentions légales de BlaBlaBook",
+  description: "Mentions légales de BlaBlaBook",
 };
 
 export default function LegalPage() {
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm p-8 md:p-12">
+    <div className="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12">
         {/* Header */}
-        <header className="border-b border-gray-100 pb-8 mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4 uppercase tracking-tight">
-            Politique de Confidentialité
+        <header className="mb-8 border-b border-gray-100 pb-8">
+          <h1 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 uppercase">
+            Mentions Légales
           </h1>
           <p className="text-sm text-gray-500 italic">
             Dernière mise à jour : 16 mars 2026
           </p>
-          <p className="text-sm text-gray-700 mt-4">
+          <p className="mt-4 text-sm text-gray-700">
             La présente politique de confidentialité décrit la manière dont l
             {"'"}application BlaBlaBook collecte, utilise et protège les données
             personnelles de ses utilisateurs dans le cadre de l{"'"}utilisation
@@ -28,9 +28,9 @@ export default function LegalPage() {
 
         {/* Politique de Confidentialité */}
         <section className="mb-8">
-          <div className="text-gray-600 space-y-8">
+          <div className="space-y-8 text-gray-600">
             <div>
-              <h2 className="text-xl font-medium text-gray-800 mb-3">
+              <h2 className="mb-3 text-xl font-medium text-gray-800">
                 1. Données collectées
               </h2>
               <p className="leading-relaxed">
@@ -38,7 +38,7 @@ export default function LegalPage() {
                 certaines données peuvent être collectées afin d{"'"}assurer le
                 bon fonctionnement du service. Ces données peuvent inclure :
               </p>
-              <ul className="list-disc list-inside mt-2 space-y-1 ml-4">
+              <ul className="mt-2 ml-4 list-inside list-disc space-y-1">
                 <li>Adresse email (pour la connexion)</li>
                 <li>Nom d{"'"}utilisateur (affiché publiquement)</li>
                 <li>Mot de passe (stocké de manière sécurisée sous hachée)</li>
@@ -55,7 +55,7 @@ export default function LegalPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-medium text-gray-800 mb-3">
+              <h2 className="mb-3 text-xl font-medium text-gray-800">
                 2. Finalité de la collecte
               </h2>
               <p className="leading-relaxed">
@@ -63,7 +63,7 @@ export default function LegalPage() {
                 du fonctionnement de l{"'"}application. Elles permettent
                 notamment :
               </p>
-              <ul className="list-disc list-inside mt-2 space-y-1 ml-4">
+              <ul className="mt-2 ml-4 list-inside list-disc space-y-1">
                 <li>La création et la gestion de comptes utilisateurs</li>
                 <li>La gestion de la bibliothèque personnelle</li>
                 <li>
@@ -73,7 +73,7 @@ export default function LegalPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-medium text-gray-800 mb-3">
+              <h2 className="mb-3 text-xl font-medium text-gray-800">
                 3. Utilisation d{"'"}API externes
               </h2>
               <p className="leading-relaxed">
@@ -86,7 +86,7 @@ export default function LegalPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-medium text-gray-800 mb-3">
+              <h2 className="mb-3 text-xl font-medium text-gray-800">
                 4. Conservation des données
               </h2>
               <p className="leading-relaxed">
@@ -96,8 +96,8 @@ export default function LegalPage() {
               </p>
             </div>
 
-            <div className="bg-blue-50 p-6 rounded-lg border-l-4 border-blue-500">
-              <h2 className="text-xl font-medium text-blue-800 mb-3">
+            <div className="rounded-lg border-l-4 border-blue-500 bg-blue-50 p-6">
+              <h2 className="mb-3 text-xl font-medium text-blue-800">
                 5. Sécurité des données
               </h2>
               <p className="leading-relaxed text-blue-900/80">
@@ -109,7 +109,7 @@ export default function LegalPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-medium text-gray-800 mb-3">
+              <h2 className="mb-3 text-xl font-medium text-gray-800">
                 6. Partage des données
               </h2>
               <p className="leading-relaxed">
@@ -119,14 +119,14 @@ export default function LegalPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-medium text-gray-800 mb-3">
+              <h2 className="mb-3 text-xl font-medium text-gray-800">
                 7. Droits des utilisateurs
               </h2>
               <p className="leading-relaxed">
                 Conformément au Règlement Général sur la Protection des Données
                 (RGPD), chaque utilisateur dispose des droits suivants :
               </p>
-              <ul className="list-disc list-inside mt-2 space-y-1 ml-4">
+              <ul className="mt-2 ml-4 list-inside list-disc space-y-1">
                 <li>Droit d{"'"}accès à ses données personnelles</li>
                 <li>Droit de rectification</li>
                 <li>Droit à l{"'"}effacement de ses données</li>
@@ -135,7 +135,7 @@ export default function LegalPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-medium text-gray-800 mb-3">
+              <h2 className="mb-3 text-xl font-medium text-gray-800">
                 8. Contact
               </h2>
               <p className="leading-relaxed">
@@ -153,7 +153,7 @@ export default function LegalPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-medium text-gray-800 mb-3">
+              <h2 className="mb-3 text-xl font-medium text-gray-800">
                 9. Modifications
               </h2>
               <p className="leading-relaxed">
@@ -167,10 +167,10 @@ export default function LegalPage() {
         </section>
 
         {/* Footer Links */}
-        <footer className="mt-12 pt-8 border-t border-gray-100 text-center">
+        <footer className="mt-12 border-t border-gray-100 pt-8 text-center">
           <Link
             href="/"
-            className="text-indigo-600 hover:underline text-sm font-medium"
+            className="text-sm font-medium text-indigo-600 hover:underline"
           >
             ← Retour à l{"'"}accueil
           </Link>
