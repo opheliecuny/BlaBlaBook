@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",              // Version JS compilée
+    "module": "ESNext",              // Modules ES pour Node
+    "moduleResolution": "Node",      // Résolution de module type Node
+    "esModuleInterop": true,         // Pour importer des modules CommonJS
+    "strict": true,                  // Active le mode strict TypeScript
+    "types": ["node"],               // Reconnaît les globals Node (process, __dirname, etc.)
+    "skipLibCheck": true,            // Ignore les vérifications de type des dépendances
+    "outDir": "dist"                 // Dossier de sortie si tu compiles
+  },
+  "include": ["src/**/*.ts"],        // Tous tes fichiers TS dans src
+  "exclude": ["node_modules"]        // Exclut node_modules
+}
