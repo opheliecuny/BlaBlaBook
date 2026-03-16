@@ -27,11 +27,17 @@ La majorité des documents du sprint 0 ont été validés, on peaufine les déta
 
 ### 13/03/2026
 
+Journée retropsective.
+
+## Sprint 1
+
+### 16/03/2026
+
 *Résumé*
 
 #### Infos individuelles
 
-- **Ophélie :**
+- **Ophélie :** Initialisation de prisma (v6 car vulnérabilités sur v7), mise en place d'un docker compose pour être sûr que tout le monde peut lancer facilement une bdd.
 - **Rémi :**
 - **Paul :**
 - **Christopher :**
