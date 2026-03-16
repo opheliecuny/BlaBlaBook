@@ -38,6 +38,6 @@ Journée retropsective.
 #### Infos individuelles
 
 - **Ophélie :** Initialisation de prisma (v6 car vulnérabilités sur v7), mise en place d'un docker compose pour être sûr que tout le monde peut lancer facilement une bdd.
-- **Rémi :**
+- **Rémi :**Implémentation des routes générales. Début des controlleurs (book et auth) avec une base de test pour book. Exploration d'openLibrary un peu plus en profondeur. 
 - **Paul :**
 - **Christopher :**
