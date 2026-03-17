@@ -1,6 +1,9 @@
 export class AppError extends Error {
     statusCode: number;
     code: string;
+    traceId?: string;
+    path?: string;
+    method?: string;
 
     constructor({ statusCode, code, message }: { statusCode: number; code: string; message: string}) {
         super(message);
