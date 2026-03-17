@@ -23,7 +23,7 @@ const config: runtime.GetPrismaClientConfig = {
       "value": "prisma-client"
     },
     "output": {
-      "value": "/var/www/html/Figueres/BlaBlaBook/projet-blablabook-cda/blablabook/backend/generated/prisma",
+      "value": "/var/www/html/figueres/apotheose/projet-blablabook-cda/blablabook/backend/generated/prisma",
       "fromEnvVar": null
     },
     "config": {
@@ -37,7 +37,7 @@ const config: runtime.GetPrismaClientConfig = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "/var/www/html/Figueres/BlaBlaBook/projet-blablabook-cda/blablabook/backend/prisma/schema.prisma",
+    "sourceFilePath": "/var/www/html/figueres/apotheose/projet-blablabook-cda/blablabook/backend/prisma/schema.prisma",
     "isCustomOutput": true
   },
   "relativePath": "../../prisma",

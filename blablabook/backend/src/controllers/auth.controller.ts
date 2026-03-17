@@ -2,13 +2,15 @@ import type { Request, Response } from "express";
 import z from "zod";
 import argon2 from "argon2";
 import { generateAuthenticationTokens } from "../utils/token";
-// !!TODO import { prisma } from toDefine
-// !!TODO import types User and Token from models toDefine
+import { prisma } from "../utils/prismaClient";
+// !!TODO import types for User and Token 
+// !!TODO Si stockage du refreshToken en bdd, il faudra le définir dans le schéma prisma
+// !!TODO Fonction logout à mettre en place (une fois décidé sur jwt ou cookie)
 
 export async function registerUser(req: Request, res: Response) {
 
   const registerUserBodySchema = z.object({
-    email: z.string().email(),
+    email: z.email(),
     password: z.string()
       .min(8, "password should have at least 8 caracters") // CNIL recommande plutôt 12 caractères
       .max(100, "password should have at most 100 caracters")
@@ -44,8 +46,8 @@ export async function registerUser(req: Request, res: Response) {
     id: user.id,
     email: user.email,
     username: user.username,
-    created_at: user.created_at,
-    updated_at: user.updated_at
+    created_at: user.createdAt,
+    updated_at: user.updatedAt
   });
 
 };

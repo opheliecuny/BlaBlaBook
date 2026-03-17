@@ -9,6 +9,6 @@
     "skipLibCheck": true,            // Ignore les vérifications de type des dépendances
     "outDir": "dist"                 // Dossier de sortie si tu compiles
   },
-  "include": ["src/**/*.ts"],        // Tous tes fichiers TS dans src
+  "include": ["src/**/*.ts", "@types/**/*.ts"],        // Tous tes fichiers TS dans src
   "exclude": ["node_modules"]        // Exclut node_modules
 }
