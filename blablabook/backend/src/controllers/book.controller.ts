@@ -17,7 +17,7 @@ export async function getRandomBooks(req: Request, res: Response) {
 
     const selectedDatas = docs.map((doc) => ({ author: doc.author_name, authorId: doc.author_key, title: doc.title }));
 
-    res.send(selectedDatas);
+    return res.send(selectedDatas);
 
   } catch (err) {
     console.error(err);
@@ -51,7 +51,7 @@ export async function searchBooks(req: Request, res: Response) {
 
     }));
 
-    res.send(selectedDatas);
+    return res.send(selectedDatas);
 
   } catch (err) {
     console.error(err);
@@ -81,7 +81,7 @@ export async function getBookById(req: Request, res: Response) {
       authorId: data.authors[0].author.key.split("/")?.[2]
     };
 
-    res.send(selectedDatas);
+    return res.send(selectedDatas);
 
   } catch (err) {
     console.error(err);
