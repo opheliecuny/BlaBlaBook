@@ -41,3 +41,15 @@ Journée retropsective.
 - **Rémi :**Implémentation des routes générales. Début des controlleurs (book et auth) avec une base de test pour book. Exploration d'openLibrary un peu plus en profondeur. 
 - **Paul :**
 - **Christopher :**
+
+
+### 17/03/2026
+
+*Résumé*
+
+#### Infos individuelles
+
+- **Ophélie :** Seeding bdd et centralisation des erreurs en back avec un midlleware. Début de controller library (route GET fonctionnelle) !
+- **Rémi :** 
+- **Paul :**
+- **Christopher :**
