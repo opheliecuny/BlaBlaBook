@@ -49,25 +49,25 @@
 
 :root {
   /* Charte graphique BlaBlaBook — "L'Élégance Littéraire" v1.0 */
-  --background: #F9FAFB;
-  --foreground: #1F2937;
-  --card: #FFFFFF;
-  --card-foreground: #1F2937;
-  --popover: #FFFFFF;
-  --popover-foreground: #1F2937;
-  --primary: #3730A3;
-  --primary-foreground: #F9FAFB;
-  --secondary: #F3F4F6;
-  --secondary-foreground: #1F2937;
-  --muted: #F3F4F6;
-  --muted-foreground: #6B7280;
-  --accent: #D4A5A5;
-  --accent-foreground: #1F2937;
-  --accent-alt: #E2725B;
+  --background: #f9fafb;
+  --foreground: #1f2937;
+  --card: #ffffff;
+  --card-foreground: #1f2937;
+  --popover: #ffffff;
+  --popover-foreground: #1f2937;
+  --primary: #3730a3;
+  --primary-foreground: #f9fafb;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #1f2937;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #d4a5a5;
+  --accent-foreground: #1f2937;
+  --accent-alt: #e2725b;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #E5E7EB;
-  --input: #E5E7EB;
-  --ring: #3730A3;
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #3730a3;
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.546 0.245 262.881);
@@ -85,24 +85,24 @@
 }
 
 .dark {
-  --background: #0F172A;
-  --foreground: #F9FAFB;
-  --card: #1E293B;
-  --card-foreground: #F9FAFB;
-  --popover: #1E293B;
-  --popover-foreground: #F9FAFB;
-  --primary: #1E3A8A;
-  --primary-foreground: #F9FAFB;
-  --secondary: #1E293B;
-  --secondary-foreground: #F9FAFB;
-  --muted: #1E293B;
-  --muted-foreground: #9CA3AF;
-  --accent: #A78BFA;
-  --accent-foreground: #0F172A;
+  --background: #0f172a;
+  --foreground: #f9fafb;
+  --card: #1e293b;
+  --card-foreground: #f9fafb;
+  --popover: #1e293b;
+  --popover-foreground: #f9fafb;
+  --primary: #1e3a8a;
+  --primary-foreground: #f9fafb;
+  --secondary: #1e293b;
+  --secondary-foreground: #f9fafb;
+  --muted: #1e293b;
+  --muted-foreground: #9ca3af;
+  --accent: #a78bfa;
+  --accent-foreground: #0f172a;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: rgba(255,255,255,0.1);
-  --input: rgba(255,255,255,0.15);
-  --ring: #1E3A8A;
+  --border: rgba(255, 255, 255, 0.1);
+  --input: rgba(255, 255, 255, 0.15);
+  --ring: #1e3a8a;
   --chart-1: oklch(0.809 0.105 251.813);
   --chart-2: oklch(0.623 0.214 259.815);
   --chart-3: oklch(0.546 0.245 262.881);
@@ -128,17 +128,23 @@
   html {
     @apply font-sans;
   }
-  h1, h2, h3 {
+  h1,
+  h2,
+  h3 {
     font-family: var(--font-playfair), serif;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 }
 
 @layer utilities {
   .tag-terracotta {
-    color: #E2725B;
+    color: #e2725b;
   }
   .tag-terracotta-filled {
-    color: #E2725B;
-    background-color: #FBF0EE;
+    color: #e2725b;
+    background-color: #fbf0ee;
   }
 }
