@@ -50,6 +50,6 @@ Journée retropsective.
 #### Infos individuelles
 
 - **Ophélie :** Seeding bdd et centralisation des erreurs en back avec un midlleware. Début de controller library (route GET fonctionnelle) !
-- **Rémi :** 
+- **Rémi :** Finalisation du auth.controller et mise en place de user.controller. Implémentation des tests associés et début de refactorisation des controllers.
 - **Paul :**
 - **Christopher :**
