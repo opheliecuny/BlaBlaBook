@@ -10,9 +10,18 @@ Lorsque vous avez récupéré le dépôt mis à jour :
   
 ```bash
 docker compose up -d
+
+# Important pour pouvoir lancer les scripts de package.json
 cd backend
+
+# Optionnel : dans le cas où les packages ne seraient pas déjà installés
 npm i
+
+# Synchronise les migrations prisma avec la BDD du container
 npm run db:migrate:deploy
+
+# Effectue le seeding dans la BDD
+npm run db:seed
 ```
 
 ### Connexion de l'API à la BDD du container
