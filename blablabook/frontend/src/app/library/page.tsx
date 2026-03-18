@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -64,7 +65,19 @@ const mockBooks: Book[] = [
 ];
 
 export default function LibraryPage() {
-  // TODO: protéger cette route (redirection /login si non connecté)
+  const router = useRouter();
+
+  // TODO: remplacer par const { isLoggedIn } = useAuth() quand AuthContext sera prêt
+  const isLoggedIn = false;
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.replace("/login");
+    }
+  }, [isLoggedIn, router]);
+
+  if (!isLoggedIn) return null;
+
   const [activeFilter, setActiveFilter] = useState<"ALL" | ReadingStatus>(
     "ALL",
   );
