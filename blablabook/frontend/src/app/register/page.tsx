@@ -53,6 +53,7 @@ export default function RegisterPage() {
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
               required
+              autoComplete="username"
             />
           </div>
 
@@ -67,6 +68,7 @@ export default function RegisterPage() {
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
               required
+              autoComplete="email"
             />
           </div>
 

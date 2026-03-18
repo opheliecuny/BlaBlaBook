@@ -1,57 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Search } from "lucide-react";
-import { useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export default function Navbar() {
-  const [query, setQuery] = useState("");
-  const router = useRouter();
-
   // TODO: remplacer par le vrai état auth (AuthContext)
   const isLoggedIn = false;
-
-  function handleSearch(e: React.FormEvent) {
-    e.preventDefault();
-    if (query.trim()) {
-      router.push(`/search?q=${encodeURIComponent(query.trim())}`);
-    }
-  }
 
   return (
     <header className="border-b border-border bg-background sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-6">
         {/* Logo */}
-        <Link href="/" className="font-bold text-xl shrink-0">
+        <Link href="/" className="font-light text-xl text-[#374151] shrink-0 font-playfair">
           BlaBlaBook
         </Link>
 
-        {/* Barre de recherche */}
-        <form onSubmit={handleSearch} className="flex-1 max-w-md mx-auto">
-          <div className="relative">
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Rechercher un livre"
-              className="w-full rounded-full border border-border px-4 py-1.5 pr-10 text-sm outline-none focus:border-primary"
-            />
-            <button
-              type="submit"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-            >
-              <Search size={16} />
-            </button>
-          </div>
-        </form>
-
         {/* Navigation */}
-        <nav className="flex items-center gap-3 shrink-0">
+        <nav className="flex items-center gap-3 shrink-0 ml-auto">
           <Link href="/" className="text-sm hover:text-primary">
             Accueil
+          </Link>
+          <Link href="/search" className="text-sm hover:text-primary">
+            Rechercher
           </Link>
 
           {isLoggedIn ? (

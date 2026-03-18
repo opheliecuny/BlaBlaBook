@@ -32,6 +32,7 @@ export default function LoginPage() {
             <Label htmlFor="email">Adresse mail</Label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="nom@exemple.com"
               value={email}
@@ -44,8 +45,9 @@ export default function LoginPage() {
             <Label htmlFor="password">Mot de passe</Label>
             <Input
               id="password"
+              name="password"
               type="password"
-              placeholder="******"
+              placeholder="••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required

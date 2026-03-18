@@ -4,12 +4,15 @@ export default function Footer() {
   return (
     <footer className="border-border bg-background mt-auto border-t">
       <div className="mx-auto max-w-7xl px-4 py-10">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {/* Logo + tagline */}
-          <div>
-            <p className="text-lg font-bold">BlaBlaBook</p>
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_auto_auto] md:gap-16">
+          {/* Logo + tagline + copyright */}
+          <div className="flex flex-col">
+            <p className="text-lg font-bold font-playfair">BlaBlaBook</p>
             <p className="text-muted-foreground mt-1 text-sm">
               La plateforme qui facilite votre gestion de lecture.
+            </p>
+            <p className="text-muted-foreground mt-auto pt-6 text-xs">
+              © 2026 - Christopher CART, Rémi CLOUET, Ophélie CUNY, Paul SEBAS
             </p>
           </div>
 
@@ -61,10 +64,6 @@ export default function Footer() {
               </li>
             </ul>
           </div>
-        </div>
-
-        <div className="border-border text-muted-foreground mt-8 border-t pt-4 text-xs">
-          © 2026 - Christoper CART, Rémi CLOUET, Ophélie CUNY, Paul SEBAS
         </div>
       </div>
     </footer>
