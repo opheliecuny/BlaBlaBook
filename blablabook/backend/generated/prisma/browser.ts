@@ -32,3 +32,8 @@ export type library_item = Prisma.library_itemModel
  * 
  */
 export type user = Prisma.userModel
+/**
+ * Model refresh_token
+ * 
+ */
+export type refresh_token = Prisma.refresh_tokenModel

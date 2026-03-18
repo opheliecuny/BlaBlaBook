@@ -16,10 +16,15 @@ export async function registerUser(req: Request, res: Response) {
       .max(100, "password should have at most 100 caracters")
       .regex(/[a-z]/, "password should contain at least a lowercase caracter")
       .regex(/[A-Z]/, "password should contain at least a uppercase caracter"),
+    confirm: z.string(), 
     username: z.string().min(1)
   });
 
-  const { email, password, username } = await registerUserBodySchema.parseAsync(req.body);
+  const { email, password, confirm, username } = await registerUserBodySchema.parseAsync(req.body);
+
+  if (password !== confirm) {
+    return res.status(400).json("Password and confirmation do not match"); 
+  }
 
   try {
     const alreadyExistingUser = await prisma.user.findFirst({ where: { email } });
@@ -29,7 +34,7 @@ export async function registerUser(req: Request, res: Response) {
     }
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: "Internal server error" }); // ou "throw err" aussi possible
+    return res.status(500).json({ message: "Internal server error" }); 
   }
 
   const hashedPassword = await argon2.hash(password);
@@ -42,14 +47,17 @@ export async function registerUser(req: Request, res: Response) {
     }
   });
 
+  const { accessToken, refreshToken } = generateAuthenticationTokens(user);
+
   return res.status(201).json({
     id: user.id,
     email: user.email,
     username: user.username,
     created_at: user.createdAt,
-    updated_at: user.updatedAt
+    updated_at: user.updatedAt,
+    accessToken, 
+    refreshToken
   });
-
 };
 
 export async function loginUser(req: Request, res: Response) {
