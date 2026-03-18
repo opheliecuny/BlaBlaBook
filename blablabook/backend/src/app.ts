@@ -1,7 +1,7 @@
 import cors from "cors"; 
 import express from "express"; 
 import { config } from "../config";
-import { router as apiRouter } from "./routes/index.router.ts";
+import { router as apiRouter } from "./routes/index.router";
 import { errorHandler } from "./middlewares/errorHandler";
 
 

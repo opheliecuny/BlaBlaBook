@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as libraryController from "../controllers/library.controller.ts";
+import * as libraryController from "../controllers/library.controller";
 
 export const router = Router(); 
 
