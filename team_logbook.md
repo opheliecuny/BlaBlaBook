@@ -39,40 +39,40 @@ Journée rétrospective.
 
 ### 16/03/2026
 
-*Résumé*
+Démarrage du sprint 1. Chacun attaque sa dominante : initialisation BDD côté Ophélie, backend côté Rémi, pages secondaires côté Paul, et structure des pages MVP côté Christopher.
 
 #### Infos individuelles
 
 - **Ophélie :** Initialisation de prisma (v6 car vulnérabilités sur v7), mise en place d'un docker compose pour être sûr que tout le monde peut lancer facilement une bdd.
 - **Rémi :** Implémentation des routes générales. Début des contrôleurs (book et auth) avec une base de test pour book. Exploration d'openLibrary un peu plus en profondeur.
 - **Paul :** Pages /legal (politique confidentialité + RGPD) et /profile (gestion profil + sécurité + suppression compte). Configuration Prettier frontend.
-- **Christopher :**
+- **Christopher :** Structure complète des pages MVP frontend : page de recherche `/search` (grille de résultats, états vides, pagination côté client) et page de détail `/book/:id`. Corrections accessibilité sur l'ensemble des formulaires (labels sr-only, name, required, autoComplete). Gestion des cas limites sur la recherche (requête vide, aucun résultat).
 
 ---
 
 ### 17/03/2026
 
-*Résumé*
+Bonne dynamique d'équipe, les fonctionnalités principales avancent en parallèle sur le back et le front.
 
 #### Infos individuelles
 
 - **Ophélie :** Seeding bdd et centralisation des erreurs en back avec un middleware. Début de controller library (route GET fonctionnelle) !
 - **Rémi :** Finalisation du auth.controller et mise en place de user.controller. Implémentation des tests associés et début de refactorisation des controllers.
 - **Paul :** Mise à jour pages /register et /login (composants shadcn/ui Input/Label/Checkbox, state management, validation). Développement complet page /library : composants StatCard et EmptyState, filtres interactifs avec variants, gestion CRUD livres (ajout/suppression), stats dynamiques, optimisation Next.js Image (remotePatterns OpenLibrary). Configuration next.config.ts pour images externes.
-- **Christopher :**
+- **Christopher :** Intégration des maquettes sur la homepage (hero, section livres du moment), la navbar (suppression barre de recherche, lien "Rechercher", logo Playfair), la page search (harmonisation largeur, polices, boutons) et la page détail livre (layout deux colonnes, tag genre, lien auteur, encadré statut de lecture). Alignement sur la charte graphique (polices Playfair/Lora/Inter, couleurs terracotta/primary).
 
 ---
 
 ### 18/03/2026
 
-*Résumé*
+Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à jour du backend.
 
 #### Infos individuelles
 
 - **Ophélie :**
-- **Rémi :**
+- **Rémi :** Mise à jour du backend : `GET /books` retourne désormais `author` (string unique), `id` et `coverThumbnail`. `GET /books/search` et `GET /books/:id` retournent `category` (string) au lieu d'un tableau. Correction auth.controller.
 - **Paul :**
-- **Christopher :**
+- **Christopher :** Branchement des 3 pages publiques sur l'API réelle : `/search` sur `GET /books/search`, `/book/:id` sur `GET /books/:id`, homepage sur `GET /books` (section livres aléatoires). Affichage des vraies couvertures avec fallback `default-cover.png`. Adaptation aux réponses API mises à jour par Rémi (champ `category`, auteur string). Migration de Google Fonts vers Bunny Fonts (respect RGPD). Protection de la route `/library` avec redirection vers `/login`.
 
 ---
 
