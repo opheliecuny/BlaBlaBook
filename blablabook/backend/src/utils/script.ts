@@ -1,15 +1,23 @@
-// vérifie la connexion à la bdd
-// pour exécuter ce script : npx tsx chemin/vers/script.ts
+import 'dotenv/config';
+import { addBookToLibrary } from "../controllers/library.controller";
 
-// imports à utiliser pour se connecter à la bdd et faire des requêtes
-import "dotenv/config";
-import { prisma } from "./prismaClient";
+// mock req
+const mockReq = {
+  user: { id: "a48b1d67-bc22-4285-92c7-1a5bdbd95bff" },
+  body: {
+    isbn: "123456789",
+    title: "Test Book",
+    author: "Moi",
+    status: "READ"
+  }
+} as any;
 
-async function main() {
-  const users = await prisma.user.findMany();
-  console.log(users);
-}
+// mock res
+const mockRes = {
+  json: (data: any) => {
+    console.log("RESPONSE :", data);
+  }
+} as any;
 
-main()
-  .catch(console.error)
-  .finally(() => prisma.$disconnect());
+// appel
+await addBookToLibrary(mockReq, mockRes);

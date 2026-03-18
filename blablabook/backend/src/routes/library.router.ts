@@ -1,10 +1,10 @@
-// import { Router } from "express";
-// import * as libraryController from "../controllers/library.controller.ts";
+import { Router } from "express";
+import { isAuthenticated } from "../middlewares/auth.middleware";
+import * as libraryController from "../controllers/library.controller";
 
-// export const router = Router(); 
+export const router = Router(); 
 
-// router.get("/library", libraryController.getLibrary);
-// router.post("/library", libraryController.addBookToLibrary);
-// router.patch("/library/:id", libraryController.updateReadingStatus);
-// router.delete("/library/:id", libraryController.deleteBookFromLibrary);
-
+router.get("/library", isAuthenticated, libraryController.getLibrary);
+router.post("/library", isAuthenticated, libraryController.addBookToLibrary);
+router.patch("/library/:id", isAuthenticated, libraryController.updateReadingStatus);
+router.delete("/library/:id", isAuthenticated, libraryController.deleteBookFromLibrary);
