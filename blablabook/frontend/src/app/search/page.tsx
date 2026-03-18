@@ -5,19 +5,28 @@ interface SearchPageProps {
   searchParams: Promise<{ q?: string; page?: string }>;
 }
 
-// TODO: remplacer par les vrais résultats GET /books/search?q=...
-const mockResults = [
-  { id: "OL1W", title: "Stefan Zweig : le voyageur et ses mondes", author: "George Steiner", genre: "Biographie", thumbnail: null },
-  { id: "OL2W", title: "Stefan Zweig et la France", author: "Stefan Zweig", genre: "Non spécifié", thumbnail: null },
-  { id: "OL3W", title: "Stefan Zweig ou empire l'Europe à son sourire", author: "Sophie Faguinier", genre: "Biographie", thumbnail: null },
-  { id: "OL4W", title: "Stefan Zweig : biographie", author: "Dominique Bona", genre: "Biographie", thumbnail: null },
-  { id: "OL5W", title: "Lettre d'une inconnue suivi de La joueur d'échecs", author: "Stefan Zweig", genre: "Fiction", thumbnail: null },
-  { id: "OL6W", title: "Seuls les vivants créent le monde", author: "Stefan Zweig", genre: "Fiction", thumbnail: null },
-  { id: "OL7W", title: "Amok ou le feu de Malaisie: un roman de Stefan Zweig", author: "Stefan Zweig", genre: "Fiction", thumbnail: null },
-  { id: "OL8W", title: "Stefan Zweig, l'impossible renoncement", author: "Bettina Ayerst, Pierre Michard", genre: "Biographie", thumbnail: null },
-  { id: "OL9W", title: "Le monde d'hier", author: "Stefan Zweig", genre: "Autobiographie", thumbnail: null },
-  { id: "OL10W", title: "Vingt-quatre heures de la vie d'une femme", author: "Stefan Zweig", genre: "Fiction", thumbnail: null },
-];
+interface BookResult {
+  id: string;
+  title: string;
+  author: string | null;
+  publishedYear: number | null;
+  coverThumbnail: string | null;
+  category: string | null;
+}
+
+async function fetchBooks(query: string): Promise<BookResult[]> {
+  try {
+    const res = await fetch(
+      `${process.env.API_URL}/books/search?q=${encodeURIComponent(query)}`,
+      { cache: "no-store" }
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data;
+  } catch {
+    return [];
+  }
+}
 
 const ITEMS_PER_PAGE = 8;
 
@@ -28,10 +37,12 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const query = q?.trim() ?? "";
   const currentPage = Math.max(1, parseInt(page ?? "1", 10));
 
-  // TODO: const results = await fetch(`${process.env.API_URL}/books/search?q=${query}&page=${currentPage}`).then(r => r.json())
-  const allResults = query ? mockResults : [];
+  const allResults: BookResult[] = query ? await fetchBooks(query) : [];
   const totalPages = Math.ceil(allResults.length / ITEMS_PER_PAGE);
-  const results = allResults.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
+  const results = allResults.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
 
   return (
     <div className="py-10">
@@ -78,51 +89,48 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </p>
 
             <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y divide-border/50">
-              {results.map((book) => (
-                <div key={book.id} className="flex flex-col px-8 py-12">
-                  {book.thumbnail ? (
+              {results.map((book) => {
+                // L'id backend est au format "/works/OL123W" — on extrait "OL123W"
+                const bookId = book.id.split("/").pop() ?? book.id;
+                const hasValidCover = book.coverThumbnail && !book.coverThumbnail.includes("undefined");
+
+                return (
+                  <div key={book.id} className="flex flex-col px-8 py-12">
                     <Image
-                      src={book.thumbnail}
-                      alt={`Couverture de ${book.title}`}
+                      src={hasValidCover ? book.coverThumbnail : "/default-cover.png"}
+                      alt={hasValidCover ? `Couverture de ${book.title}` : "Couverture non disponible"}
                       width={200}
                       height={300}
                       className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
                     />
-                  ) : (
-                    <Image
-                      src="/default-cover.png"
-                      alt="Couverture non disponible"
-                      width={200}
-                      height={300}
-                      className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
-                    />
-                  )}
-                  <div className="flex flex-col flex-1 mt-3">
-                    <p className="font-bold text-sm leading-snug font-playfair">{book.title}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{book.author}</p>
-                    {/* Tag + boutons alignés en bas */}
-                    <div className="mt-auto pt-4 flex flex-col gap-2">
-                      <span className="text-xs border rounded px-2 py-0.5 w-fit tag-terracotta">
-                        {book.genre}
-                      </span>
-                      <div className="flex gap-2 w-full">
-                        <Link
-                          href={`/book/${book.id}`}
-                          className="flex items-center justify-center rounded-md bg-[#E5E7EB] py-1.5 text-xs font-medium hover:bg-[#D1D5DB] grow min-w-0"
-                        >
-                          Voir le détail
-                        </Link>
-                        <button
-                          type="button"
-                          className="flex items-center justify-center rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium hover:bg-primary/90 whitespace-nowrap shrink-0"
-                        >
-                          <span className="text-sm font-black leading-none mr-1.5" style={{ WebkitTextStroke: "1px currentColor" }}>+</span>Biblio
-                        </button>
+                    <div className="flex flex-col flex-1 mt-3">
+                      <p className="font-bold text-sm leading-snug font-playfair">{book.title}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{book.author ?? "Auteur inconnu"}</p>
+                      <div className="mt-auto pt-4 flex flex-col gap-2">
+                        {book.category && (
+                          <span className="text-xs border rounded px-2 py-0.5 w-fit tag-terracotta">
+                            {book.category}
+                          </span>
+                        )}
+                        <div className="flex gap-2 w-full">
+                          <Link
+                            href={`/book/${bookId}`}
+                            className="flex items-center justify-center rounded-md bg-[#E5E7EB] py-1.5 text-xs font-medium hover:bg-[#D1D5DB] grow min-w-0"
+                          >
+                            Voir le détail
+                          </Link>
+                          <button
+                            type="button"
+                            className="flex items-center justify-center rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium hover:bg-primary/90 whitespace-nowrap shrink-0"
+                          >
+                            <span className="text-sm font-black leading-none mr-1.5" style={{ WebkitTextStroke: "1px currentColor" }}>+</span>Biblio
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Pagination */}

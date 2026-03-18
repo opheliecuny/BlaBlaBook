@@ -2,7 +2,28 @@ import Image from "next/image";
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
 
-export default function HomePage() {
+interface RandomBook {
+  id: string;
+  title: string;
+  author: string | null;
+  coverThumbnail: string | null;
+}
+
+async function fetchRandomBooks(): Promise<RandomBook[]> {
+  try {
+    const res = await fetch(`${process.env.API_URL}/books`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return [];
+    return await res.json();
+  } catch {
+    return [];
+  }
+}
+
+export default async function HomePage() {
+  const randomBooks = await fetchRandomBooks();
+
   return (
     <div>
       {/* Hero */}
@@ -53,10 +74,35 @@ export default function HomePage() {
             SÉLECTION ALÉATOIRE
           </p>
         </div>
-        {/* TODO: remplacer par les vrais livres depuis l'API */}
         <div className="max-w-[88%] mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4">
-            {[1, 2, 3, 4].map((i) => (
+            {randomBooks.length > 0 ? randomBooks.map((book, i) => {
+              const bookId = book.id?.split("/").pop() ?? null;
+              const hasValidCover = book.coverThumbnail && !book.coverThumbnail.includes("undefined");
+              return (
+                <div key={i} className="flex flex-col p-12">
+                  <Image
+                    src={hasValidCover ? book.coverThumbnail! : "/default-cover.png"}
+                    alt={hasValidCover ? `Couverture de ${book.title}` : "Couverture non disponible"}
+                    width={200}
+                    height={300}
+                    className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
+                  />
+                  <div className="flex flex-col flex-1 mt-3">
+                    <p className="font-bold text-base leading-snug font-playfair">{book.title}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{book.author ?? "Auteur inconnu"}</p>
+                    <div className="mt-auto pt-4">
+                      <Link
+                        href={bookId ? `/book/${bookId}` : `/search?q=${encodeURIComponent(book.title)}`}
+                        className="inline-flex items-center justify-center rounded-md bg-[#E5E7EB] px-3 py-1.5 text-xs font-medium hover:bg-[#D1D5DB] w-full"
+                      >
+                        Voir le détail
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            }) : [1, 2, 3, 4].map((i) => (
               <div key={i} className="flex flex-col p-12">
                 <Image
                   src="/default-cover.png"
@@ -68,12 +114,9 @@ export default function HomePage() {
                 <div className="flex flex-col flex-1 mt-3">
                   <p className="font-bold text-base leading-snug font-playfair">Titre du livre</p>
                   <p className="text-xs text-muted-foreground mt-1">Auteur</p>
-                  <div className="mt-auto pt-4 flex flex-col gap-2">
-                    <span className="text-xs border rounded px-2 py-0.5 w-fit tag-terracotta">
-                      Genre
-                    </span>
+                  <div className="mt-auto pt-4">
                     <Link
-                      href="#"
+                      href="/search"
                       className="inline-flex items-center justify-center rounded-md bg-[#E5E7EB] px-3 py-1.5 text-xs font-medium hover:bg-[#D1D5DB] w-full"
                     >
                       Voir le détail

@@ -5,30 +5,67 @@ interface BookPageProps {
   params: Promise<{ id: string }>;
 }
 
-// TODO: remplacer par les vraies données GET /books/:openLibraryId
-const mockBook = {
-  id: "OL123456W",
-  title: "Lettre d'une inconnue suivi de Le joueur d'échecs",
-  author: "Stefan Zweig",
-  genre: "Roman",
-  description:
-    "« À lui qui ne m'as jamais connue » La lettre, anonyme, s'adresse bien à lui, à l'homme qu'il était et qu'il est devenu, l'écrivain célèbre pour son talent, sa finesse et ses conquêtes. Comment se souvenir de cette femme qui lui déclare sa passion de toute une vie, de cette adolescente de 13 ans qui l'aimait et l'aimait encore, silence agacé ? Comment revoir le visage de cette enfant qui l'a vu partir et revenir, les yeux remplis de larmes et les bras écartés ? Dans ces quelques pages défile l'existence d'une esclave dévouée par une attente éternelle, un amour obsessionnel et absolu. Celle, il a, sans jamais rien savoir de rien, que « rien ne rend un homme si beau que le jeu ».",
-  publisher: "Classiques Pocket",
-  publishedYear: 2013,
-  pageCount: 83,
-  language: "Français",
-  isbn: "9782266195607",
-  thumbnail: null,
-};
+interface BookData {
+  title: string;
+  publishedYear: string | null;
+  category: string | null;
+  description: string | { value: string } | null;
+  authorId: string | null;
+}
+
+async function fetchBook(id: string): Promise<BookData | null> {
+  try {
+    const res = await fetch(`${process.env.API_URL}/books/${id}`, {
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return await res.json();
+  } catch {
+    return null;
+  }
+}
+
+async function fetchAuthorName(authorId: string): Promise<string | null> {
+  try {
+    const res = await fetch(
+      `https://openlibrary.org/authors/${authorId}.json`,
+      { cache: "force-cache" }
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.name ?? null;
+  } catch {
+    return null;
+  }
+}
 
 export default async function BookPage({ params }: BookPageProps) {
   const { id } = await params;
 
-  // TODO: const book = await fetch(`${process.env.API_URL}/books/${id}`).then(r => r.json())
-  const book = { ...mockBook, id };
+  const book = await fetchBook(id);
 
   // TODO: récupérer depuis AuthContext (isLoggedIn)
   const isLoggedIn = false;
+
+  if (!book) {
+    return (
+      <div className="max-w-[88%] mx-auto px-12 py-20 text-center">
+        <p className="text-lg font-medium mb-2">Livre introuvable</p>
+        <Link href="/search" className="text-sm text-primary hover:underline">
+          Retour à la recherche
+        </Link>
+      </div>
+    );
+  }
+
+  const authorName = book.authorId ? await fetchAuthorName(book.authorId) : null;
+  const genre = book.category ?? null;
+  const description =
+    typeof book.description === "object" && book.description !== null
+      ? book.description.value
+      : book.description;
+  // La couverture via l'ID du work Open Library
+  const coverUrl = `https://covers.openlibrary.org/b/olid/${id}-L.jpg`;
 
   return (
     <div className="max-w-[88%] mx-auto px-12 py-10">
@@ -37,8 +74,8 @@ export default async function BookPage({ params }: BookPageProps) {
         {/* Colonne gauche : couverture + actions */}
         <div className="w-48 shrink-0 flex flex-col gap-5">
           <Image
-            src={book.thumbnail ?? "/default-cover.png"}
-            alt={book.thumbnail ? `Couverture de ${book.title}` : "Couverture non disponible"}
+            src={coverUrl}
+            alt={`Couverture de ${book.title}`}
             width={200}
             height={300}
             className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
@@ -93,44 +130,41 @@ export default async function BookPage({ params }: BookPageProps) {
         {/* Colonne droite : infos livre */}
         <div className="flex-1 flex flex-col gap-3">
           {/* Tag genre */}
-          <div>
-            <span className="text-xs font-medium rounded-md px-3 py-1 bg-[#E2725B] text-white">
-              {book.genre}
-            </span>
-          </div>
+          {genre && (
+            <div>
+              <span className="text-xs font-medium rounded-md px-3 py-1 bg-[#E2725B] text-white">
+                {genre}
+              </span>
+            </div>
+          )}
 
           {/* Titre */}
           <h1 className="text-3xl font-bold leading-snug">{book.title}</h1>
 
           {/* Auteur — lien vers les livres de cet auteur */}
-          <Link
-            href={`/search?q=${encodeURIComponent(book.author)}`}
-            className="text-base text-primary hover:underline w-fit"
-          >
-            {book.author}
-          </Link>
+          {authorName && (
+            <Link
+              href={`/search?q=${encodeURIComponent(authorName)}`}
+              className="text-base text-primary hover:underline w-fit"
+            >
+              {authorName}
+            </Link>
+          )}
 
           {/* Métadonnées */}
-          <div className="flex flex-col gap-0.5">
+          {book.publishedYear && (
             <p className="text-sm text-muted-foreground">
-              {book.pageCount && <span>{book.pageCount} pages</span>}
-              {book.pageCount && book.publishedYear && <span> | </span>}
-              {book.publishedYear && <span>Publié en {book.publishedYear}</span>}
-              {book.publishedYear && book.language && <span> | </span>}
-              {book.language && <strong className="font-semibold text-foreground">{book.language}</strong>}
-              {book.language && book.publisher && <span> | </span>}
-              {book.publisher && <span>{book.publisher}</span>}
+              Publié en {book.publishedYear}
             </p>
-            {book.isbn && (
-              <p className="text-sm text-muted-foreground">ISBN : {book.isbn}</p>
-            )}
-          </div>
+          )}
 
           {/* Description */}
-          <div className="flex flex-col gap-2 mt-2">
-            <h2 className="text-base font-semibold">Description</h2>
-            <p className="text-sm leading-relaxed">{book.description}</p>
-          </div>
+          {description && (
+            <div className="flex flex-col gap-2 mt-2">
+              <h2 className="text-base font-semibold">Description</h2>
+              <p className="text-sm leading-relaxed">{description}</p>
+            </div>
+          )}
         </div>
 
       </div>
