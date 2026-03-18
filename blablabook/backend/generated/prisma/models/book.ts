@@ -297,11 +297,11 @@ export type bookOrderByWithRelationInput = {
 
 export type bookWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  isbn?: string
   openLibraryId?: string
   AND?: Prisma.bookWhereInput | Prisma.bookWhereInput[]
   OR?: Prisma.bookWhereInput[]
   NOT?: Prisma.bookWhereInput | Prisma.bookWhereInput[]
-  isbn?: Prisma.StringNullableFilter<"book"> | string | null
   title?: Prisma.StringFilter<"book"> | string
   author?: Prisma.StringNullableFilter<"book"> | string | null
   genre?: Prisma.StringNullableFilter<"book"> | string | null
@@ -312,7 +312,7 @@ export type bookWhereUniqueInput = Prisma.AtLeast<{
   language?: Prisma.StringNullableFilter<"book"> | string | null
   publishedYear?: Prisma.IntNullableFilter<"book"> | number | null
   library_item?: Prisma.Library_itemListRelationFilter
-}, "id" | "openLibraryId">
+}, "id" | "isbn" | "openLibraryId">
 
 export type bookOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
