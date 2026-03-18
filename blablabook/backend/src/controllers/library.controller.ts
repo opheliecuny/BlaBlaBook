@@ -2,28 +2,21 @@ import { Request, Response } from "express";
 import { prisma } from "../utils/prismaClient";
 import z from "zod";
 
-// TODO : ajouter tests associés 
+// TODO : ajouter tests associés
+// TODO : gérer les erreurs prisma et zod
 
 // GET /library ; bibliohtèque de l'utilisateur connecté
 
 export async function getLibrary(req: Request, res: Response) {
-  const userId = req.user.id; // TODO : s'assurer que ça colle avec l'authentification
-
+  const userId = req.user.id;
   const library = await prisma.library_item.findMany({
-    where: {
-      userId
-    },
-    include: {
-      // TODO : sélectionner les détails pertinents du livre (titre, auteur, etc.)
-      book: true
-    }
+    where: { userId },
+    include: { book: true }
   });
-
   const books = library.map(item => ({
     ...item.book,
     status: item.status
   }));
-
   res.json(books);
 }
 
@@ -31,7 +24,6 @@ export async function getLibrary(req: Request, res: Response) {
 
 export async function addBookToLibrary(req: Request, res: Response) {
   const userId = req.user.id;
-
   const postBookBodySchema = z.object({
     isbn: z.string(),
     openLibraryId: z.string().optional(),
@@ -48,14 +40,13 @@ export async function addBookToLibrary(req: Request, res: Response) {
   });
 
   const bookData = postBookBodySchema.parse(req.body);
-
-  const book  = await prisma.book.upsert({
+  const book = await prisma.book.upsert({
     where: {
       isbn: bookData.isbn
     },
     update: {},
     create: {
-      isbn : bookData.isbn,
+      isbn: bookData.isbn,
       openLibraryId: bookData.openLibraryId,
       title: bookData.title,
       author: bookData.author,
@@ -84,32 +75,37 @@ export async function addBookToLibrary(req: Request, res: Response) {
 // PATCH /library/:id ; modifier le statut de lecture d'un livre de la bibliothèque de l'utilisateur connecté
 
 export async function updateReadingStatus(req: Request, res: Response) {
-  const userId = req.user.id;
-
-  const paramsSchema = z.object({
-    id: z.string().min(1)
-  });
-
-  const bodySchema = z.object({
-    status: z.enum(["TO_READ", "READING", "READ"])
-  });
-
-  const { id: bookId } = paramsSchema.parse(req.params);
-  const { status } = bodySchema.parse(req.body);
-
-  const libraryItem = await prisma.library_item.update({
-    where: {
-      userId_bookId: {
-        userId,
-        bookId
+  try {
+    const userId = req.user.id;
+  
+    const paramsSchema = z.object({
+      id: z.string().min(1)
+    });
+  
+    const bodySchema = z.object({
+      status: z.enum(["TO_READ", "READING", "READ"])
+    });
+  
+    const { id: bookId } = paramsSchema.parse(req.params);
+    const { status } = bodySchema.parse(req.body);
+  
+    const libraryItem = await prisma.library_item.update({
+      where: {
+        userId_bookId: {
+          userId,
+          bookId
+        }
+      },
+      data: {
+        status
       }
-    },
-    data: {
-      status
-    }
-  });
-
-  return res.status(200).json(libraryItem);
+    });
+  
+    return res.status(200).json(libraryItem);
+  } catch (error) {
+    console.error("Error updating reading status:", error);
+    return res.status(400).json({ error: "Invalid request data" });
+  }
 }
 
 // DELETE /library/:id ; supprimer un livre de la bibliothèque de l'utilisateur connecté
@@ -132,6 +128,5 @@ export async function deleteBookFromLibrary(req: Request, res: Response) {
     }
   });
 
-  // TODO : gérer les exceptions prisma
   return res.status(204).send();
 }
