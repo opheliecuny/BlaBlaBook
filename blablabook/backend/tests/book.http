@@ -6,7 +6,7 @@ GET {{baseUrl}}/books
 ### Get books with a specific query
 GET {{baseUrl}}/books/search?q=mishima
 
-### Get books
+### Get books with a specific query
 GET {{baseUrl}}/books/search?q=king
 
 ### Get book by openLibraryId

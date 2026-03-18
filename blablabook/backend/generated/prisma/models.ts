@@ -11,4 +11,5 @@
 export type * from './models/book.js'
 export type * from './models/library_item.js'
 export type * from './models/user.js'
+export type * from './models/refresh_token.js'
 export type * from './commonInputTypes.js'

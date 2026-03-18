@@ -392,7 +392,8 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 export const ModelName = {
   book: 'book',
   library_item: 'library_item',
-  user: 'user'
+  user: 'user',
+  refresh_token: 'refresh_token'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -408,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "book" | "library_item" | "user"
+    modelProps: "book" | "library_item" | "user" | "refresh_token"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -634,6 +635,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    refresh_token: {
+      payload: Prisma.$refresh_tokenPayload<ExtArgs>
+      fields: Prisma.refresh_tokenFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.refresh_tokenFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokenPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.refresh_tokenFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokenPayload>
+        }
+        findFirst: {
+          args: Prisma.refresh_tokenFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokenPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.refresh_tokenFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokenPayload>
+        }
+        findMany: {
+          args: Prisma.refresh_tokenFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokenPayload>[]
+        }
+        create: {
+          args: Prisma.refresh_tokenCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokenPayload>
+        }
+        createMany: {
+          args: Prisma.refresh_tokenCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.refresh_tokenCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokenPayload>[]
+        }
+        delete: {
+          args: Prisma.refresh_tokenDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokenPayload>
+        }
+        update: {
+          args: Prisma.refresh_tokenUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokenPayload>
+        }
+        deleteMany: {
+          args: Prisma.refresh_tokenDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.refresh_tokenUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.refresh_tokenUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokenPayload>[]
+        }
+        upsert: {
+          args: Prisma.refresh_tokenUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$refresh_tokenPayload>
+        }
+        aggregate: {
+          args: Prisma.Refresh_tokenAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRefresh_token>
+        }
+        groupBy: {
+          args: Prisma.refresh_tokenGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Refresh_tokenGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.refresh_tokenCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.Refresh_tokenCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -715,6 +790,17 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const Refresh_tokenScalarFieldEnum = {
+  id: 'id',
+  token: 'token',
+  userId: 'userId',
+  issuedAt: 'issuedAt',
+  expiresAt: 'expiresAt'
+} as const
+
+export type Refresh_tokenScalarFieldEnum = (typeof Refresh_tokenScalarFieldEnum)[keyof typeof Refresh_tokenScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -906,6 +992,7 @@ export type GlobalOmitConfig = {
   book?: Prisma.bookOmit
   library_item?: Prisma.library_itemOmit
   user?: Prisma.userOmit
+  refresh_token?: Prisma.refresh_tokenOmit
 }
 
 /* Types for Logging */

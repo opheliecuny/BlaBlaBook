@@ -106,13 +106,14 @@ export default function PrivacyPage() {
           >
             ← Retour à l{"'"}accueil
           </Link>
-          <div className="space-x-4">
+          <div className="flex items-center space-x-4">
             <Link
               href="/cgu"
               className="text-xs text-gray-400 hover:text-gray-600"
             >
               CGU
             </Link>
+            <div className="text-xs text-gray-600">|</div>
             <Link
               href="/legal"
               className="text-xs text-gray-400 hover:text-gray-600"

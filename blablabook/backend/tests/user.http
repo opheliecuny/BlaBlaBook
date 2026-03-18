@@ -1,0 +1,30 @@
+@baseUrl = http://localhost:3000
+
+### Update an existing user
+PATCH {{baseUrl}}/user/profile
+Content-Type: application/json
+Authorization: Bearer RVGU3cahPlF9gSFbkAs7G7fhDl6Idrx3pakxgGgl3Kx4moishlyiwIQD3cVm6C2Ob4U+v9WNyhuGFNHA0trMDvq97ig+PVyOZA3mz0eYmQvGVxk2NVvUMGJ/j57LCl6l97EB0k9uV8jsVgPtRPb9ODgyc6enFXzi7u+M1E3nddY=
+
+{
+  "email": "test1@example.com",
+  "password": "Password123",
+  "username": "newUserTest"
+}
+
+### Update an existing user with wrong PW
+PATCH {{baseUrl}}/user/profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNmUwY2NjMS05ZjFjLTRkYTEtOWUxMC0zYTUwYTQzM2MyMWEiLCJpYXQiOjE3NzM3NTI3ODcsImV4cCI6MTc3Mzc1NjM4N30.C4CM-IKc9ykDhYrYnTKcxnKlr-ALxIj2eF8-XA5c9Lw
+
+{
+  "password": "123",
+}
+
+### Update an existing user with wrong email
+PATCH {{baseUrl}}/user/profile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNmUwY2NjMS05ZjFjLTRkYTEtOWUxMC0zYTUwYTQzM2MyMWEiLCJpYXQiOjE3NzM3NTI3ODcsImV4cCI6MTc3Mzc1NjM4N30.C4CM-IKc9ykDhYrYnTKcxnKlr-ALxIj2eF8-XA5c9Lw
+
+{
+  "email": "123",
+}

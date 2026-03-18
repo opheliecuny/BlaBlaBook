@@ -1,0 +1,24 @@
+
+### Register with valid informations
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "email": "test3@example.com",
+  "password": "Password123",
+  "confirm": "Password123",
+  "username": "testuser"
+}
+
+### Register with wrong informations
+POST http://localhost:3000/auth/register
+Content-Type: application/json
+
+{
+  "email": "test",
+  "password": "test",
+  "username": "test"
+}
+
+# !! TODO : Finaliser la gestion du jwt puis mettre en place les tests
+### Login
