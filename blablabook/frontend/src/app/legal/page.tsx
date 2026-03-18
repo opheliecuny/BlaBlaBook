@@ -167,13 +167,28 @@ export default function LegalPage() {
         </section>
 
         {/* Footer Links */}
-        <footer className="mt-12 border-t border-gray-100 pt-8 text-center">
+        <footer className="mt-12 flex items-center justify-between border-t border-gray-100 pt-8">
           <Link
             href="/"
             className="text-sm font-medium text-indigo-600 hover:underline"
           >
             ← Retour à l{"'"}accueil
           </Link>
+          <div className="flex items-center space-x-4">
+            <Link
+              href="/privacy"
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
+              Politique de confidentialité
+            </Link>
+            <div className="text-xs text-gray-600">|</div>
+            <Link
+              href="/cgu"
+              className="text-xs text-gray-400 hover:text-gray-600"
+            >
+              CGU
+            </Link>
+          </div>
         </footer>
       </div>
     </div>
