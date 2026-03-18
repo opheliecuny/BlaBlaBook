@@ -67,21 +67,20 @@ const mockBooks: Book[] = [
 export default function LibraryPage() {
   const router = useRouter();
 
+  // Déclaration de tous les Hooks en premier dans le composant
+  const [activeFilter, setActiveFilter] = useState<"ALL" | ReadingStatus>(
+    "ALL",
+  );
+  const [books, setBooks] = useState<Book[]>(mockBooks);
+
   // TODO: remplacer par const { isLoggedIn } = useAuth() quand AuthContext sera prêt
-  const isLoggedIn = false;
+  const isLoggedIn = true;
 
   useEffect(() => {
     if (!isLoggedIn) {
       router.replace("/login");
     }
   }, [isLoggedIn, router]);
-
-  if (!isLoggedIn) return null;
-
-  const [activeFilter, setActiveFilter] = useState<"ALL" | ReadingStatus>(
-    "ALL",
-  );
-  const [books, setBooks] = useState<Book[]>(mockBooks);
 
   // Calcul des statistiques
   const stats = useMemo(
@@ -93,6 +92,8 @@ export default function LibraryPage() {
     }),
     [books],
   );
+
+  if (!isLoggedIn) return null;
 
   // Filtrage des livres
   const filteredBooks =
@@ -138,11 +139,12 @@ export default function LibraryPage() {
             votre bibliothèque
           </p>
         </div>
-        {/* TODO: remplacer par un Link vers /search */}
-        <Button className="gap-2 shadow-sm">
-          <Plus size={18} />
-          Ajouter un livre
-        </Button>
+        <Link href="/search">
+          <Button className="gap-2 shadow-sm">
+            <Plus size={18} />
+            Ajouter un livre
+          </Button>
+        </Link>
       </div>
 
       {/* Stats Cards */}
