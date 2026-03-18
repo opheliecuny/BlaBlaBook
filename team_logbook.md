@@ -71,7 +71,8 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 - **Ophélie :** le controller library est complété et toutes les routes liées sont fonctionnelles (tests effectués), ne reste plus qu'à préciser un peu les erreurs spécifiques à prisma et zod mais ça n'empêche pas de les utiliser.
 - **Rémi :** Mise à jour du backend : `GET /books` retourne désormais `author` (string unique), `id` et `coverThumbnail`. `GET /books/search` et `GET /books/:id` retournent `category` (string) au lieu d'un tableau. Correction auth.controller.
-- **Paul :**
+- **Paul :** Finalisation pages frontend avec composants shadcn/ui : amélioration page /profile (remplacement inputs HTML natifs par composants shadcn/ui Input/Label/Button pour harmonisation design system), transformation bouton "Ajouter un livre" en lien vers /search dans /library.
+
 - **Christopher :** Branchement des 3 pages publiques sur l'API réelle : `/search` sur `GET /books/search`, `/book/:id` sur `GET /books/:id`, homepage sur `GET /books` (section livres aléatoires). Affichage des vraies couvertures avec fallback `default-cover.png`. Adaptation aux réponses API mises à jour par Rémi (champ `category`, auteur string). Migration de Google Fonts vers Bunny Fonts (respect RGPD). Protection de la route `/library` avec redirection vers `/login`.
 
 ---
