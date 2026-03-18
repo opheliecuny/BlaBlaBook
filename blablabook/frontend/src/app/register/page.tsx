@@ -46,10 +46,12 @@ export default function RegisterPage() {
             <Label htmlFor="username">Nom d{"'"}utilisateur</Label>
             <Input
               id="username"
+              name="username"
               type="text"
               placeholder="Entrez votre nom d'utilisateur"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
+              autoComplete="username"
               required
             />
           </div>
@@ -58,10 +60,12 @@ export default function RegisterPage() {
             <Label htmlFor="email">Adresse mail</Label>
             <Input
               id="email"
+              name="email"
               type="email"
               placeholder="nom@exemple.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
               required
             />
           </div>
@@ -70,10 +74,12 @@ export default function RegisterPage() {
             <Label htmlFor="password">Mot de passe</Label>
             <Input
               id="password"
+              name="password"
               type="password"
-              placeholder="******"
+              placeholder="••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
               required
             />
           </div>
@@ -83,9 +89,10 @@ export default function RegisterPage() {
             <Input
               id="confirmPassword"
               type="password"
-              placeholder="******"
+              placeholder="••••••"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              autoComplete="new-password"
               required
             />
           </div>
@@ -96,7 +103,10 @@ export default function RegisterPage() {
               checked={acceptTerms}
               onCheckedChange={(checked) => setAcceptTerms(checked === true)}
             />
-            <label htmlFor="terms" className="text-sm leading-none">
+            <label
+              htmlFor="terms"
+              className="cursor-pointer text-sm leading-none"
+            >
               J{"'"}accepte les{" "}
               <Link href="/cgu" className="text-primary hover:underline">
                 Conditions d{"'"}utilisation
