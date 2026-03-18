@@ -1,7 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
-import { User, Shield } from "lucide-react";
+import { useState } from "react";
+import { User, Shield, AlertTriangle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function ProfilePage() {
   // Etat des formulaires
@@ -40,22 +43,22 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="bg-background min-h-screen px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl space-y-6">
         {/* Header - Profil utilisateur */}
-        <div className="rounded-2xl bg-white p-8 shadow-sm">
+        <div className="bg-card rounded-2xl border p-8 shadow-sm">
           <div className="flex flex-col items-center text-center">
             {/* Avatar */}
-            <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gray-400">
-              <User className="h-12 w-12 text-white" />
+            <div className="bg-primary mb-4 flex h-24 w-24 items-center justify-center rounded-full">
+              <User className="text-primary-foreground h-12 w-12" />
             </div>
 
             {/* Nom et email */}
-            <h1 className="text-2xl font-bold text-gray-900">{username}</h1>
-            <p className="mt-1 text-gray-500">{email}</p>
+            <h1 className="text-2xl font-bold">{username}</h1>
+            <p className="text-muted-foreground mt-1">{email}</p>
 
             {/* Badge membre */}
-            <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-sm font-medium text-indigo-700">
+            <div className="bg-secondary mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium">
               <User className="h-4 w-4" />
               MEMBRE DEPUIS JANVIER 2023
             </div>
@@ -63,150 +66,114 @@ export default function ProfilePage() {
         </div>
 
         {/* Section Informations personnelles */}
-        <div className="rounded-2xl bg-white p-8 shadow-sm">
+        <div className="bg-card rounded-2xl border p-8 shadow-sm">
           <div className="mb-6 flex items-center gap-3">
-            <User className="h-5 w-5 text-gray-700" />
-            <h2 className="text-xl font-semibold text-gray-900">
-              Informations personnelles
-            </h2>
+            <User className="h-5 w-5" />
+            <h2 className="text-xl font-semibold">Informations personnelles</h2>
           </div>
 
           <form onSubmit={handleProfileUpdate} className="space-y-6">
             {/* Pseudo */}
-            <div>
-              <label
-                htmlFor="username"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Pseudo
-              </label>
-              <input
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="username">Pseudo</Label>
+              <Input
                 type="text"
                 id="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Votre pseudo"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             {/* Email */}
-            <div>
-              <label
-                htmlFor="email"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Email
-              </label>
-              <input
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="email">Email</Label>
+              <Input
                 type="email"
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Votre email"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             {/* Bouton Submit */}
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-indigo-600 px-4 py-3 font-medium text-white transition-colors hover:bg-indigo-700"
-            >
+            <Button type="submit" className="w-full">
               Enregistrer les modifications
-            </button>
+            </Button>
           </form>
         </div>
 
         {/* Section Sécurité */}
-        <div className="rounded-2xl bg-white p-8 shadow-sm">
+        <div className="bg-card rounded-2xl border p-8 shadow-sm">
           <div className="mb-6 flex items-center gap-3">
-            <Shield className="h-5 w-5 text-gray-700" />
-            <h2 className="text-xl font-semibold text-gray-900">Sécurité</h2>
+            <Shield className="h-5 w-5" />
+            <h2 className="text-xl font-semibold">Sécurité</h2>
           </div>
 
           <form onSubmit={handlePasswordUpdate} className="space-y-6">
             {/* Mot de passe actuel */}
-            <div>
-              <label
-                htmlFor="currentPassword"
-                className="mb-2 block text-sm font-medium text-gray-700"
-              >
-                Mot de passe actuel
-              </label>
-              <input
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="currentPassword">Mot de passe actuel</Label>
+              <Input
                 type="password"
                 id="currentPassword"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
               />
             </div>
 
             {/* Nouveau mot de passe */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-              <div>
-                <label
-                  htmlFor="newPassword"
-                  className="mb-2 block text-sm font-medium text-gray-700"
-                >
-                  Nouveau mot de passe
-                </label>
-                <input
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="newPassword">Nouveau mot de passe</Label>
+                <Input
                   type="password"
                   id="newPassword"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
 
               {/* Confirmation mot de passe */}
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="mb-2 block text-sm font-medium text-gray-700"
-                >
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="confirmPassword">
                   Confirmation du mot de passe
-                </label>
-                <input
+                </Label>
+                <Input
                   type="password"
                   id="confirmPassword"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••••••"
-                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:border-transparent focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
             </div>
 
             {/* Bouton Submit */}
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-indigo-600 px-4 py-3 font-medium text-white transition-colors hover:bg-indigo-700"
-            >
+            <Button type="submit" className="w-full">
               Mettre à jour le mot de passe
-            </button>
+            </Button>
           </form>
         </div>
 
         {/* Zone de danger */}
-        <div className="flex items-center justify-between rounded-2xl border-2 border-red-200 bg-red-50 p-8">
+        <div className="border-destructive/20 bg-destructive/5 flex items-center justify-between rounded-2xl border-2 p-8">
           {/* Partie gauche - Icône et texte */}
           <div className="flex items-start space-x-4">
             {/* Icône d'alerte */}
-            <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-red-500 text-white">
-              !
+            <div className="bg-destructive text-destructive-foreground mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+              <AlertTriangle className="h-6 w-6 text-white" />
             </div>
 
             <div>
-              <h2 className="text-xl font-bold text-red-900">Zone de danger</h2>
-              <p className="mt-1 text-lg font-medium text-red-800">
+              <h2 className="text-xl font-bold">Zone de danger</h2>
+              <p className="text-muted-foreground mt-1 text-lg font-medium">
                 Supprimer mon compte
               </p>
-              <p className="mt-1 text-sm text-red-600">
+              <p className="text-muted-foreground mt-1 text-sm">
                 Cette action est irréversible. Toutes vos données seront
                 effacées.
               </p>
@@ -214,12 +181,13 @@ export default function ProfilePage() {
           </div>
 
           {/* Partie droite : Bouton de suppression */}
-          <button
+          <Button
+            variant="destructive"
             onClick={handleAccountDelete}
-            className="ml-4 shrink-0 rounded-lg bg-red-600 px-6 py-3 font-semibold text-white transition-colors hover:bg-red-700"
+            className="ml-4 shrink-0"
           >
             Supprimer définitivement
-          </button>
+          </Button>
         </div>
       </div>
     </div>
