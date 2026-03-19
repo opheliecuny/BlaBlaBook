@@ -79,14 +79,14 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 ### 19/03/2026
 
-*Résumé*
+*Avancée significative sur l'intégration frontend-backend : auth JWT finalisée, library CRUD mergé, AuthContext créé par Paul, reviews PR #76 et #77.*
 
 #### Infos individuelles
 
 - **Ophélie :**
 - **Rémi :**
 - **Paul :**
-- **Christopher :**
+- **Christopher :** rebase feature/api-search-integration sur main, analyse état du projet, identification blocage isbn + conflit auth cookie/localStorage, reviews PR #76 et #77, communication équipe
 
 ---
 

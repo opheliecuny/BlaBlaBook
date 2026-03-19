@@ -2,9 +2,6 @@ import { Request, Response } from "express";
 import { prisma } from "../utils/prismaClient";
 import z from "zod";
 
-// TODO : ajouter tests associés
-// TODO : gérer les erreurs prisma et zod
-
 // GET /library ; bibliohtèque de l'utilisateur connecté
 
 export async function getLibrary(req: Request, res: Response) {

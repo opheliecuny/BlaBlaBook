@@ -4,13 +4,13 @@
 
 ### Get user's library
 GET {{baseUrl}}/library
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NWI5OTI1MS05NTNkLTQ4ZGYtYWFiMi1jMzBkMDJmMjBjODMiLCJpYXQiOjE3NzM4NDAyOTgsImV4cCI6MTc3Mzg0Mzg5OH0.QBE8WVYizKgS2pqUwPEVSBoA8wFp5O3gbOjjOD3bE8E
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMDhjYmZmNS1iZTVjLTRkZjUtOWQ1YS03ZmZmYjQyYzdkNzMiLCJpYXQiOjE3NzM5MTUxNDksImV4cCI6MTc3MzkxODc0OX0.ah0g4jjtwyR5MLUQSIVPZ-kFs3zTaQzzT_fBoqkq0rQ
 
 
 ### Add a book to a user's library
 POST {{baseUrl}}/library
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NWI5OTI1MS05NTNkLTQ4ZGYtYWFiMi1jMzBkMDJmMjBjODMiLCJpYXQiOjE3NzM4NDAyOTgsImV4cCI6MTc3Mzg0Mzg5OH0.QBE8WVYizKgS2pqUwPEVSBoA8wFp5O3gbOjjOD3bE8E
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMDhjYmZmNS1iZTVjLTRkZjUtOWQ1YS03ZmZmYjQyYzdkNzMiLCJpYXQiOjE3NzM5MTUxNDksImV4cCI6MTc3MzkxODc0OX0.ah0g4jjtwyR5MLUQSIVPZ-kFs3zTaQzzT_fBoqkq0rQ
 
 {
   "isbn": "9782070368228",
@@ -27,10 +27,21 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NWI5O
   "status": "TO_READ"
 }
 
+### Add a book to a user's library (ommitting required fields to trigger validation error)
+POST {{baseUrl}}/library
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMDhjYmZmNS1iZTVjLTRkZjUtOWQ1YS03ZmZmYjQyYzdkNzMiLCJpYXQiOjE3NzM5MTUxNDksImV4cCI6MTc3MzkxODc0OX0.ah0g4jjtwyR5MLUQSIVPZ-kFs3zTaQzzT_fBoqkq0rQ
+
+{
+  "isbn": "9782070368228",
+  "publishedYear": 1942,
+  "status": "TO_READ"
+}
+
 ### Update reading status of a book in user's library
 PATCH {{baseUrl}}/library/bdae862b-0ec5-4371-9977-b81b6889179e
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NWI5OTI1MS05NTNkLTQ4ZGYtYWFiMi1jMzBkMDJmMjBjODMiLCJpYXQiOjE3NzM4NDAyOTgsImV4cCI6MTc3Mzg0Mzg5OH0.QBE8WVYizKgS2pqUwPEVSBoA8wFp5O3gbOjjOD3bE8E
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMDhjYmZmNS1iZTVjLTRkZjUtOWQ1YS03ZmZmYjQyYzdkNzMiLCJpYXQiOjE3NzM5MTUxNDksImV4cCI6MTc3MzkxODc0OX0.ah0g4jjtwyR5MLUQSIVPZ-kFs3zTaQzzT_fBoqkq0rQ
 
 {
   "status": "READING"
@@ -38,4 +49,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NWI5O
 
 ### Delete a book from user's library
 DELETE {{baseUrl}}/library/bdae862b-0ec5-4371-9977-b81b6889179e
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI4NWI5OTI1MS05NTNkLTQ4ZGYtYWFiMi1jMzBkMDJmMjBjODMiLCJpYXQiOjE3NzM4NDAyOTgsImV4cCI6MTc3Mzg0Mzg5OH0.QBE8WVYizKgS2pqUwPEVSBoA8wFp5O3gbOjjOD3bE8E
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMDhjYmZmNS1iZTVjLTRkZjUtOWQ1YS03ZmZmYjQyYzdkNzMiLCJpYXQiOjE3NzM5MTUxNDksImV4cCI6MTc3MzkxODc0OX0.ah0g4jjtwyR5MLUQSIVPZ-kFs3zTaQzzT_fBoqkq0rQ
+
+### Delete a non-existent book from user's library
+DELETE {{baseUrl}}/library/bdae86zujeghf
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjMDhjYmZmNS1iZTVjLTRkZjUtOWQ1YS03ZmZmYjQyYzdkNzMiLCJpYXQiOjE3NzM5MTUxNDksImV4cCI6MTc3MzkxODc0OX0.ah0g4jjtwyR5MLUQSIVPZ-kFs3zTaQzzT_fBoqkq0rQ
