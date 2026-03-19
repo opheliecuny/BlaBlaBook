@@ -2,32 +2,54 @@ import type { Request, Response } from "express";
 import { OpenLibraryResponse } from "../../@types/express";
 
 export async function getRandomBooks(req: Request, res: Response) {
-
-  // TODO: fonction à peaufiner pour recherche aléatoire optimisée (date ou note par exemple)
-
   try {
-
     const page = Math.floor(Math.random() * 50);
     const limit = 4;
-    const result = await fetch(`https://openlibrary.org/search.json?q=novel&page=${page}&limit=${limit}`, {
-      headers: { "User-Agent": "MyAppName/1.0 (myemail@example.com)" }
-    });
+
+    const result = await fetch(
+      `https://openlibrary.org/search.json?q=novel&page=${page}&limit=${limit}`,
+      { headers: { "User-Agent": "MyAppName/1.0 (myemail@example.com)" } }
+    );
 
     const data: OpenLibraryResponse = await result.json();
     const { docs } = data;
 
-    const selectedDatas = docs.map((doc) => ({
-      author: doc.author_name?.[0] ?? null,
-      authorId: doc.author_key?.[0] ?? null,
-      title: doc.title,
-      id: doc.key,
-      coverThumbnail: doc.cover_i
-        ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
-        : null,
-    }));
+    const selectedDatas = await Promise.all(
+      docs.map(async (doc) => {
+        let isbn: string | null = null;
+
+        if (doc.cover_edition_key) {
+          try {
+            const editionRes = await fetch(
+              `https://openlibrary.org/books/${doc.cover_edition_key}.json`,
+              { headers: { "User-Agent": "MyAppName/1.0 (myemail@example.com)" } }
+            );
+            const editionData = await editionRes.json();
+
+            // isbn_13 en priorité, sinon isbn_10
+            isbn =
+              editionData.isbn_13?.[0] ??
+              editionData.isbn_10?.[0] ??
+              null;
+          } catch {
+            // Si le fetch de l'édition échoue, on continue sans ISBN
+          }
+        }
+
+        return {
+          author: doc.author_name?.[0] ?? null,
+          authorId: doc.author_key?.[0] ?? null,
+          title: doc.title,
+          id: doc.key,
+          isbn,
+          coverThumbnail: doc.cover_i
+            ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
+            : null,
+        };
+      })
+    );
 
     return res.send(selectedDatas);
-
   } catch (err) {
     console.error(err);
   }
@@ -87,32 +109,47 @@ export async function searchBooks(req: Request, res: Response) {
   }
 }
 
-
 export async function getBookById(req: Request, res: Response) {
   const id = req.params.openLibraryId;
-
-  // Warning: la "key" renvoyée par l'api est sous la forme "work/id"
   const apiPath = `works/${id}`;
   if (!apiPath) return;
 
   try {
-
     const url = `https://openlibrary.org/${apiPath}.json`;
-    const result = await fetch(url, {
-      headers: { "User-Agent": "MyAppName/1.0 (contact@example.com)" }
-    });
-    const data = await result.json();
+
+    // Fetch en parallèle du work et de ses éditions
+    const [workRes, editionsRes] = await Promise.all([
+      fetch(url, { headers: { "User-Agent": "MyAppName/1.0 (contact@example.com)" } }),
+      fetch(`https://openlibrary.org/${apiPath}/editions.json`, {
+        headers: { "User-Agent": "MyAppName/1.0 (contact@example.com)" },
+      }),
+    ]);
+
+    const [data, editionsData] = await Promise.all([
+      workRes.json(),
+      editionsRes.json(),
+    ]);
+
+    const isbn =
+      editionsData.entries?.reduce(
+        (found: string | null, edition: any) =>
+          found ??
+          edition.isbn_13?.[0] ??
+          edition.isbn_10?.[0] ??
+          null,
+        null
+      ) ?? null;
 
     const selectedDatas = {
       title: data.title,
       publishedYear: data.first_publish_date,
-      category: data.subjects[0],
-      description: data.description,
-      authorId: data.authors[0].author.key.split("/")?.[2]
+      category: data.subjects?.[0] ?? null,
+      description: data.description ?? null,
+      authorId: data.authors?.[0]?.author.key.split("/")?.[2] ?? null,
+      isbn,
     };
 
     return res.send(selectedDatas);
-
   } catch (err) {
     console.error(err);
   }

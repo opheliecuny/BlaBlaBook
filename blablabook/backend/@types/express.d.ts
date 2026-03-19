@@ -5,6 +5,7 @@ interface OpenLibraryDoc {
   author_key?: string[];
   cover_i?: number;
   first_publish_year?: number;
+  cover_edition_key: string; 
 }
 
 export interface OpenLibraryResponse {
