@@ -83,7 +83,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 #### Infos individuelles
 
-- **Ophélie :**
+- **Ophélie :**- Refactorisation de book.controller afin d'optimiser le temps de chargement des fetch et de compléter les informations manquantes nécessaires à Christopher pour cabler ça au front. Mis à jour le docker-compose et création d'un script bash puis d'un README pour optimisation du process général.
 - **Rémi :**
 - **Paul :**
 - **Christopher :** Rebase feature/api-search-integration sur main, analyse état du projet, identification blocage isbn + conflit auth cookie/localStorage, reviews PR #76 et #77. Branchement page `/library` sur l'API réelle : GET /library, PATCH /library/:id et DELETE /library/:id avec rollback optimiste, connexion AuthContext (PR #79).
