@@ -2,33 +2,68 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { useAuth } from "@/contexts/AuthContext";
+import { register } from "@/services/authService";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const { login: loginUser } = useAuth();
+
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  function handleRegister(e: React.SubmitEvent<HTMLFormElement>) {
+  async function handleRegister(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError("");
 
     if (password !== confirmPassword) {
-      alert("Les mots de passe ne correspondent pas");
+      setError("Les mots de passe ne correspondent pas");
       return;
     }
 
     if (!acceptTerms) {
-      alert("Vous devez accepter les conditions d'utilisation");
+      setError("Vous devez accepter les conditions d'utilisation");
       return;
     }
 
-    console.log("Inscription:", { username, email, password });
-    // TODO: API call POST /api/auth/register
+    setIsLoading(true);
+
+    try {
+      const response = await register({
+        email,
+        password,
+        confirm: confirmPassword,
+        username,
+      });
+
+      // Stocker les données d'authentification
+      loginUser(response.accessToken, {
+        id: response.id,
+        email: response.email,
+        username: response.username || username,
+      });
+
+      // Rediriger vers la bibliothèque
+      router.push("/library");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Une erreur est survenue lors de l'inscription");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -42,6 +77,12 @@ export default function RegisterPage() {
         </p>
 
         <form onSubmit={handleRegister} className="flex flex-col gap-5">
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+              {error}
+            </div>
+          )}
+
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="username">Nom d{"'"}utilisateur</Label>
             <Input
@@ -119,8 +160,12 @@ export default function RegisterPage() {
             </label>
           </div>
 
-          <Button type="submit" className="hover:bg-primary/80 mt-2 w-full">
-            S{"'"}inscrire
+          <Button
+            type="submit"
+            className="hover:bg-primary/80 mt-2 w-full"
+            disabled={isLoading}
+          >
+            {isLoading ? "Inscription en cours..." : "S'inscrire"}
           </Button>
         </form>
 
