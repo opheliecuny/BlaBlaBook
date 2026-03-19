@@ -26,8 +26,8 @@ export default function LoginPage() {
     try {
       const response = await login({ email, password });
 
-      // Stocker les données d'authentification
-      loginUser(response.accessToken, {
+      // Stocker les données utilisateur (le token est dans un cookie httpOnly)
+      loginUser({
         id: response.id,
         email: response.email,
         username: response.username || email,

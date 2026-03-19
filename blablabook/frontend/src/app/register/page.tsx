@@ -46,8 +46,8 @@ export default function RegisterPage() {
         username,
       });
 
-      // Stocker les données d'authentification
-      loginUser(response.accessToken, {
+      // Stocker les données utilisateur (le token est dans un cookie httpOnly)
+      loginUser({
         id: response.id,
         email: response.email,
         username: response.username || username,

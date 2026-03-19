@@ -13,14 +13,6 @@ class ApiClient {
   }
 
   /**
-   * Récupère le token d'authentification depuis localStorage
-   */
-  private getAuthToken(): string | null {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem("accessToken");
-  }
-
-  /**
    * Méthode générique pour faire des requêtes HTTP
    */
   private async request<T>(
@@ -28,7 +20,6 @@ class ApiClient {
     options: RequestInit = {},
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
-    const token = this.getAuthToken();
 
     // Configuration des headers par défaut
     const headers: HeadersInit = {
@@ -36,16 +27,13 @@ class ApiClient {
       ...options.headers,
     };
 
-    // Ajouter le token d'authentification si disponible
-    // Le backend vérifie le header Authorization (pas les cookies pour l'instant)
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-
+    // Le token est maintenant dans un cookie httpOnly (accessToken)
+    // Il est automatiquement envoyé par le navigateur avec credentials: 'include'
+    // Pas besoin d'ajouter le header Authorization
     const config: RequestInit = {
       ...options,
       headers,
-      credentials: "include", // Important pour les cookies httpOnly
+      credentials: "include", // Envoie automatiquement les cookies httpOnly
     };
 
     try {
@@ -57,10 +45,9 @@ class ApiClient {
           message: "Une erreur est survenue",
         }));
 
-        // Si 401 (Unauthorized), supprimer le token et rediriger vers login
+        // Si 401 (Unauthorized), supprimer les données utilisateur et rediriger vers login
         if (response.status === 401) {
           if (typeof window !== "undefined") {
-            localStorage.removeItem("accessToken");
             localStorage.removeItem("user");
             window.location.href = "/login";
           }

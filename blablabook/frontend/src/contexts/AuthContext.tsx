@@ -11,10 +11,9 @@ import type { User } from "@/types/auth";
 
 interface AuthContextType {
   user: User | null;
-  accessToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (accessToken: string, user: User) => void;
+  login: (user: User) => void;
   logout: () => void;
   updateUser: (user: User) => void;
 }
@@ -23,27 +22,23 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Charger les données depuis localStorage au montage
+  // Charger les données utilisateur depuis localStorage au montage
+  // Le token est maintenant dans un cookie httpOnly et n'est plus stocké ici
   useEffect(() => {
-    const storedToken = localStorage.getItem("accessToken");
     const storedUser = localStorage.getItem("user");
 
     // Vérifier que les données sont valides avant de les utiliser
     try {
-      if (storedToken && storedUser) {
+      if (storedUser) {
         // Si les données sont présentes, on les parse et on les met dans le state
         const parsedUser = JSON.parse(storedUser);
-
-        setAccessToken(storedToken);
         setUser(parsedUser);
       }
     } catch (error) {
       console.error("Erreur lors de la lecture du localStorage :", error);
       // En cas d'erreur, on nettoie les données corrompues
-      localStorage.removeItem("accessToken");
       localStorage.removeItem("user");
     } finally {
       // Quel que soit le résultat, on arrête le chargement
@@ -51,17 +46,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  function login(token: string, userData: User) {
-    setAccessToken(token);
+  function login(userData: User) {
     setUser(userData);
-    localStorage.setItem("accessToken", token);
     localStorage.setItem("user", JSON.stringify(userData));
   }
 
   function logout() {
-    setAccessToken(null);
     setUser(null);
-    localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
   }
 
