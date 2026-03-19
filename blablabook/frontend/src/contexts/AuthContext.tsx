@@ -63,8 +63,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = {
     user,
-    accessToken,
-    isAuthenticated: !!user && !!accessToken, // L'utilisateur est authentifié si les deux sont présents
+    isAuthenticated: !!user, // L'utilisateur est authentifié si user est présent (le token est dans les cookies)
     isLoading,
     login,
     logout,
