@@ -12,7 +12,6 @@ export function isAuthenticated(req: Request, res: Response, next: NextFunction)
   const accessToken = token.split(" ")[1];
 
   try {
-    console.log(config.jwtSecret);
     const payload = jwt.verify(accessToken, config.jwtSecret) as JwtPayload;
 
     req.user = {

@@ -3,7 +3,7 @@
 ### Update an existing user
 PATCH {{baseUrl}}/user/profile
 Content-Type: application/json
-Authorization: Bearer RVGU3cahPlF9gSFbkAs7G7fhDl6Idrx3pakxgGgl3Kx4moishlyiwIQD3cVm6C2Ob4U+v9WNyhuGFNHA0trMDvq97ig+PVyOZA3mz0eYmQvGVxk2NVvUMGJ/j57LCl6l97EB0k9uV8jsVgPtRPb9ODgyc6enFXzi7u+M1E3nddY=
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjYjg2NTdmNC1kNjI4LTRiZTYtODg2NC0wMWMyNWM0YTVhNjQiLCJpYXQiOjE3NzM4NTgyNzksImV4cCI6MTc3Mzg2MTg3OX0.aQhmYmWvEcy6n9BuLu2Z5uBf8WQKsnwzWxvjhcUIhs4
 
 {
   "email": "test1@example.com",

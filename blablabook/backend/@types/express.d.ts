@@ -17,3 +17,10 @@ export interface OpenLibraryResponse {
   offset?: number | null;
   docs: OpenLibraryDoc[];
 }
+
+
+export interface Token {
+  token: string;
+  type: string;
+  expiresInMS: number;
+}

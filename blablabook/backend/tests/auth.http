@@ -4,7 +4,7 @@ POST http://localhost:3000/auth/register
 Content-Type: application/json
 
 {
-  "email": "test3@example.com",
+  "email": "test@example.com",
   "password": "Password123",
   "confirm": "Password123",
   "username": "testuser"
@@ -20,5 +20,25 @@ Content-Type: application/json
   "username": "test"
 }
 
-# !! TODO : Finaliser la gestion du jwt puis mettre en place les tests
 ### Login
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "Password123"
+}
+
+### Login with wrong email
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+{
+  "email": "testFalseEmail",
+  "password": "Password123"
+}
+
+### Logout 
+POST http://localhost:3000/auth/logout
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMThiZGMzZi0zMmNkLTQ3ZWMtYTdiNS0zODA5NTRhYWEyYjQiLCJpYXQiOjE3NzM4Mzk0NjUsImV4cCI6MTc3Mzg0MzA2NX0.8tTw_2t0ZAy7Q_NxqCgZIXAEsQjrbbntO9nxPVPtKzQ

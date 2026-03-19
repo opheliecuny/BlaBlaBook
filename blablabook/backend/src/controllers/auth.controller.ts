@@ -1,11 +1,8 @@
 import type { Request, Response } from "express";
 import z from "zod";
 import argon2 from "argon2";
-import { generateAuthenticationTokens } from "../utils/token";
+import { generateAuthenticationTokens, saveRefreshTokenInDatabase, setAccessTokenCookie, setRefreshTokenCookie, replaceRefreshTokenInDatabase } from "../utils/token";
 import { prisma } from "../utils/prismaClient";
-// !!TODO import types for User and Token 
-// !!TODO Si stockage du refreshToken en bdd, il faudra le définir dans le schéma prisma
-// !!TODO Fonction logout à mettre en place (une fois décidé sur jwt ou cookie)
 
 export async function registerUser(req: Request, res: Response) {
 
@@ -49,12 +46,16 @@ export async function registerUser(req: Request, res: Response) {
 
   const { accessToken, refreshToken } = generateAuthenticationTokens(user);
 
+  await saveRefreshTokenInDatabase(refreshToken, user);
+
+  setAccessTokenCookie(res, accessToken);
+  setRefreshTokenCookie(res, refreshToken);
+
+// TODO Décider si on envoie le token dans le body ou les cookies (pas les deux) 
+
   return res.status(201).json({
     id: user.id,
     email: user.email,
-    username: user.username,
-    created_at: user.createdAt,
-    updated_at: user.updatedAt,
     accessToken, 
     refreshToken
   });
@@ -88,36 +89,15 @@ export async function loginUser(req: Request, res: Response) {
   return res.json({ accessToken, refreshToken });
 }
 
-async function replaceRefreshTokenInDatabase(refreshToken: Token, user: User) {
-  await prisma.refreshToken.deleteMany({ where: { user_id: user.id } });
-  await prisma.refreshToken.create({
-    data: {
-      token: refreshToken.token,
-      user_id: user.id,
-      issued_at: new Date(),
-      expires_at: new Date(new Date().valueOf() + refreshToken.expiresInMS)
-    }
-  });
-}
+export async function logoutUser(req: Request, res: Response) {
+  const userId = req.user?.id; 
 
-function setAccessTokenCookie(res: Response, accessToken: Token) {
-  res.cookie("accessToken", accessToken.token, {
-    httpOnly: true,
-    maxAge: accessToken.expiresInMS, // 1h
+  if (userId) {
+    await prisma.refresh_token.deleteMany({ where: {userId: userId }}); 
+  }
 
-    // Pour des cookies sécurisés cross-origin il faut :
-    secure: true,     // les cookies cross-origin, c'est seulement en HTTPS !
-    sameSite: "none"  // les cookies cross-origin, c'est forcement entre plusieurs origins
-    // Et ne pas oublier de faire en sorte que les CORS autorise l'envoie de "credentials"
-  });
-}
+  res.cookie("accessToken", "", { httpOnly: true, maxAge: 0 });
+  res.cookie("refreshToken", "", { httpOnly: true, maxAge: 0 });
 
-function setRefreshTokenCookie(res: Response, refreshToken: Token) {
-  res.cookie("refreshToken", refreshToken.token, {
-    httpOnly: true,
-    maxAge: refreshToken.expiresInMS, // 7j
-    secure: true,
-    sameSite: "none",
-    path: "/api/auth/refresh" // Sécurité : le cookie s'enverra (front -> back) uniquement via cette route, pas les autres routes (limite les transferts de ce cookie)
-  });
+  res.status(204).json({ message: "Successfully logged out"}); 
 }
