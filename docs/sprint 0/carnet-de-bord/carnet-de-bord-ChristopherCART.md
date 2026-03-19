@@ -549,6 +549,61 @@ Rémi a mis à jour le backend dans la journée. Adaptation des 3 pages en cons�
 
 ---
 
+### Séance 22 — Analyse état du projet + reviews PRs (19/03/2026)
+
+**Travail réalisé :**
+
+**Pull + rebase `feature/api-search-integration` sur `main`**
+- 3 conflits résolus sur `search/page.tsx`, `book/[id]/page.tsx` et `page.tsx` — commits de fix déjà intégrés dans `main` via squash merge → écartés automatiquement
+
+**Analyse des PRs mergées (18-19/03)**
+- PR #71 (Rémi) : library controller complet — GET/POST/PATCH/DELETE `/library`
+- PR #72 (Rémi) : auth controller finalisé + middleware JWT (cookie httpOnly)
+- Backend complet pour le MVP
+
+**Identification des blocages**
+- AuthContext inexistant → `isLoggedIn` hardcodé partout
+- `POST /library` exige `isbn` obligatoire mais aucun endpoint book ne le retourne
+- Middleware lit `req.cookies?.accessToken` (PR #74) → conflit avec PR #77 de Paul (localStorage)
+
+**Communication équipe**
+- Rémi : fix isbn dans `searchBooks` + `getBookById` → PR #76
+- Paul : correction PR #77 (localStorage → cookie)
+- Décision actée : stratégie cookie httpOnly retenue
+
+**Reviews soumises**
+- PR #76 : 2 points signalés (format `authorId` + `description` null) → infondés après vérification
+- PR #77 : conflit auth signalé → Paul corrige
+
+---
+
+### Séance 23 — Branchement page bibliothèque sur l'API (19/03/2026)
+
+**Travail réalisé :**
+
+**Création branche `feature/library-api-integration`** depuis `feature/frontend-backend-integration` (Paul)
+
+**Page `/library` — branchement complet en 3 commits atomiques**
+
+**Commit 1 — `GET /library`**
+- Suppression des données mockées (5 livres hardcodés)
+- Import `getLibrary()` depuis `libraryService` (Paul)
+- Mapping `LibraryItem[]` → `DisplayBook[]` : `bookId`, `title`, `author`, `thumbnail` → `cover`, `status`
+- État de chargement avec spinner
+
+**Commit 2 — `PATCH` et `DELETE`**
+- `handleStatusChange` : appel réel `updateReadingStatus(bookId, { status })` avec rollback optimiste si erreur
+- `handleDeleteBook` : appel réel `deleteBookFromLibrary(bookId)` avec rollback optimiste si erreur
+
+**Commit 3 — AuthContext**
+- `useAuth()` branché : `isAuthenticated`, `authLoading`, `user`
+- Protection de route : redirection `/login` si non connecté, attente de la résolution de l'auth avant fetch
+- "Bonjour xxx" → `user?.username`
+
+**PR #79 ouverte** — base : `feature/frontend-backend-integration`, reviewers : Paul, Ophélie, Rémi
+
+---
+
 ## Bilan Sprint 0
 
 | Livrable | Emplacement | Statut |
