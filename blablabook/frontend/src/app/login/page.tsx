@@ -2,19 +2,48 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/contexts/AuthContext";
+import { login } from "@/services/authService";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const { login: loginUser } = useAuth();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  function handleLogin(e: React.SubmitEvent<HTMLFormElement>) {
+  async function handleLogin(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
-    console.log("Connexion:", { email, password });
-    // TODO: API call POST /api/auth/login
+    try {
+      const response = await login({ email, password });
+
+      // Stocker les données utilisateur (le token est dans un cookie httpOnly)
+      loginUser({
+        id: response.id,
+        email: response.email,
+        username: response.username || email,
+      });
+
+      // Rediriger vers la bibliothèque
+      router.push("/library");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Une erreur est survenue lors de la connexion");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -28,6 +57,12 @@ export default function LoginPage() {
         </p>
 
         <form onSubmit={handleLogin} className="flex flex-col gap-5">
+          {error && (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+              {error}
+            </div>
+          )}
+
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="email">Adresse mail</Label>
             <Input
@@ -54,8 +89,12 @@ export default function LoginPage() {
             />
           </div>
 
-          <Button type="submit" className="hover:bg-primary/80 mt-2 w-full">
-            Se connecter
+          <Button
+            type="submit"
+            className="hover:bg-primary/80 mt-2 w-full"
+            disabled={isLoading}
+          >
+            {isLoading ? "Connexion en cours..." : "Se connecter"}
           </Button>
         </form>
 
