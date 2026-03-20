@@ -6,7 +6,10 @@ interface OpenLibraryDoc {
   cover_i?: number;
   first_publish_year?: number;
   cover_edition_key?: string; 
-  lending_edition_s?: string
+  lending_edition_s?: string;
+  subject?: string[];
+  isbn?: number[]; 
+  author_name?: string[]; 
 }
 
 export interface OpenLibraryResponse {
