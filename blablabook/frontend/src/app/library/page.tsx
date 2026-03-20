@@ -13,74 +13,50 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Bookmark, BookOpen, Check, Plus, Trash2, Search } from "lucide-react";
+import { getLibrary, updateReadingStatus, deleteBookFromLibrary } from "@/services/libraryService";
+import type { ReadingStatus } from "@/types/library";
+import { useAuth } from "@/contexts/AuthContext";
 
-// Types
-type ReadingStatus = "TO_READ" | "READING" | "READ";
-
-interface Book {
-  id: string;
+interface DisplayBook {
+  bookId: string;
   title: string;
   author: string;
   cover: string;
   status: ReadingStatus;
 }
 
-// Données mockées (TODO: remplacer par API GET /library)
-const mockBooks: Book[] = [
-  {
-    id: "1",
-    title: "Mythologie",
-    author: "Edith Hamilton",
-    cover: "https://covers.openlibrary.org/b/id/12818862-L.jpg",
-    status: "READ",
-  },
-  {
-    id: "2",
-    title: "La femme abandonnée",
-    author: "Honoré de Balzac",
-    cover: "https://covers.openlibrary.org/b/id/11135759-L.jpg",
-    status: "READING",
-  },
-  {
-    id: "3",
-    title: "L'Odyssée",
-    author: "Homère",
-    cover: "https://covers.openlibrary.org/b/id/12863690-L.jpg",
-    status: "READ",
-  },
-  {
-    id: "4",
-    title: "Klara et le Soleil",
-    author: "Kazuo Ishiguro",
-    cover: "https://covers.openlibrary.org/b/id/10531584-L.jpg",
-    status: "TO_READ",
-  },
-  {
-    id: "5",
-    title: "Station Eleven",
-    author: "Emily St. John Mandel",
-    cover: "https://covers.openlibrary.org/b/id/14533038-L.jpg",
-    status: "READING",
-  },
-];
-
 export default function LibraryPage() {
   const router = useRouter();
 
-  // Déclaration de tous les Hooks en premier dans le composant
-  const [activeFilter, setActiveFilter] = useState<"ALL" | ReadingStatus>(
-    "ALL",
-  );
-  const [books, setBooks] = useState<Book[]>(mockBooks);
+  const [activeFilter, setActiveFilter] = useState<"ALL" | ReadingStatus>("ALL");
+  const [books, setBooks] = useState<DisplayBook[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // TODO: remplacer par const { isLoggedIn } = useAuth() quand AuthContext sera prêt
-  const isLoggedIn = true;
+  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (authLoading) return;
+
+    if (!isAuthenticated) {
       router.replace("/login");
+      return;
     }
-  }, [isLoggedIn, router]);
+
+    getLibrary()
+      .then((items) => {
+        setBooks(
+          items.map((item) => ({
+            bookId: item.bookId,
+            title: item.book.title,
+            author: item.book.author ?? "Auteur inconnu",
+            cover: item.book.thumbnail ?? "/default-cover.png",
+            status: item.status,
+          }))
+        );
+      })
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
+  }, [isAuthenticated, authLoading, router]);
 
   // Calcul des statistiques
   const stats = useMemo(
@@ -93,7 +69,15 @@ export default function LibraryPage() {
     [books],
   );
 
-  if (!isLoggedIn) return null;
+  if (authLoading || !isAuthenticated) return null;
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <p className="text-muted-foreground text-sm">Chargement...</p>
+      </div>
+    );
+  }
 
   // Filtrage des livres
   const filteredBooks =
@@ -101,23 +85,29 @@ export default function LibraryPage() {
       ? books
       : books.filter((b) => b.status === activeFilter);
 
-  const handleStatusChange = (bookId: string, newStatus: ReadingStatus) => {
+  const handleStatusChange = async (bookId: string, newStatus: ReadingStatus) => {
+    const previous = books;
     setBooks((prev) =>
       prev.map((book) =>
-        book.id === bookId ? { ...book, status: newStatus } : book,
+        book.bookId === bookId ? { ...book, status: newStatus } : book,
       ),
     );
-    console.log(`Livre ${bookId} → ${newStatus}`);
-    // TODO: API call PATCH /library/:id
+    try {
+      await updateReadingStatus(bookId, { status: newStatus });
+    } catch {
+      setBooks(previous);
+    }
   };
 
-  const handleDeleteBook = (bookId: string) => {
-    if (
-      confirm("Voulez-vous vraiment supprimer ce livre de votre bibliothèque ?")
-    ) {
-      setBooks((prev) => prev.filter((book) => book.id !== bookId));
-      console.log(`Livre ${bookId} supprimé`);
-      // TODO: API call DELETE /library/:id
+  const handleDeleteBook = async (bookId: string) => {
+    if (confirm("Voulez-vous vraiment supprimer ce livre de votre bibliothèque ?")) {
+      const previous = books;
+      setBooks((prev) => prev.filter((book) => book.bookId !== bookId));
+      try {
+        await deleteBookFromLibrary(bookId);
+      } catch {
+        setBooks(previous);
+      }
     }
   };
 
@@ -135,7 +125,7 @@ export default function LibraryPage() {
         <div>
           <h1 className="text-3xl font-bold">Ma bibliothèque</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Bonjour xxx - {stats.total} livre{stats.total > 1 ? "s" : ""} dans
+            Bonjour {user?.username} — {stats.total} livre{stats.total > 1 ? "s" : ""} dans
             votre bibliothèque
           </p>
         </div>
@@ -205,7 +195,7 @@ export default function LibraryPage() {
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {filteredBooks.map((book) => (
             <div
-              key={book.id}
+              key={book.bookId}
               className="bg-card group flex flex-col rounded-xl border p-2 shadow-sm transition-all hover:shadow-md"
             >
               {/* Couverture avec bouton de suppression */}
@@ -222,7 +212,7 @@ export default function LibraryPage() {
                   variant="destructive"
                   size="icon"
                   className="text-destructive hover:bg-accent absolute top-2 right-2 h-8 w-8 rounded-full border-none bg-white shadow-sm"
-                  onClick={() => handleDeleteBook(book.id)}
+                  onClick={() => handleDeleteBook(book.bookId)}
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>
@@ -243,11 +233,10 @@ export default function LibraryPage() {
                   <Select
                     value={book.status}
                     onValueChange={(value) =>
-                      handleStatusChange(book.id, value as ReadingStatus)
+                      handleStatusChange(book.bookId, value as ReadingStatus)
                     }
                   >
                     <SelectTrigger className="bg-background w-full">
-                      {/* On utilise le mapping pour forcer l'affichage en français */}
                       <SelectValue>{STATUS_LABELS[book.status]}</SelectValue>
                     </SelectTrigger>
                     <SelectContent>
@@ -258,7 +247,7 @@ export default function LibraryPage() {
                   </Select>
                 </div>
 
-                <Link href={`/book/${book.id}`} className="mt-4 block">
+                <Link href={`/book/${book.bookId}`} className="mt-4 block">
                   <Button
                     variant="secondary"
                     className="hover:bg-accent w-full"
