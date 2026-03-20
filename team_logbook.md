@@ -97,7 +97,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 #### Infos individuelles
 
 - **Ophélie :**
-- **Rémi :**
+- **Rémi :**- **Rémi :**Refactorisation de book.controller et auth.controller afin qu'ils utilisent asyncWrapper (*donc plus besoin de try/catch*). Modification des tests et du auth.controller pour que tout fonctionne uniquement avec les cookies (*plus de localStorage*). Amélioration du auth.middleware : plus de renvoie du message de l'erreur à l'utilisateur (*plus sécurisé de cette façon*).
 - **Paul :**
 - **Christopher :**
 
