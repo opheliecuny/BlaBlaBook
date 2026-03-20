@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:3000
+@baseUrl = http://localhost:3001
 
 // TODO : ajouter les tests pour les requêtes invalides quand le controller sera à jour pour les gérer
 

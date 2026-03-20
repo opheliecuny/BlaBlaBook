@@ -1,33 +1,80 @@
-# Utilisation de docker compose
+# Utilisation de Docker Compose
+## Version 2.0 : db, adminer, api, frontend
 
-## Version 1.0 : db et adminer
+### Prérequis
+- Docker et Docker Compose installés
+- Un fichier `.env` à la racine de `blablabook/` en suivant le modèle ci-dessous
 
-### Lancement de la BDD
+### Modèle de .env
+```env
+# ─── Base de données ───────────────────────────────
+POSTGRES_USER=blablabook
+POSTGRES_PASSWORD=blablabook
+POSTGRES_DB=blablabookdb
+POSTGRES_PORT=5433
 
-Lorsque vous avez récupéré le dépôt mis à jour :
+# ─── API (Express + Prisma) ────────────────────────
+PORT=3001
+ALLOWED_ORIGINS="*"
+DATABASE_URL=postgresql://blablabook:blablabook@db:5432/blablabookdb?schema=public
 
-- s'assurer d'avoir un .env dans blablabook/ en suivant le modèle
-  
-```bash
-docker compose up -d
-
-# Important pour pouvoir lancer les scripts de package.json
-cd backend
-
-# Optionnel : dans le cas où les packages ne seraient pas déjà installés
-npm i
-
-# Synchronise les migrations prisma avec la BDD du container
-npm run db:migrate:deploy
-
-# Effectue le seeding dans la BDD
-npm run db:seed
+# ─── Frontend (Next.js) ────────────────────────────
+FRONTEND_PORT=3000
 ```
 
-### Connexion de l'API à la BDD du container
+> ⚠️ Ne pas modifier `@db:5432` dans la `DATABASE_URL` : `db` est le nom du service PostgreSQL dans Docker, et `5432` est son port interne.
 
-- s'assurer d'avoir un .env dans backend/ (attention à faire coincider les infos de l'url postgres avec celles fournies précédemment dans le .env de blablabook/)
+---
 
-### Checker si tout est ok
+### Lancement
 
-Il suffira de se connecter via son navigateur à localhost:8000 et se connecter à adminer. Si tout va bien vous devriez voir les tables affichées !
+Tout se fait via le script `init.sh` depuis la racine du projet :
+
+```bash
+bash init.sh
+```
+
+Ce script va automatiquement :
+1. Arrêter et supprimer les conteneurs existants
+2. Démarrer tous les services (db, adminer, api, frontend)
+3. Attendre que l'API soit prête
+4. Lancer le reset de la BDD et le seeding
+
+---
+
+### Services disponibles
+
+| Service  | URL                   | Description                  |
+|----------|-----------------------|------------------------------|
+| Frontend | http://localhost:3000 | Application Next.js          |
+| API      | http://localhost:3001 | API Express                  |
+| Adminer  | http://localhost:8000 | Interface d'admin PostgreSQL |
+
+---
+
+### Vérifier que tout fonctionne
+
+Connectez-vous à [Adminer](http://localhost:8000) avec les identifiants de votre `.env`. Si les tables sont visibles et peuplées, tout est bon !
+
+Pour suivre les logs en temps réel :
+
+```bash
+docker compose logs -f          # tous les services
+docker compose logs -f api      # API uniquement
+docker compose logs -f frontend # Frontend uniquement
+```
+
+---
+
+### Commandes utiles
+
+```bash
+# Arrêter les conteneurs sans supprimer les volumes
+docker compose stop
+
+# Arrêter et supprimer les conteneurs
+docker compose down
+
+# Relancer proprement (reset BDD + seeding inclus)
+bash init.sh
+```
