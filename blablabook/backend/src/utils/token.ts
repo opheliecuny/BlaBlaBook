@@ -7,7 +7,7 @@ import type { Response } from "express";
 import { Token } from "../../@types/express";
 
 
-export function generateAuthenticationTokens(user: user) {
+export function generateAuthenticationTokens(user: user): { accessToken: Token, refreshToken: Token} {
   const payload = {
     userId: user.id,
   };

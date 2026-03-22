@@ -1,12 +1,14 @@
 @baseUrl = http://localhost:3001
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI0NGU4YmJlNi1lZThiLTQ5MmEtYWM4ZC1jYmQ0MzAzZjE3ZWEiLCJpYXQiOjE3NzM5OTg5ODUsImV4cCI6MTc3NDAwMjU4NX0.i8PTVjfFYJCoG5vX_HWezatQuS4v1hLNr7O3hgsX3pM
+
 
 ### Update an existing user
 PATCH {{baseUrl}}/user/profile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjYjg2NTdmNC1kNjI4LTRiZTYtODg2NC0wMWMyNWM0YTVhNjQiLCJpYXQiOjE3NzM4NTgyNzksImV4cCI6MTc3Mzg2MTg3OX0.aQhmYmWvEcy6n9BuLu2Z5uBf8WQKsnwzWxvjhcUIhs4
+Cookie: accessToken={{accessToken}}
 
 {
-  "email": "test1@example.com",
+  "email": "test@example.com",
   "password": "Password123",
   "username": "newUserTest"
 }
@@ -14,7 +16,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJjYjg2N
 ### Update an existing user with wrong PW
 PATCH {{baseUrl}}/user/profile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNmUwY2NjMS05ZjFjLTRkYTEtOWUxMC0zYTUwYTQzM2MyMWEiLCJpYXQiOjE3NzM3NTI3ODcsImV4cCI6MTc3Mzc1NjM4N30.C4CM-IKc9ykDhYrYnTKcxnKlr-ALxIj2eF8-XA5c9Lw
+Cookie: accessToken={{accessToken}}
 
 {
   "password": "123",
@@ -23,7 +25,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNmUwY
 ### Update an existing user with wrong email
 PATCH {{baseUrl}}/user/profile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIzNmUwY2NjMS05ZjFjLTRkYTEtOWUxMC0zYTUwYTQzM2MyMWEiLCJpYXQiOjE3NzM3NTI3ODcsImV4cCI6MTc3Mzc1NjM4N30.C4CM-IKc9ykDhYrYnTKcxnKlr-ALxIj2eF8-XA5c9Lw
+Cookie: accessToken={{accessToken}}
 
 {
   "email": "123",

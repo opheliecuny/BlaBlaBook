@@ -1,17 +1,19 @@
+@baseUrl = http://localhost:3001
+@accessToken = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIwZTA5YWIzZi05MTcwLTRlOGEtYjE1Zi03ZDhlNDU0NjRjYzIiLCJpYXQiOjE3NzM5OTc4MTcsImV4cCI6MTc3NDAwMTQxN30.BEGC-43-Gl9aX1IV9exsO79D8GA6kPMhOf78CIk_tdc
 
 ### Register with valid informations
-POST http://localhost:3001/auth/register
+POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
 {
-  "email": "test1@example.com",
+  "email": "test@example.com",
   "password": "Password123",
   "confirm": "Password123",
   "username": "testuser"
 }
 
 ### Register with wrong informations
-POST http://localhost:3000/auth/register
+POST {{baseUrl}}/auth/register
 Content-Type: application/json
 
 {
@@ -21,7 +23,7 @@ Content-Type: application/json
 }
 
 ### Login
-POST http://localhost:3000/auth/login
+POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
@@ -30,7 +32,7 @@ Content-Type: application/json
 }
 
 ### Login with wrong email
-POST http://localhost:3000/auth/login
+POST {{baseUrl}}/auth/login
 Content-Type: application/json
 
 {
@@ -39,6 +41,6 @@ Content-Type: application/json
 }
 
 ### Logout 
-POST http://localhost:3000/auth/logout
+POST {{baseUrl}}/auth/logout
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJhMThiZGMzZi0zMmNkLTQ3ZWMtYTdiNS0zODA5NTRhYWEyYjQiLCJpYXQiOjE3NzM4Mzk0NjUsImV4cCI6MTc3Mzg0MzA2NX0.8tTw_2t0ZAy7Q_NxqCgZIXAEsQjrbbntO9nxPVPtKzQ
+Cookie: accessToken={{accessToken}}

@@ -9,10 +9,8 @@ export function isAuthenticated(req: Request, res: Response, next: NextFunction)
     return res.status(401).json({message: "Token is missing"}); 
   }
 
-  const accessToken = token; 
-
   try {
-    const payload = jwt.verify(accessToken, config.jwtSecret) as JwtPayload;
+    const payload = jwt.verify(token, config.jwtSecret) as JwtPayload;
 
     req.user = {
       id: payload.userId
@@ -20,6 +18,6 @@ export function isAuthenticated(req: Request, res: Response, next: NextFunction)
 
     next();
   } catch (error) {
-    return res.status(401).json({ message: "Token is not valid or expired", error: error.message });
+    return res.status(401).json({ message: "Token is not valid or expired" });
   }
 }

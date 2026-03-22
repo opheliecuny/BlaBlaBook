@@ -3,6 +3,7 @@ import z from "zod";
 import argon2 from "argon2";
 import { generateAuthenticationTokens, saveRefreshTokenInDatabase, setAccessTokenCookie, setRefreshTokenCookie, replaceRefreshTokenInDatabase } from "../utils/token";
 import { prisma } from "../utils/prismaClient";
+import { ConflictError } from "../errors";
 
 export async function registerUser(req: Request, res: Response) {
 
@@ -15,23 +16,17 @@ export async function registerUser(req: Request, res: Response) {
       .regex(/[A-Z]/, "password should contain at least a uppercase caracter"),
     confirm: z.string(), 
     username: z.string().min(1)
+  }).refine(data => data.password === data.confirm, {
+    message: "Passwords do not match", 
+    path: ["confirm"]
   });
 
-  const { email, password, confirm, username } = await registerUserBodySchema.parseAsync(req.body);
+  const { email, password, username } = await registerUserBodySchema.parseAsync(req.body);
 
-  if (password !== confirm) {
-    return res.status(400).json("Password and confirmation do not match"); 
-  }
+  const alreadyExistingUser = await prisma.user.findUnique({ where: { email } });
 
-  try {
-    const alreadyExistingUser = await prisma.user.findFirst({ where: { email } });
-
-    if (alreadyExistingUser) {
-      return res.status(409).json({ message: "Email already taken" });
-    }
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "Internal server error" }); 
+  if (alreadyExistingUser) {
+    throw new ConflictError("Email already token");
   }
 
   const hashedPassword = await argon2.hash(password);
@@ -51,13 +46,9 @@ export async function registerUser(req: Request, res: Response) {
   setAccessTokenCookie(res, accessToken);
   setRefreshTokenCookie(res, refreshToken);
 
-// TODO Décider si on envoie le token dans le body ou les cookies (pas les deux) 
-
   return res.status(201).json({
     id: user.id,
     email: user.email,
-    accessToken, 
-    refreshToken
   });
 };
 
@@ -86,7 +77,7 @@ export async function loginUser(req: Request, res: Response) {
   setAccessTokenCookie(res, accessToken);
   setRefreshTokenCookie(res, refreshToken);
 
-  return res.json({ accessToken, refreshToken });
+  return res.status(200).json({ message: "Login successful" });
 }
 
 export async function logoutUser(req: Request, res: Response) {
@@ -99,5 +90,5 @@ export async function logoutUser(req: Request, res: Response) {
   res.cookie("accessToken", "", { httpOnly: true, maxAge: 0 });
   res.cookie("refreshToken", "", { httpOnly: true, maxAge: 0 });
 
-  res.status(204).json({ message: "Successfully logged out"}); 
+  res.status(204).send({ message: "Successfully logged out"}); 
 }

@@ -8,18 +8,18 @@
 ### Modèle de .env
 ```env
 # ─── Base de données ───────────────────────────────
-POSTGRES_USER=blablabook
-POSTGRES_PASSWORD=blablabook
-POSTGRES_DB=blablabookdb
-POSTGRES_PORT=5433
+POSTGRES_USER=XXXXXX
+POSTGRES_PASSWORD=XXXXXX
+POSTGRES_DB=XXXXXX
+POSTGRES_PORT=XXXX
 
 # ─── API (Express + Prisma) ────────────────────────
-PORT=3001
+PORT=XXXX
 ALLOWED_ORIGINS="*"
-DATABASE_URL=postgresql://blablabook:blablabook@db:5432/blablabookdb?schema=public
+DATABASE_URL=postgresql://username:password@db:port/dbname?schema=public
 
 # ─── Frontend (Next.js) ────────────────────────────
-FRONTEND_PORT=3000
+FRONTEND_PORT=XXXX
 ```
 
 > ⚠️ Ne pas modifier `@db:5432` dans la `DATABASE_URL` : `db` est le nom du service PostgreSQL dans Docker, et `5432` est son port interne.

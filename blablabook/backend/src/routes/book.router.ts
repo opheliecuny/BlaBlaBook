@@ -1,8 +1,9 @@
 import { Router } from "express";
-import * as booksController from "../controllers/book.controller.ts";
+import * as booksController from "../controllers/book.controller";
+import { asyncWrapper } from "../errors/asyncWrapper";
 
 export const router = Router(); 
 
-router.get("/books", booksController.getRandomBooks);
-router.get("/books/search", booksController.searchBooks);
-router.get("/books/:openLibraryId", booksController.getBookById);
+router.get("/books", asyncWrapper(booksController.getRandomBooks));
+router.get("/books/search", asyncWrapper(booksController.searchBooks));
+router.get("/books/:openLibraryId", asyncWrapper(booksController.getBookById));
