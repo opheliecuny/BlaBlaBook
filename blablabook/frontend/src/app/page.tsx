@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
+import BookCover from "@/components/BookCover";
 
 interface RandomBook {
   id: string;
@@ -78,14 +79,11 @@ export default async function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4">
             {randomBooks.length > 0 ? randomBooks.map((book, i) => {
               const bookId = book.id?.split("/").pop() ?? null;
-              const hasValidCover = book.coverThumbnail && !book.coverThumbnail.includes("undefined");
               return (
                 <div key={i} className="flex flex-col p-12">
-                  <Image
-                    src={hasValidCover ? book.coverThumbnail! : "/default-cover.png"}
-                    alt={hasValidCover ? `Couverture de ${book.title}` : "Couverture non disponible"}
-                    width={200}
-                    height={300}
+                  <BookCover
+                    src={book.coverThumbnail}
+                    alt={`Couverture de ${book.title}`}
                     className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
                   />
                   <div className="flex flex-col flex-1 mt-3">
@@ -104,11 +102,9 @@ export default async function HomePage() {
               );
             }) : [1, 2, 3, 4].map((i) => (
               <div key={i} className="flex flex-col p-12">
-                <Image
-                  src="/default-cover.png"
+                <BookCover
+                  src={null}
                   alt="Couverture non disponible"
-                  width={200}
-                  height={300}
                   className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
                 />
                 <div className="flex flex-col flex-1 mt-3">

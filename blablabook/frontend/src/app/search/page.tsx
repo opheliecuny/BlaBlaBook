@@ -1,5 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
+import AddToLibraryButton from "@/components/AddToLibraryButton";
+import BookCover from "@/components/BookCover";
 
 interface SearchPageProps {
   searchParams: Promise<{ q?: string; page?: string }>;
@@ -12,6 +13,7 @@ interface BookResult {
   publishedYear: number | null;
   coverThumbnail: string | null;
   category: string | null;
+  isbn: string | null;
 }
 
 async function fetchBooks(query: string): Promise<BookResult[]> {
@@ -92,15 +94,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               {results.map((book) => {
                 // L'id backend est au format "/works/OL123W" — on extrait "OL123W"
                 const bookId = book.id.split("/").pop() ?? book.id;
-                const hasValidCover = book.coverThumbnail && !book.coverThumbnail.includes("undefined");
-
                 return (
                   <div key={book.id} className="flex flex-col px-8 py-12">
-                    <Image
-                      src={hasValidCover ? book.coverThumbnail : "/default-cover.png"}
-                      alt={hasValidCover ? `Couverture de ${book.title}` : "Couverture non disponible"}
-                      width={200}
-                      height={300}
+                    <BookCover
+                      src={book.coverThumbnail}
+                      alt={`Couverture de ${book.title}`}
                       className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
                     />
                     <div className="flex flex-col flex-1 mt-3">
@@ -119,12 +117,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                           >
                             Voir le détail
                           </Link>
-                          <button
-                            type="button"
-                            className="flex items-center justify-center rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium hover:bg-primary/90 whitespace-nowrap shrink-0"
-                          >
-                            <span className="text-sm font-black leading-none mr-1.5" style={{ WebkitTextStroke: "1px currentColor" }}>+</span>Biblio
-                          </button>
+                          <AddToLibraryButton
+                            bookId={bookId}
+                            isbn={book.isbn}
+                            title={book.title}
+                            author={book.author}
+                            publishedYear={book.publishedYear}
+                            thumbnail={book.coverThumbnail}
+                            category={book.category}
+                          />
                         </div>
                       </div>
                     </div>

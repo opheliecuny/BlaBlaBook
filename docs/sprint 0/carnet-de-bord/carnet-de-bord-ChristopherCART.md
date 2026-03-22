@@ -604,6 +604,70 @@ Rémi a mis à jour le backend dans la journée. Adaptation des 3 pages en cons�
 
 ---
 
+### Séance 24 — Bouton "+ Biblio" + reviews équipe (20/03/2026)
+
+**Travail réalisé :**
+
+**Merge de main + résolution conflits (PR #79)**
+- Merge de `origin/main` dans `feature/library-api-integration` — aucun conflit (merge automatique)
+- PR #79 mergée dans main par Paul
+
+**Reviews approuvées**
+- PR #78 (Rémi — fix api controllers) : approuvée
+- PR #80 (Rémi — docker compose + init.sh) : approuvée
+
+**Nouvelle branche `feature/add-to-library-button`** depuis `main`
+
+**Composant `AddToLibraryButton`** — page `/search`
+- Client component : `useAuth()` pour vérifier la connexion
+- Non connecté → `router.push("/login")`
+- Connecté → fetch `GET /books/:id` pour récupérer l'isbn (absent des résultats de recherche), puis `POST /library` avec statut `TO_READ` par défaut
+- Fallback isbn : `ol-${bookId}` si Open Library ne retourne pas d'isbn
+- États visuels : loading (`...`) et succès (`✓ Ajouté`)
+
+**Composant `AddToLibraryPanel`** — page `/book/:id`
+- Sélection du statut (À lire / En cours / Lu) avant ajout
+- Non connecté → `<Link href="/login">` à la place du bouton
+- Connecté → `POST /library` avec le statut choisi
+- `isbn` passé directement en prop depuis le Server Component (déjà retourné par `GET /books/:id`)
+- Ajout du champ `isbn` dans l'interface `BookData` locale (manquant)
+
+**2 commits atomiques** : `feat(search)` → `feat(book)`
+
+**Composant `BookCover`** — fallback couverture manquante
+- Création d'un composant client `BookCover.tsx` centralisé pour toutes les couvertures
+- `onError` : si l'image Open Library échoue (ECONNRESET, timeout), bascule sur `/default-cover.png`
+- `unoptimized={true}` pour les URLs distantes : contourne les erreurs 500 du proxy Next.js image
+- `src` null → `/default-cover.png` directement
+- Appliqué sur les 3 pages : homepage, `/search`, `/book/:id`
+
+**Diagnostic couvertures page détail + fix suite retour Rémi**
+- Couvertures absentes sur certains livres : `getBookById` ne retournait pas `cover_i` → URL construite manuellement depuis isbn/olid, peu fiable
+- Open Library renvoie un placeholder gris (pas un 404) → `onError` ne se déclenche pas → signalé à Rémi
+- Rémi a ajouté `coverThumbnail` dans la réponse de `getBookById`
+- Frontend mis à jour : ajout de `coverThumbnail` dans l'interface `BookData`, suppression de la construction d'URL manuelle — `coverUrl = book.coverThumbnail ?? null`
+
+**Diagnostic setup local**
+- Mise en place de l'environnement de développement complet : docker-compose (Postgres port 5433 + Adminer port 8000), backend port 3001, frontend port 3000
+- `npx prisma migrate deploy` : 4 migrations appliquées
+- Diagnostic équipe : "Livres du moment" absents = `API_URL` manquante dans `blablabook/frontend/.env.local`
+
+**PR #83 ouverte** — reviewers à désigner
+
+**Fix `AddToLibraryButton` — isbn depuis les résultats de recherche**
+- Rémi a signalé que `searchBooks` (PR #78) retourne déjà l'isbn via `fields=isbn` dans la requête Open Library
+- Suppression du fetch `GET /books/:id` au clic dans `AddToLibraryButton` (inutile et coûteux)
+- Ajout du champ `isbn` dans l'interface `BookResult` de la page search
+- Ajout de la prop `isbn` dans `AddToLibraryButton` — passée directement depuis les résultats
+- Le fallback `ol-${bookId}` reste pour les œuvres sans isbn sur Open Library
+
+**Navbar — branchement AuthContext**
+- Import `useAuth()` : `isAuthenticated` remplace `isLoggedIn = false`
+- `handleLogout` : appel `POST /auth/logout` via `authService`, puis `logout()` (vide localStorage), puis `router.push("/")`
+- Commit atomique `feat(navbar)` ajouté à la branche `feature/add-to-library-button`
+
+---
+
 ## Bilan Sprint 0
 
 | Livrable | Emplacement | Statut |

@@ -3,10 +3,19 @@
 import Link from "next/link";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/contexts/AuthContext";
+import { logout as logoutService } from "@/services/authService";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
-  // TODO: remplacer par le vrai état auth (AuthContext)
-  const isLoggedIn = false;
+  const { isAuthenticated, logout } = useAuth();
+  const router = useRouter();
+
+  async function handleLogout() {
+    await logoutService();
+    logout();
+    router.push("/");
+  }
 
   return (
     <header className="border-b border-border bg-background sticky top-0 z-50">
@@ -25,7 +34,7 @@ export default function Navbar() {
             Rechercher
           </Link>
 
-          {isLoggedIn ? (
+          {isAuthenticated ? (
             <>
               <Link href="/library" className="text-sm hover:text-primary">
                 Ma bibliothèque
@@ -33,7 +42,7 @@ export default function Navbar() {
               <Link href="/profile" className="text-sm hover:text-primary">
                 Compte
               </Link>
-              <Button variant="outline" size="sm" className="border-primary hover:bg-primary/5">
+              <Button variant="outline" size="sm" className="border-primary hover:bg-primary/5" onClick={handleLogout}>
                 Déconnexion
               </Button>
             </>

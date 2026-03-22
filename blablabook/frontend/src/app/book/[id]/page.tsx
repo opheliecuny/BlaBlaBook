@@ -1,5 +1,6 @@
-import Image from "next/image";
 import Link from "next/link";
+import AddToLibraryPanel from "@/components/AddToLibraryPanel";
+import BookCover from "@/components/BookCover";
 
 interface BookPageProps {
   params: Promise<{ id: string }>;
@@ -11,6 +12,8 @@ interface BookData {
   category: string | null;
   description: string | { value: string } | null;
   authorId: string | null;
+  isbn: string | null;
+  coverThumbnail: string | null;
 }
 
 async function fetchBook(id: string): Promise<BookData | null> {
@@ -44,9 +47,6 @@ export default async function BookPage({ params }: BookPageProps) {
 
   const book = await fetchBook(id);
 
-  // TODO: récupérer depuis AuthContext (isLoggedIn)
-  const isLoggedIn = false;
-
   if (!book) {
     return (
       <div className="max-w-[88%] mx-auto px-12 py-20 text-center">
@@ -64,8 +64,7 @@ export default async function BookPage({ params }: BookPageProps) {
     typeof book.description === "object" && book.description !== null
       ? book.description.value
       : book.description;
-  // La couverture via l'ID du work Open Library
-  const coverUrl = `https://covers.openlibrary.org/b/olid/${id}-L.jpg`;
+  const coverUrl = book.coverThumbnail ?? null;
 
   return (
     <div className="max-w-[88%] mx-auto px-12 py-10">
@@ -73,58 +72,21 @@ export default async function BookPage({ params }: BookPageProps) {
 
         {/* Colonne gauche : couverture + actions */}
         <div className="w-48 shrink-0 flex flex-col gap-5">
-          <Image
+          <BookCover
             src={coverUrl}
             alt={`Couverture de ${book.title}`}
-            width={200}
-            height={300}
             className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
           />
 
-          {isLoggedIn ? (
-            <div className="flex flex-col gap-2.5 border border-border rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-4">
-              <div className="flex flex-col gap-1.5">
-                <label htmlFor="status" className="text-xs text-foreground">
-                  Statut de lecture
-                </label>
-                <select
-                  id="status"
-                  name="status"
-                  className="w-full border border-border rounded px-3 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
-                >
-                  <option value="TO_READ">À lire</option>
-                  <option value="READING">En cours</option>
-                  <option value="READ">Lu</option>
-                </select>
-              </div>
-              {/* TODO: brancher sur POST /library avec { openLibraryId: id, status } */}
-              <button
-                type="button"
-                className="w-full inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-5 py-2 text-[0.65rem] font-medium hover:bg-primary/90 whitespace-nowrap"
-              >
-                + Ajouter à ma bibliothèque
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2.5 border border-border rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-4">
-              <div className="flex flex-col gap-1.5">
-                <p className="text-xs text-foreground">Statut de lecture</p>
-                <select
-                  className="w-full border border-border rounded px-3 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
-                >
-                  <option value="TO_READ">À lire</option>
-                  <option value="READING">En cours</option>
-                  <option value="READ">Lu</option>
-                </select>
-              </div>
-              <Link
-                href="/login"
-                className="w-full inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-5 py-2 text-[0.65rem] font-medium hover:bg-primary/90 whitespace-nowrap"
-              >
-                + Ajouter à ma bibliothèque
-              </Link>
-            </div>
-          )}
+          <AddToLibraryPanel
+            openLibraryId={id}
+            isbn={book.isbn ?? null}
+            title={book.title}
+            author={authorName}
+            publishedYear={book.publishedYear}
+            thumbnail={coverUrl ?? ""}
+            genre={genre}
+          />
         </div>
 
         {/* Colonne droite : infos livre */}
@@ -162,7 +124,7 @@ export default async function BookPage({ params }: BookPageProps) {
           {description && (
             <div className="flex flex-col gap-2 mt-2">
               <h2 className="text-base font-semibold">Description</h2>
-              <p className="text-sm leading-relaxed">{description}</p>
+              <p className="text-sm leading-relaxed text-justify">{description}</p>
             </div>
           )}
         </div>
