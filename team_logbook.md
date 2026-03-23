@@ -110,7 +110,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 #### Infos individuelles
 
 - **Ophélie :** Passage en front, prise en main du code. Premier travail de dynamisation sur la page de profil (affichage des données personnelles) et connexion à l'API dont nouvelles routes (GET et DELETE) pour rendre les fonctionnalitées fonctionnelles, ajout de services user en accord avec les nouvelles routes API Express.
-- **Rémi :**
+- **Rémi :** Perdu un temps fou à essayer de modifier le code front pour ne plus utiliser le localStorage et passer uniquement aux cookies. Commenc" un début de responsive sur la page book:id. 
 - **Paul :**
 - **Christopher :**
 
