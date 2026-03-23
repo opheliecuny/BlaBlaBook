@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  backend:
+    name: Backend — Build & Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: blablabook/backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: blablabook/backend
+        run: npm ci
+
+      - name: Generate Prisma client
+        working-directory: blablabook/backend
+        run: npx prisma generate
+
+      - name: Build (TypeScript)
+        working-directory: blablabook/backend
+        run: npm run build
+
+      - name: Lint
+        working-directory: blablabook/backend
+        run: npm run lint
+
+  frontend:
+    name: Frontend — Build & Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: blablabook/frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: blablabook/frontend
+        run: npm ci
+
+      - name: Build (Next.js)
+        working-directory: blablabook/frontend
+        run: npm run build
+
+      - name: Lint
+        working-directory: blablabook/frontend
+        run: npm run lint
