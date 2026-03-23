@@ -1,7 +1,8 @@
 // Service pour la gestion du profil utilisateur
 
 import { apiClient } from "@/lib/api";
-import type { UpdateProfileRequest, UpdateProfileResponse } from "@/types/auth";
+import type { UpdateProfileRequest } from "@/types/auth";
+import type { UpdateProfileResponse } from "@/types/user";
 
 /**
  * Met à jour le profil de l'utilisateur connecté
