@@ -22,9 +22,14 @@
     "db:reset": "npm run db:migrate:reset && npm run db:seed",
     "db:studio": "prisma studio",
     "======= Pour les tests ========": "=====================",
-    "test:unit": "tsx --test ./**/*.unit.test.ts",
-    "test:spec": "tsx --test --env-file=./test/config/.env.test --import ./test/config/global-setup.ts --experimental-test-isolation=none ./**/*.spec.test.ts",
-    "test": "npm run test:unit && npm run test:spec"
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:watch": "vitest watch",
+    "test:coverage": "vitest run --coverage",
+    "test:ui": "vitest --ui",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:api": "vitest run tests/api"
   },
   "keywords": [],
   "author": "",
@@ -52,10 +57,16 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.5.0",
     "@types/pg": "^8.18.0",
+    "@types/supertest": "^7.2.0",
+    "@vitest/coverage-v8": "^4.1.0",
+    "@vitest/ui": "^4.1.0",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^10.0.3",
     "prisma": "^6.19.2",
+    "supertest": "^7.2.2",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.57.0"
+    "typescript-eslint": "^8.57.0",
+    "vitest": "^4.1.0"
   }
 }
