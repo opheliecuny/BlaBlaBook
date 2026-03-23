@@ -3,6 +3,33 @@ import z from "zod";
 import { prisma } from "../utils/prismaClient";
 import argon2 from "argon2";
 
+export async function getUserProfile(req: Request, res: Response) {
+  try {
+    const userId = req.user?.id;
+    if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        createdAt: true,
+        updatedAt: true,
+      }
+    });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json(user);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export async function updateUser(req: Request, res: Response) {
 
   const updateUserBodySchema = z.object({
