@@ -11,7 +11,7 @@ export const errorHandler = (
   err: AppError | Error,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   let traceId: string;
 

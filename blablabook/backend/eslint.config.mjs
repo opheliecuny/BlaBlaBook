@@ -11,6 +11,7 @@ export default tseslint.config(
       'semi': ['error', 'always'], // ; obligatoire en fin d'instruction
       'indent': ['error', 2], // L'intentation du code doit être de 2
       '@typescript-eslint/no-explicit-any': 'off', // on autorise any partout pour se faciliter la vie en tant que débutant
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' }], // on autorise les paramètres et erreurs capturées préfixés par _
     },
   },
   {

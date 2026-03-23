@@ -1,5 +1,5 @@
-import { prisma } from "../utils/prismaClient"
-import { ReadingStatus } from "../../generated/prisma/enums"
+import { prisma } from "../utils/prismaClient";
+import { ReadingStatus } from "../../generated/prisma/enums";
 
 async function main() {
   // USERS
@@ -9,7 +9,7 @@ async function main() {
       password: 'hashedpassword1',
       username: 'alice',
     },
-  })
+  });
 
   const bob = await prisma.user.create({
     data: {
@@ -17,7 +17,7 @@ async function main() {
       password: 'hashedpassword2',
       username: 'bob',
     },
-  })
+  });
 
   // BOOKS
   const book1 = await prisma.book.create({
@@ -33,7 +33,7 @@ async function main() {
       language: 'fr',
       publishedYear: 1942,
     },
-  })
+  });
 
   const book2 = await prisma.book.create({
     data: {
@@ -48,7 +48,7 @@ async function main() {
       language: 'fr',
       publishedYear: 1997,
     },
-  })
+  });
 
   const book3 = await prisma.book.create({
     data: {
@@ -63,7 +63,7 @@ async function main() {
       language: 'en',
       publishedYear: 1996,
     },
-  })
+  });
 
   // LIBRARY ITEMS
   await prisma.library_item.createMany({
@@ -87,16 +87,16 @@ async function main() {
         status: ReadingStatus.TO_READ,
       },
     ],
-  })
+  });
 }
 
 main()
   .then(() => {
-    console.log('🌱 Seeding terminé')
-    return prisma.$disconnect()
+    console.log('🌱 Seeding terminé');
+    return prisma.$disconnect();
   })
   .catch(async (e) => {
-    console.error(e)
-    await prisma.$disconnect()
-    process.exit(1)
-  })
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });

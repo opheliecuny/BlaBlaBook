@@ -696,7 +696,17 @@ Rémi a mis à jour le backend dans la journée. Adaptation des 3 pages en cons�
 - `token.ts` : import `Token` corrigé (`../../@types/express` → `../@types/index`)
 - `@types/index.d.ts` : `req.user` typé `{ id: string }` au lieu du modèle Prisma complet (le middleware ne posant que l'id) ; suppression du champ `author_name` en double dans `OpenLibraryDoc`
 - `npx tsc --noEmit` : 0 erreur après corrections
-- 3 commits atomiques, PR #87 ouverte
+- 3 commits atomiques, PR #87 mergée
+
+**Fix CI — PR #89**
+- `prisma generate` échouait en CI : Prisma 7 charge `prisma.config.ts` qui appelle `env("DATABASE_URL")` — absente en CI
+- Fix : `DATABASE_URL` factice passée en env sur le seul step `generate` (pas de connexion réelle nécessaire)
+- Lint backend : 3 fichiers en erreur détectés par la CI
+  - `seeding.ts` : points-virgules manquants → auto-fix `eslint --fix`
+  - `auth.middleware.ts` : `error` non utilisé dans catch → renommé `_error`
+  - `errorHandler.ts` : `next` non utilisé → renommé `_next`
+  - `eslint.config.mjs` : ajout `argsIgnorePattern: '^_'` et `caughtErrorsIgnorePattern: '^_'`
+- 5 commits atomiques, PR #89 ouverte — CI verte ✅ (Backend + Frontend)
 
 **Bug signalé à l'équipe**
 - PR #84 (Rémi) : `POST /auth/login` retourne `{ message }` au lieu de `{ id, email, username }` → AuthContext non hydraté après connexion → boutons "+ Biblio" et `/library` non fonctionnels

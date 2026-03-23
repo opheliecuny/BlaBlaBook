@@ -229,7 +229,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 - **Ophélie :**
 - **Rémi :**
 - **Paul :**
-- **Christopher :** Mise en place GitHub Actions CI (PR #86) — 2 jobs build + lint sur backend et frontend, déclenchés sur push/PR vers `main`. Corrections TypeScript backend bloquant la CI (PR #87) : imports cassés suite à la suppression de `@types/express.d.ts` dans PR #84, type `req.user` aligné sur le middleware (`{ id: string }` au lieu du modèle Prisma complet). Bug signalé à Rémi (`POST /auth/login` ne retourne plus les données utilisateur) et Paul (conflit d'export dans `src/types/index.ts`).
+- **Christopher :** Mise en place GitHub Actions CI (PR #86). Corrections TypeScript backend (PR #87) : imports cassés suite PR #84, type `req.user` aligné. Fix CI suite diagnostic (PR #89) : `DATABASE_URL` factice pour `prisma generate`, lint backend (semicolons, unused vars, ESLint config) — CI verte ✅ Backend + Frontend. Bug signalé à Rémi (login ne retourne plus les données user) et Paul (conflit export types — corrigé PR #88).
 
 ---
 
