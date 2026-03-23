@@ -4,7 +4,7 @@ import { config } from "../../config";
 import { prisma } from "../utils/prismaClient";
 import { user } from "../../generated/prisma/client"; 
 import type { Response } from "express";
-import { Token } from "../../@types/express";
+import type { Token } from "../@types/index";
 
 
 export function generateAuthenticationTokens(user: user): { accessToken: Token, refreshToken: Token} {

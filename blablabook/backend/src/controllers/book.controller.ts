@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { OpenLibraryResponse } from "../../@types/express";
+import type { OpenLibraryResponse } from "../@types/index";
 
 export async function getRandomBooks(req: Request, res: Response) {
 

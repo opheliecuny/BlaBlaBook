@@ -668,6 +668,42 @@ Rémi a mis à jour le backend dans la journée. Adaptation des 3 pages en cons�
 
 ---
 
+### Séance 25 — GitHub Actions CI + corrections TypeScript backend (23/03/2026)
+
+**Travail réalisé :**
+
+**Nouvelle répartition des tâches (sprint 1 — rotation)**
+- Tests backend Vitest : Paul + Christopher
+- GitHub Actions CI : Paul + Christopher
+- Déploiement prod : Paul + Christopher
+- MVP Profile page + Notes & avis UI : Ophélie + Rémi
+
+**Mise à jour de `main` en local**
+- Pull SSH bloqué (connexion lente) — contournement via HTTPS
+- Fast-forward sur 3 commits : PR #83 (Christopher), PR #84 (Rémi — refactor auth cookies), doc team logbook
+
+**GitHub Actions CI — PR #86**
+- Création de `.github/workflows/ci.yml` : 2 jobs parallèles (Backend + Frontend)
+  - Backend : `prisma generate` → `npm run build` (TypeScript) → `npm run lint`
+  - Frontend : `npm run build` (Next.js) → `npm run lint`
+  - Déclenchement sur push et PR vers `main`
+- Diagnostic CI : backend échoue → `prisma generate` manquant avant le build
+- Fix : ajout du step `prisma generate` → commit `fix(ci)` atomique
+- CI a également détecté des erreurs TypeScript pré-existantes dans le backend
+
+**Corrections TypeScript backend — PR #87**
+- `book.controller.ts` : import `OpenLibraryResponse` corrigé (`../../@types/express` → `../@types/index`) — fichier supprimé dans PR #84 sans mise à jour des imports
+- `token.ts` : import `Token` corrigé (`../../@types/express` → `../@types/index`)
+- `@types/index.d.ts` : `req.user` typé `{ id: string }` au lieu du modèle Prisma complet (le middleware ne posant que l'id) ; suppression du champ `author_name` en double dans `OpenLibraryDoc`
+- `npx tsc --noEmit` : 0 erreur après corrections
+- 3 commits atomiques, PR #87 ouverte
+
+**Bug signalé à l'équipe**
+- PR #84 (Rémi) : `POST /auth/login` retourne `{ message }` au lieu de `{ id, email, username }` → AuthContext non hydraté après connexion → boutons "+ Biblio" et `/library` non fonctionnels
+- Frontend (Paul) : conflit d'export `UpdateProfileResponse` dans `src/types/index.ts`
+
+---
+
 ## Bilan Sprint 0
 
 | Livrable | Emplacement | Statut |

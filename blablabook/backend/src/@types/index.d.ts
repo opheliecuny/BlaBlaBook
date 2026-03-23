@@ -1,5 +1,3 @@
-import { user } from "../../generated/prisma/client";
-
 export interface IBook {
   id: string;
   isbn: string;
@@ -18,7 +16,7 @@ export interface IBook {
 declare global {
     namespace Express {
         interface Request {
-            user : user
+            user: { id: string }
         }
     }
 }
@@ -33,8 +31,7 @@ interface OpenLibraryDoc {
   cover_edition_key?: string; 
   lending_edition_s?: string;
   subject?: string[];
-  isbn?: number[]; 
-  author_name?: string[]; 
+  isbn?: number[];
 }
 
 export interface OpenLibraryResponse {

@@ -220,6 +220,19 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 ---
 
+### 23/03/2026
+
+*Nouvelle répartition des tâches : GitHub Actions + tests backend + déploiement (Paul + Christopher) ; Profile page + Notes & avis (Ophélie + Rémi).*
+
+#### Infos individuelles
+
+- **Ophélie :**
+- **Rémi :**
+- **Paul :**
+- **Christopher :** Mise en place GitHub Actions CI (PR #86) — 2 jobs build + lint sur backend et frontend, déclenchés sur push/PR vers `main`. Corrections TypeScript backend bloquant la CI (PR #87) : imports cassés suite à la suppression de `@types/express.d.ts` dans PR #84, type `req.user` aligné sur le middleware (`{ id: string }` au lieu du modèle Prisma complet). Bug signalé à Rémi (`POST /auth/login` ne retourne plus les données utilisateur) et Paul (conflit d'export dans `src/types/index.ts`).
+
+---
+
 ### 03/04/2026
 
 *Résumé*
