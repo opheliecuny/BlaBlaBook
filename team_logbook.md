@@ -96,7 +96,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 #### Infos individuelles
 
-- **Ophélie :**
+- **Ophélie :** Bidouillage d'éléments pour la présentation de l'après-midi.
 - **Rémi :**- **Rémi :**Refactorisation de book.controller et auth.controller afin qu'ils utilisent asyncWrapper (*donc plus besoin de try/catch*). Modification des tests et du auth.controller pour que tout fonctionne uniquement avec les cookies (*plus de localStorage*). Amélioration du auth.middleware : plus de renvoie du message de l'erreur à l'utilisateur (*plus sécurisé de cette façon*).
 - **Paul :**
 - **Christopher :** Merge de main dans feature/library-api-integration (conflits résolus), PR #79 mergée. Implémentation du bouton "+ Biblio" : composant `AddToLibraryButton` (page `/search`, ajout TO_READ par défaut) et composant `AddToLibraryPanel` (page `/book/:id`, sélection du statut, redirection `/login` si non connecté). Fix suite retour Rémi : isbn passé directement en prop depuis les résultats de recherche. Branchement Navbar sur l'AuthContext (affichage conditionnel + déconnexion). Composant `BookCover` avec fallback `onError` vers `default-cover.png` sur les 3 pages (homepage, search, book detail). Diagnostic setup équipe (`API_URL` manquante dans `.env.local`). Diagnostic couvertures page détail : `cover_i` absent des `fields` de `getBookById` (signalé à Rémi) — Rémi a ajouté `coverThumbnail` dans la réponse, frontend mis à jour pour l'utiliser directement. PR #83 ouverte. Reviews PR #78 et #80 approuvées.
@@ -109,7 +109,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 #### Infos individuelles
 
-- **Ophélie :**
+- **Ophélie :** Passage en front, prise en main du code. Premier travail de dynamisation sur la page de profil (affichage des données personnelles) et connexion à l'API dont nouvelles routes (GET et DELETE) pour rendre les fonctionnalitées fonctionnelles, ajout de services user en accord avec les nouvelles routes API Express.
 - **Rémi :**
 - **Paul :**
 - **Christopher :**
