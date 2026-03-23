@@ -109,9 +109,10 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 #### Infos individuelles
 
-- **Ophélie :** Passage en front, prise en main du code. Premier travail de dynamisation sur la page de profil (affichage des données personnelles) et connexion à l'API dont nouvelles routes (GET et DELETE) pour rendre les fonctionnalitées fonctionnelles, ajout de services user en accord avec les nouvelles routes API Express.
-- **Rémi :** Perdu un temps fou à essayer de modifier le code front pour ne plus utiliser le localStorage et passer uniquement aux cookies. Commenc" un début de responsive sur la page book:id. 
-- **Paul :**
+- **Ophélie :** Passage en front, prise en main du code. Premier travail de dynamisation sur la page de profil (affichage des données personnelles) et connexion à l'API dont nouvelles routes (GET et DELETE) pour rendre les fonctionnalités fonctionnelles, ajout de services user en accord avec les nouvelles routes API Express.
+- **Rémi :** Perdu un temps fou à essayer de modifier le code front pour ne plus utiliser le localStorage et passer uniquement aux cookies. Commenc" un début de responsive sur la page book:id.
+- **Paul :** Installation complète de Vitest pour le backend. Création de 45 tests (33 unitaires + 12 intégration) avec 100% de succès. Configuration base de données de test (testdb) et helpers de test. Ajout routes GET /user/profile et DELETE /user. Résolution problèmes Prisma (Query Engine, credentials, migrations). Correction conflit types frontend (UpdateProfileResponse).
+
 - **Christopher :**
 
 ---

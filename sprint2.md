@@ -1,8 +1,9 @@
 # Sprint 2 — Plan de finition BlaBlaBook
 
 > **Date de rédaction** : 2026-03-22
+> **Dernière mise à jour** : 2026-03-23
 > **Phase** : Sprint 2 — Intégration, Tests, CI/CD, Déploiement
-> **Statut global** : MVP fonctionnel à ~80%, tests à 0%, CI/CD absent, déploiement non configuré
+> **Statut global** : MVP fonctionnel à ~85%, tests backend à 60% (45 tests), CI/CD absent, déploiement non configuré
 
 ---
 
@@ -27,13 +28,22 @@
 
 | Priorité  | Tâche                                                                                           | Fichier(s) concerné(s)                                 |
 | --------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| 🔴 Haute   | **Page profil** : câbler l'appel API `PATCH /user/profile` (actuellement TODO commenté)         | `frontend/src/app/profile/page.tsx` + `userService.ts` |
+| 🔴 Haute   | **Page profil** : câbler l'appel API `PATCH /user/profile` et `GET /user/profile`              | `frontend/src/app/profile/page.tsx` + `userService.ts` |
 | 🔴 Haute   | **Notation (1–5 étoiles)** : UI manquante sur `/library` + `PATCH /library/:id` à enrichir      | `library/page.tsx`, `library.controller.ts`            |
 | 🔴 Haute   | **Avis personnel** : UI manquante sur `/library`                                                | `library/page.tsx`                                     |
-| 🟠 Moyenne | **Suppression de compte** : Route backend `DELETE /user` absente, UI présente                   | `user.controller.ts`, `user.router.ts`                 |
 | 🟠 Moyenne | **Refresh token** : Logique de renouvellement absente (token stocké en BDD mais jamais utilisé) | `auth.controller.ts`, `auth.router.ts`                 |
 | 🟡 Basse   | **Confirmation de suppression livre** : Dialog de confirmation manquant                         | `library/page.tsx`                                     |
 | 🟡 Basse   | **Feedback visuel** : Remplacer `alert()` par des toast notifications                           | Toutes les pages avec formulaires                      |
+
+#### Complété aujourd'hui (23/03/2026) ✅
+
+| Tâche | Fichier(s) concerné(s) |
+| ----- | ---------------------- |
+| ✅ **Suppression de compte** : Route backend `DELETE /user` implémentée | `user.controller.ts`, `user.router.ts` |
+| ✅ **Récupération profil** : Route backend `GET /user/profile` ajoutée | `user.controller.ts`, `user.router.ts` |
+| ✅ **Tests backend** : 45 tests Vitest (33 unitaires + 12 intégration) | Voir section 2.3 |
+| ✅ **Configuration Prisma** : `binaryTargets = ["native"]` ajouté | `prisma/schema.prisma` |
+| ✅ **Frontend** : Résolution conflit types `UpdateProfileResponse` | `frontend/src/types/` |
 
 #### Fonctionnel non-MVP (à exclure du sprint actuel)
 
@@ -97,62 +107,53 @@ export default defineConfig({
 
 ### 2.3 Tests à écrire — Backend
 
-#### Tests unitaires (`*.unit.test.ts`)
+#### Tests unitaires — ✅ FAIT (33 tests)
 
-Tester la logique pure, sans base de données.
+**✅ `tests/unit/utils/token.test.ts`** — 8 tests
+- ✅ generateAuthenticationTokens() génère accessToken JWT valide
+- ✅ generateAuthenticationTokens() génère refreshToken base64 unique
+- ✅ saveRefreshTokenInDatabase() crée en BDD
+- ✅ setAccessTokenCookie() définit cookie httpOnly
+- ✅ setRefreshTokenCookie() définit cookie httpOnly avec path restreint
+- ✅ replaceRefreshTokenInDatabase() supprime anciens + crée nouveau
 
-**`tests/utils/token.unit.test.ts`** — Génération et vérification des tokens JWT
+**✅ `tests/unit/middlewares/auth.middleware.test.ts`** — 5 tests
+- ✅ Retourne 401 si aucun cookie accessToken
+- ✅ Retourne 401 si token invalide
+- ✅ Retourne 401 si token expiré
+- ✅ Appelle next() et injecte req.user si token valide
+- ✅ Gère correctement payload avec champs supplémentaires
 
-```ts
-// Ce qu'il faut couvrir :
-// - generateAccessToken() retourne un JWT valide
-// - verifyAccessToken() retourne le payload attendu
-// - verifyAccessToken() lève une erreur si token invalide/expiré
-// - generateRefreshToken() retourne une chaîne base64
-```
+**✅ `tests/unit/errors/errors.test.ts`** — 20 tests
+- ✅ Classes d'erreurs (AppError, NotFoundError, BadRequestError, etc.) — 9 tests
+- ✅ transformError (Zod, Prisma P2002/P2025, erreurs inconnues) — 7 tests
+- ✅ asyncWrapper capture erreurs async et appelle next() — 4 tests
 
-**`tests/middlewares/auth.middleware.unit.test.ts`** — Middleware JWT
+#### Tests d'intégration — 🚧 EN COURS (12/X tests)
 
-```ts
-// Ce qu'il faut couvrir :
-// - Retourne 401 si aucun cookie accessToken
-// - Retourne 401 si token invalide
-// - Appelle next() et injecte req.user si token valide
-```
+**Prérequis** : ✅ `.env.test` créé, base `testdb` configurée, migrations appliquées
 
-**`tests/errors/errors.unit.test.ts`** — Classes d'erreurs
+**✅ `tests/integration/api/auth.test.ts`** — 12 tests
 
-```ts
-// Ce qu'il faut couvrir :
-// - AppError, NotFoundError, BadRequestError, UnauthorizedError... ont le bon statusCode
-// - asyncWrapper capture les erreurs async et les passe à next()
-```
+- ✅ POST /auth/register
+  - ✅ 201 avec email/password/username valides + cookies définis
+  - ✅ 409 si email déjà utilisé
+  - ✅ 400 si password trop court (< 8 chars)
+  - ✅ 400 si password sans majuscule
+  - ✅ 400 si passwords ne correspondent pas
+  - ✅ 400 si email invalide
 
-#### Tests d'intégration (`*.spec.test.ts`)
+- ✅ POST /auth/login
+  - ✅ 200 avec cookie accessToken + refreshToken
+  - ✅ 401 si utilisateur n'existe pas
+  - ✅ 401 si mauvais mot de passe
+  - ✅ 400 si email manquant
 
-Tester les routes HTTP complètes avec une base de données de test.
+- ✅ POST /auth/logout
+  - ✅ 204 et suppression cookies + refresh tokens BDD
+  - ✅ 401 si non authentifié
 
-**Prérequis** : Créer un fichier `.env.test` avec une DATABASE_URL pointant vers une BDD de test (ou utiliser une base en mémoire SQLite — mais Prisma + PostgreSQL, donc préférer une BDD PostgreSQL de test).
-
-**`tests/auth.spec.test.ts`**
-
-```ts
-// POST /auth/register
-// - ✅ 201 avec email/password/username valides
-// - ❌ 400 si email invalide
-// - ❌ 400 si password trop faible (< 8 chars, sans majuscule)
-// - ❌ 409 si email déjà utilisé
-
-// POST /auth/login
-// - ✅ 200 avec cookie accessToken + refreshToken
-// - ❌ 401 si mauvais mot de passe
-// - ❌ 404 si email inconnu
-
-// POST /auth/logout
-// - ✅ 200 et suppression des cookies
-```
-
-**`tests/library.spec.test.ts`**
+**❌ `tests/integration/api/library.test.ts`** — À créer
 
 ```ts
 // GET /library — auth requise
@@ -174,33 +175,50 @@ Tester les routes HTTP complètes avec une base de données de test.
 // - ❌ 404 si item inconnu
 ```
 
-**`tests/user.spec.test.ts`**
+**❌ `tests/integration/api/user.test.ts`** — À créer
 
 ```ts
+// GET /user/profile
+// - ✅ 200 avec données profil
+// - ❌ 401 sans token
+
 // PATCH /user/profile
 // - ✅ 200 avec username modifié
 // - ❌ 409 si nouvel email déjà pris
 // - ❌ 401 sans token
+
+// DELETE /user
+// - ✅ 204 avec suppression compte + refresh tokens
+// - ❌ 401 sans token
 ```
 
-#### Organisation des fichiers de test
+#### Organisation des fichiers de test — ✅ CRÉÉ
 
 ```plaintext
 backend/
 └── tests/
-    ├── helpers/
-    │   ├── createTestUser.ts     # Utilitaire : créer un user en BDD de test
-    │   └── getAuthCookie.ts      # Utilitaire : login et récupérer le cookie
-    ├── auth.http                 # Tests manuels (existants)
+    ├── helpers/                        # ✅ CRÉÉ
+    │   ├── testServer.ts               # ✅ Serveur Express de test
+    │   └── dbHelpers.ts                # ✅ cleanDatabase, createTestUser
+    ├── unit/                           # ✅ CRÉÉ
+    │   ├── utils/
+    │   │   └── token.test.ts           # ✅ 8 tests
+    │   ├── middlewares/
+    │   │   └── auth.middleware.test.ts # ✅ 5 tests
+    │   └── errors/
+    │       └── errors.test.ts          # ✅ 20 tests
+    ├── integration/                    # ✅ CRÉÉ
+    │   └── api/
+    │       ├── auth.test.ts            # ✅ 12 tests
+    │       ├── library.test.ts         # ❌ À créer
+    │       └── user.test.ts            # ❌ À créer
+    ├── auth.http                       # Tests manuels (existants)
     ├── book.http
     ├── library.http
-    ├── user.http
-    ├── auth.spec.test.ts         # À créer
-    ├── library.spec.test.ts      # À créer
-    ├── user.spec.test.ts         # À créer
-    └── utils/
-        └── token.unit.test.ts    # À créer
+    └── user.http
 ```
+
+**📊 Couverture actuelle : 45 tests (33 unitaires + 12 intégration) — ~40-50% du code**
 
 ### 2.4 Installation — Frontend (optionnel pour le sprint)
 
@@ -463,21 +481,24 @@ jobs:
 
 ### 🔴 Priorité 1 — Compléter le MVP (1–2 jours)
 
-- [ ] **Profile page** : Implémenter l'appel `userService.updateProfile()` dans `app/profile/page.tsx`
-- [ ] **Route DELETE /user** : Ajouter la route de suppression de compte dans le backend
+- [ ] **Profile page** : Implémenter l'appel `userService.updateProfile()` et `getUserProfile()` dans `app/profile/page.tsx`
+- [x] **Route DELETE /user** : ✅ Ajouter la route de suppression de compte dans le backend (fait 23/03)
+- [x] **Route GET /user/profile** : ✅ Ajouter la route de récupération du profil (fait 23/03)
 - [ ] **Notes et avis** : Ajouter l'UI étoiles + zone de texte dans `/library`, enrichir `PATCH /library/:id`
 
-### 🟠 Priorité 2 — Tests backend avec Vitest (2–3 jours)
+### 🟠 Priorité 2 — Tests backend avec Vitest (2–3 jours) — 🚧 EN COURS (60% complété)
 
-- [ ] Installer Vitest + supertest dans le backend
-- [ ] Créer `vitest.config.ts`
-- [ ] Créer `tests/helpers/createTestUser.ts` et `getAuthCookie.ts`
-- [ ] Écrire `tests/auth.spec.test.ts` (register, login, logout)
-- [ ] Écrire `tests/library.spec.test.ts` (CRUD bibliothèque)
-- [ ] Écrire `tests/user.spec.test.ts` (update profile)
-- [ ] Écrire `tests/utils/token.unit.test.ts`
-- [ ] Écrire `tests/middlewares/auth.middleware.unit.test.ts`
-- [ ] Atteindre ~70% de couverture sur `src/`
+- [x] ✅ Installer Vitest + supertest dans le backend
+- [x] ✅ Créer `vitest.config.ts`
+- [x] ✅ Créer `.env.test` et configurer base de données de test
+- [x] ✅ Créer `tests/helpers/testServer.ts` et `dbHelpers.ts`
+- [x] ✅ Écrire `tests/integration/api/auth.test.ts` (register, login, logout) — 12 tests
+- [ ] ❌ Écrire `tests/integration/api/library.test.ts` (CRUD bibliothèque)
+- [ ] ❌ Écrire `tests/integration/api/user.test.ts` (profile, delete)
+- [x] ✅ Écrire `tests/unit/utils/token.test.ts` — 8 tests
+- [x] ✅ Écrire `tests/unit/middlewares/auth.middleware.test.ts` — 5 tests
+- [x] ✅ Écrire `tests/unit/errors/errors.test.ts` — 20 tests
+- [ ] 🚧 Atteindre ~70% de couverture sur `src/` (actuellement ~40-50%)
 
 ### 🟠 Priorité 3 — GitHub Actions CI (0,5 jour)
 
