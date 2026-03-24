@@ -72,37 +72,32 @@ export async function addBookToLibrary(req: Request, res: Response) {
 // PATCH /library/:id ; modifier le statut de lecture d'un livre de la bibliothèque de l'utilisateur connecté
 
 export async function updateReadingStatus(req: Request, res: Response) {
-  try {
-    const userId = req.user.id;
-  
-    const paramsSchema = z.object({
-      id: z.string().min(1)
-    });
-  
-    const bodySchema = z.object({
-      status: z.enum(["TO_READ", "READING", "READ"])
-    });
-  
-    const { id: bookId } = paramsSchema.parse(req.params);
-    const { status } = bodySchema.parse(req.body);
-  
-    const libraryItem = await prisma.library_item.update({
-      where: {
-        userId_bookId: {
-          userId,
-          bookId
-        }
-      },
-      data: {
-        status
+  const userId = req.user.id;
+
+  const paramsSchema = z.object({
+    id: z.string().min(1)
+  });
+
+  const bodySchema = z.object({
+    status: z.enum(["TO_READ", "READING", "READ"])
+  });
+
+  const { id: bookId } = paramsSchema.parse(req.params);
+  const { status } = bodySchema.parse(req.body);
+
+  const libraryItem = await prisma.library_item.update({
+    where: {
+      userId_bookId: {
+        userId,
+        bookId
       }
-    });
-  
-    return res.status(200).json(libraryItem);
-  } catch (error) {
-    console.error("Error updating reading status:", error);
-    return res.status(400).json({ error: "Invalid request data" });
-  }
+    },
+    data: {
+      status
+    }
+  });
+
+  return res.status(200).json(libraryItem);
 }
 
 // DELETE /library/:id ; supprimer un livre de la bibliothèque de l'utilisateur connecté
