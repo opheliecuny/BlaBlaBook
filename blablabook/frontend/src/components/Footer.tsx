@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="border-border bg-background mt-auto border-t">
       <div className="mx-auto max-w-7xl px-4 py-10">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-[1fr_auto_auto] md:gap-16">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-16">
           {/* Logo + tagline + copyright */}
           <div className="flex flex-col">
             <p className="text-lg font-bold font-playfair">BlaBlaBook</p>
