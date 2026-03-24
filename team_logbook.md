@@ -123,7 +123,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 #### Infos individuelles
 
-- **Ophélie :**
+- **Ophélie :** Correction de la PR #97 pour passer les tests du CI mis en place. Gestion du responsive sur les composants Nav et Footer qui bloquaient les pages. Correction du contenu dans les pages Politique de confidentialité et Mentions Légales ainsi que du responsive. Début d'affinement du responsive sur la page d'accueil (Hero et CTA), reste à faire la section sélection du moment. 
 - **Rémi :**
 - **Paul :**
 - **Christopher :**
