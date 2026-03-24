@@ -50,8 +50,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     <div className="py-10">
       <div className="max-w-[88%] mx-auto">
 
-        {/* Formulaire de recherche */}
-        <form action="/search" method="GET" className="flex gap-2 mb-10 px-12">
+        <form action="/search" method="GET" className="flex flex-col sm:flex-row gap-2 mb-10 px-4 sm:px-12">
           <label htmlFor="search-input" className="sr-only">
             Rechercher un livre ou un auteur
           </label>
@@ -61,17 +60,16 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             type="text"
             defaultValue={q ?? ""}
             placeholder="Rechercher un livre, un auteur..."
-            className="flex-1 border border-border rounded-full px-4 h-10 text-sm outline-none focus:border-primary"
+            className="w-full border border-border rounded-full px-4 h-10 text-sm outline-none focus:border-primary"
           />
           <button
             type="submit"
-            className="h-10 rounded-full bg-[#E2725B] hover:bg-[#c85e48] text-white text-xs font-medium px-8 shrink-0"
+            className="h-10 rounded-full bg-[#E2725B] hover:bg-[#c85e48] text-white text-xs font-medium px-8 shrink-0 w-full sm:w-auto"
           >
             Rechercher
           </button>
         </form>
 
-        {/* État : pas de requête */}
         {!hasQuery && (
           <div className="text-center py-20">
             <p className="text-muted-foreground">
@@ -80,22 +78,20 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </div>
         )}
 
-        {/* État : requête avec résultats */}
         {hasQuery && results.length > 0 && (
           <>
-            <h1 className="text-2xl font-bold mb-1 px-12">
+            <h1 className="text-2xl font-bold mb-1 px-4 sm:px-12">
               Résultats de recherche pour &quot;{query}&quot;
             </h1>
-            <p className="text-sm text-muted-foreground mb-8 px-12">
+            <p className="text-sm text-muted-foreground mb-4 px-4 sm:px-12">
               {allResults.length} résultat{allResults.length > 1 ? "s" : ""}
             </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-y divide-border/50">
+            <div className="grid grid-cols-2 md:grid-cols-4 divide-y divide-border/50 [&>*]:border-r [&>*]:border-border/50 [&>*:nth-child(2n)]:border-r-0 md:[&>*:nth-child(2n)]:border-r md:[&>*:nth-child(4n)]:border-r-0">
               {results.map((book) => {
-                // L'id backend est au format "/works/OL123W" — on extrait "OL123W"
                 const bookId = book.id.split("/").pop() ?? book.id;
                 return (
-                  <div key={book.id} className="flex flex-col px-8 py-12">
+                  <div key={book.id} className="flex flex-col px-4 py-6 sm:px-8 sm:py-12">
                     <BookCover
                       src={book.coverThumbnail}
                       alt={`Couverture de ${book.title}`}
@@ -106,14 +102,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                       <p className="text-xs text-muted-foreground mt-1">{book.author ?? "Auteur inconnu"}</p>
                       <div className="mt-auto pt-4 flex flex-col gap-2">
                         {book.category && (
-                          <span className="text-xs border rounded px-2 py-0.5 w-fit tag-terracotta">
+                          <span className="text-base border rounded px-2 py-0.5 w-fit tag-terracotta">
                             {book.category}
                           </span>
                         )}
-                        <div className="flex gap-2 w-full">
+                        <div className="flex flex-col lg:flex-row gap-2 w-full">
                           <Link
                             href={`/book/${bookId}`}
-                            className="flex items-center justify-center rounded-md bg-[#E5E7EB] py-1.5 text-xs font-medium hover:bg-[#D1D5DB] grow min-w-0"
+                            className="flex items-center justify-center rounded-md bg-[#E5E7EB] py-1.5 text-xs font-medium hover:bg-[#D1D5DB] active:bg-[#C4C9D0] w-full sm:grow"
                           >
                             Voir le détail
                           </Link>
@@ -134,9 +130,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               })}
             </div>
 
-            {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-6 mt-12 px-12">
+              <div className="flex items-center justify-center gap-6 mt-12 px-4 sm:px-12">
                 <Link
                   href={`/search?q=${encodeURIComponent(query)}&page=${Math.max(1, currentPage - 1)}`}
                   className="inline-flex items-center gap-2 border border-primary rounded px-4 h-8 text-xs font-medium hover:bg-primary/5"
@@ -167,7 +162,6 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </>
         )}
 
-        {/* État : requête sans résultats */}
         {hasQuery && allResults.length === 0 && (
           <div className="text-center py-20">
             <p className="text-lg font-medium mb-2">
