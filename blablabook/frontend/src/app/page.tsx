@@ -28,41 +28,41 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="max-w-[88%] mx-auto px-12 py-10 flex flex-col md:flex-row items-center gap-12">
-        <div className="flex-1">
-          <span className="text-xs font-semibold rounded px-2 py-1 mb-4 inline-flex items-center gap-1.5 tag-terracotta-filled" style={{ color: "#E8927A" }}>
+      <section className="relative max-w-[88%] mx-auto px-6 sm:px-12 py-10 flex flex-col sm:flex-row items-center gap-12 overflow-hidden">
+        <div className="flex-1 relative z-10 bg-white/80 sm:bg-transparent p-6 rounded-xl mt-6 sm:mt-0">
+          <span className="hidden sm:inline-flex text-xs font-semibold rounded px-2 py-1 mb-4 items-center gap-1.5 tag-terracotta-filled" style={{ color: "#E8927A" }}>
             <Bookmark size={11} aria-hidden="true" />
             Votre bibliothèque personnelle
           </span>
-          <h1 className="text-5xl font-normal mt-3 mb-4">BlaBlaBook</h1>
-          <p className="max-w-md mb-8 font-medium normal-case font-lora leading-tight text-justify text-[0.9375rem]">
+          <h1 className="text-5xl font-normal mt-3 mb-4 text-shadow-xs text-center sm:text-left">BlaBlaBook</h1>
+          <p className="max-w-md mb-8 mt-8 normal-case font-inter leading-tight text-center sm:text-justify text-[0.9375rem]">
             Une façon simple et agréable de ne plus jamais perdre le fil de vos lectures.
             <br />
             Notre application vous permet d&apos;organiser facilement votre
             bibliothèque personnelle : ajoutez vos ouvrages, suivez vos lectures
             et retrouvez en un instant les livres que vous aimez.
           </p>
-          <div className="flex gap-3">
+          <div className="flex gap-3 justify-center sm:justify-start">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center rounded-md bg-muted border border-[#9CA3AF] px-4 h-9 text-sm font-semibold text-foreground hover:bg-muted/70"
+              className="inline-flex items-center justify-center rounded-md bg-muted border border-[#9CA3AF] p-2 h-auto text-sm font-semibold text-foreground hover:bg-muted/70 text-center"
             >
               Se connecter
             </Link>
             <Link
               href="/register"
-              className="inline-flex items-center justify-center rounded-md bg-[#E2725B] hover:bg-[#c85e48] px-4 h-9 text-sm font-semibold text-white"
+              className="inline-flex items-center justify-center rounded-md bg-[#E2725B] hover:bg-[#c85e48] p-2 h-auto text-sm font-semibold text-white text-center"
             >
               Créer un compte
             </Link>
           </div>
         </div>
-        <div className="flex-1 relative self-stretch min-h-[220px] rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
+        <div className="mt-6 sm:mt-0 absolute inset-0 sm:relative sm:flex-1 self-stretch min-h-[220px] rounded-xl overflow-hidden sm:shadow-[0_4px_20px_rgba(0,0,0,0.25)] z-0">
           <Image
             src="/book-pile.jpg"
             alt="Pile de livres"
             fill
-            className="object-cover"
+            className="object-cover sm:opacity-100"
           />
         </div>
       </section>
@@ -126,12 +126,12 @@ export default async function HomePage() {
       </section>
 
       {/* CTA Recherche */}
-      <section className="max-w-[88%] mx-auto px-12 py-8">
-        <div className="bg-[#EEF2FF] border border-[#C7D2FE] rounded-xl p-12 flex flex-col items-center gap-6">
+      <section className="sm:max-w-[88%] mx-auto px-6 sm:px-12 py-8">
+        <div className="bg-[#EEF2FF] border border-[#C7D2FE] rounded-xl p-12 flex flex-col items-center gap-6 w-full">
           <h2 className="text-2xl font-bold text-center">
             Vous cherchez un livre en particulier ?
           </h2>
-          <form action="/search" className="flex gap-2 w-full max-w-md">
+          <form action="/search" className="flex flex-col sm:flex-row gap-2 w-full max-w-md">
             <label htmlFor="search" className="sr-only">
               Rechercher un livre ou un auteur
             </label>
@@ -140,17 +140,17 @@ export default async function HomePage() {
               name="q"
               type="text"
               placeholder="Rechercher un livre, un auteur,..."
-              className="flex-1 border border-border rounded-full px-4 h-10 text-sm outline-none focus:border-primary bg-white"
+              className="w-full sm:flex-1 border border-border rounded-full px-4 h-10 text-sm outline-none focus:border-primary bg-white"
             />
             <button
               type="submit"
-              className="h-10 rounded-full bg-[#E2725B] hover:bg-[#c85e48] text-white text-sm font-semibold px-8 shrink-0"
+              className="h-10 rounded-full bg-[#E2725B] hover:bg-[#c85e48] text-white text-sm font-semibold px-8 w-full sm:w-auto"
             >
               Rechercher
             </button>
           </form>
         </div>
-      </section>
-    </div>
+      </section >
+    </div >
   );
 }
