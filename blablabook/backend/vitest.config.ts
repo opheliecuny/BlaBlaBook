@@ -7,6 +7,7 @@ export default defineConfig({
     environment: "node",
     include: ["tests/**/*.{test,spec}.{ts,tsx}", "src/**/*.test.ts"],
     exclude: ["node_modules", "dist", "prisma/migrations"],
+    fileParallelism: false, // Désactive le parallélisme pour éviter les conflits BDD
     coverage: {
       provider: "v8",
       reporter: ["text", "lcov", "html"],
