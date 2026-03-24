@@ -27,3 +27,8 @@ export function createTestServer(): Express {
 
   return app;
 }
+
+/**
+ * Instance unique de l'application de test
+ */
+export const app = createTestServer();

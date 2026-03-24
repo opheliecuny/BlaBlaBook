@@ -7,8 +7,13 @@
     "strict": true,                  // Active le mode strict TypeScript
     "types": ["node"],               // Reconnaît les globals Node (process, __dirname, etc.)
     "skipLibCheck": true,            // Ignore les vérifications de type des dépendances
-    "outDir": "dist"                 // Dossier de sortie si tu compiles
+    "outDir": "dist",                // Dossier de sortie si tu compiles
+    "baseUrl": ".",                  // Base pour les path aliases
+    "paths": {                       // Path aliases pour imports
+      "@/*": ["src/*"],
+      "@tests/*": ["tests/*"]
+    }
   },
-  "include": ["src/**/*.ts", "@types/**/*.ts"],        // Tous tes fichiers TS dans src
+  "include": ["src/**/*.ts", "@types/**/*.ts", "tests/**/*.ts"],        // Tous tes fichiers TS
   "exclude": ["node_modules"]        // Exclut node_modules
 }
