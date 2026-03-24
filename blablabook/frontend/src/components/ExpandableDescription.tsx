@@ -1,0 +1,29 @@
+"use client";
+import { useState } from "react";
+
+interface Props {
+    description: string;
+}
+
+export default function ExpandableDescription({ description }: Props) {
+    const [expanded, setExpanded] = useState(false);
+
+    return (
+        <div className="flex flex-col gap-2">
+            <h2 className="text-base font-semibold">Description</h2>
+            <p className={`text-sm leading-relaxed [overflow-wrap:anywhere] ${expanded ? "" : "line-clamp-4 md:line-clamp-none"
+                }`}>
+                {description}
+            </p>
+            <button
+                onClick={() => setExpanded(!expanded)}
+                className="md:hidden mt-1 w-full flex items-center justify-center gap-2 border border-[#E2725B] rounded-lg py-2 text-sm text-muted-foreground bg-muted hover:bg-muted/80 transition-colors"
+            >
+                {expanded ? "Lire moins" : "Lire plus"}
+                <span className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}>
+                    ↓
+                </span>
+            </button>
+        </div>
+    );
+};

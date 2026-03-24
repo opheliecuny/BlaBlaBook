@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AddToLibraryPanel from "@/components/AddToLibraryPanel";
 import BookCover from "@/components/BookCover";
+import ExpandableDescription from "@/components/ExpandableDescription";
 
 interface BookPageProps {
   params: Promise<{ id: string }>;
@@ -66,18 +67,28 @@ export default async function BookPage({ params }: BookPageProps) {
       : book.description;
   const coverUrl = book.coverThumbnail ?? null;
 
-  return (
-    <div className="max-w-[88%] mx-auto px-12 py-10">
-      <div className="flex flex-col md:flex-row gap-12">
+return (
+  <div className="max-w-[88%] mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-10">
+    <div className="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">
 
-        {/* Colonne gauche : couverture + actions */}
-        <div className="w-48 shrink-0 flex flex-col gap-5">
-          <BookCover
-            src={coverUrl}
-            alt={`Couverture de ${book.title}`}
-            className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
-          />
+      {/* Colonne gauche : couverture + actions */}
+      <div className="flex flex-col items-center md:items-start gap-5 md:shrink-0 md:w-56 lg:w-64">
 
+        {/* Tag genre au dessus de la cover — mobile uniquement */}
+        {genre && (
+          <div className="self-start md:hidden">
+            <span className="text-xs font-medium rounded-md px-3 py-1 bg-[#E2725B] text-white uppercase tracking-wide">
+              {genre}
+            </span>
+          </div>
+        )}
+
+        <BookCover
+          src={coverUrl}
+          alt={`Couverture de ${book.title}`}
+          className="w-56 sm:w-64 md:w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
+        />
+        <div className="w-full">
           <AddToLibraryPanel
             openLibraryId={id}
             isbn={book.isbn ?? null}
@@ -88,48 +99,46 @@ export default async function BookPage({ params }: BookPageProps) {
             genre={genre}
           />
         </div>
-
-        {/* Colonne droite : infos livre */}
-        <div className="flex-1 flex flex-col gap-3">
-          {/* Tag genre */}
-          {genre && (
-            <div>
-              <span className="text-xs font-medium rounded-md px-3 py-1 bg-[#E2725B] text-white">
-                {genre}
-              </span>
-            </div>
-          )}
-
-          {/* Titre */}
-          <h1 className="text-3xl font-bold leading-snug">{book.title}</h1>
-
-          {/* Auteur — lien vers les livres de cet auteur */}
-          {authorName && (
-            <Link
-              href={`/search?q=${encodeURIComponent(authorName)}`}
-              className="text-base text-primary hover:underline w-fit"
-            >
-              {authorName}
-            </Link>
-          )}
-
-          {/* Métadonnées */}
-          {book.publishedYear && (
-            <p className="text-sm text-muted-foreground">
-              Publié en {book.publishedYear}
-            </p>
-          )}
-
-          {/* Description */}
-          {description && (
-            <div className="flex flex-col gap-2 mt-2">
-              <h2 className="text-base font-semibold">Description</h2>
-              <p className="text-sm leading-relaxed text-justify">{description}</p>
-            </div>
-          )}
-        </div>
-
       </div>
+
+      {/* Colonne droite : infos livre */}
+      <div className="flex-1 min-w-0 flex flex-col gap-3">
+
+        {/* Tag genre — desktop uniquement */}
+        {genre && (
+          <div className="hidden md:block">
+            <span className="text-xs font-medium rounded-md px-3 py-1 bg-[#E2725B] text-white uppercase tracking-wide">
+              {genre}
+            </span>
+          </div>
+        )}
+
+        <h1 className="text-2xl md:text-3xl font-bold leading-snug">{book.title}</h1>
+
+        {authorName && (
+          <Link
+            href={`/search?q=${encodeURIComponent(authorName)}`}
+            className="text-base text-primary hover:underline w-fit"
+          >
+            {authorName}
+          </Link>
+        )}
+
+        {book.publishedYear && (
+          <p className="text-sm text-muted-foreground">
+            Publié en {book.publishedYear}
+          </p>
+        )}
+
+        {description && (
+          <div className="mt-2">
+            <hr className="border-t border-border mb-3" />
+            <ExpandableDescription description={description} />
+          </div>
+        )}
+      </div>
+
     </div>
-  );
-}
+  </div>
+);
+};
