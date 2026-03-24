@@ -66,6 +66,7 @@ export default function RegisterPage() {
     }
   }
 
+
   return (
     <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center px-4">
       <div className="border-border w-full max-w-md rounded-xl border bg-white p-10 shadow-xl">

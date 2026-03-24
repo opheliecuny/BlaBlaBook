@@ -1,12 +1,16 @@
 import { prisma } from "../utils/prismaClient";
 import { ReadingStatus } from "../../generated/prisma/enums";
+import argon2 from "argon2";
 
 async function main() {
+
+  const hashedPassword = await argon2.hash("password123");
+
   // USERS
   const alice = await prisma.user.create({
     data: {
       email: 'alice@example.com',
-      password: 'hashedpassword1',
+      password: hashedPassword,
       username: 'alice',
     },
   });
@@ -14,7 +18,7 @@ async function main() {
   const bob = await prisma.user.create({
     data: {
       email: 'bob@example.com',
-      password: 'hashedpassword2',
+      password: hashedPassword,
       username: 'bob',
     },
   });

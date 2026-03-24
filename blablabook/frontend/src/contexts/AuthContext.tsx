@@ -7,6 +7,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
+import { API_URL } from "@/lib/api";
 import type { AuthUser } from "@/types/auth";
 
 interface AuthContextType {
@@ -24,41 +25,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Charger les données utilisateur depuis localStorage au montage
   // Le token est maintenant dans un cookie httpOnly et n'est plus stocké ici
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-
-    // Vérifier que les données sont valides avant de les utiliser
-    try {
-      if (storedUser) {
-        // Si les données sont présentes, on les parse et on les met dans le state
-        const parsedUser = JSON.parse(storedUser);
-        setUser(parsedUser);
+    async function checkSession() {
+      try {
+        const res = await fetch(`${API_URL}/auth/me`, {
+          credentials: "include", // envoie les cookies httpOnly
+        });
+        if (res.ok) {
+          const userData = await res.json();
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error("Erreur lors de la vérification de session :", error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      console.error("Erreur lors de la lecture du localStorage :", error);
-      // En cas d'erreur, on nettoie les données corrompues
-      localStorage.removeItem("user");
-    } finally {
-      // Quel que soit le résultat, on arrête le chargement
-      setIsLoading(false);
     }
+
+    checkSession();
   }, []);
 
   function login(userData: AuthUser) {
     setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
   }
 
   function logout() {
     setUser(null);
-    localStorage.removeItem("user");
   }
 
   function updateUser(userData: AuthUser) {
     setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
   }
 
   const value = {

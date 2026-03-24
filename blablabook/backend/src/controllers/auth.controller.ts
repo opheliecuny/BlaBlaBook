@@ -14,10 +14,10 @@ export async function registerUser(req: Request, res: Response) {
       .max(100, "password should have at most 100 caracters")
       .regex(/[a-z]/, "password should contain at least a lowercase caracter")
       .regex(/[A-Z]/, "password should contain at least a uppercase caracter"),
-    confirm: z.string(), 
+    confirm: z.string(),
     username: z.string().min(1)
   }).refine(data => data.password === data.confirm, {
-    message: "Passwords do not match", 
+    message: "Passwords do not match",
     path: ["confirm"]
   });
 
@@ -77,18 +77,33 @@ export async function loginUser(req: Request, res: Response) {
   setAccessTokenCookie(res, accessToken);
   setRefreshTokenCookie(res, refreshToken);
 
-  return res.status(200).json({ message: "Login successful" });
+  return res.status(200).json({
+    id: user.id,
+    email: user.email,
+    username: user.username
+  });
 }
 
 export async function logoutUser(req: Request, res: Response) {
-  const userId = req.user?.id; 
+  const userId = req.user?.id;
 
   if (userId) {
-    await prisma.refresh_token.deleteMany({ where: {userId: userId }}); 
+    await prisma.refresh_token.deleteMany({ where: { userId: userId } });
   }
 
   res.cookie("accessToken", "", { httpOnly: true, maxAge: 0 });
   res.cookie("refreshToken", "", { httpOnly: true, maxAge: 0 });
 
-  res.status(204).send({ message: "Successfully logged out"}); 
+  res.status(204).send({ message: "Successfully logged out" });
+}
+
+export async function getMe(req: Request, res: Response) {
+  const user = await prisma.user.findUnique({
+    where: { id: req.user!.id },
+    select: { id: true, email: true, username: true },
+  });
+
+  if (!user) return res.status(404).json({ message: "User not found" });
+
+  return res.status(200).json(user);
 }

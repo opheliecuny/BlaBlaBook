@@ -28,7 +28,6 @@ export async function logout(): Promise<void> {
   } finally {
     // Nettoyer le localStorage même si la requête échoue
     if (typeof window !== "undefined") {
-      localStorage.removeItem("user");
     }
   }
 }

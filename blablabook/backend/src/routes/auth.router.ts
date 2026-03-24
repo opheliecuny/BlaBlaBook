@@ -5,6 +5,7 @@ import { asyncWrapper } from "../errors/asyncWrapper";
 
 export const router = Router(); 
 
+router.get("/auth/me", isAuthenticated, asyncWrapper(authController.getMe)); 
 router.post("/auth/register", asyncWrapper(authController.registerUser)); 
 router.post("/auth/login", asyncWrapper(authController.loginUser)); 
 router.post("/auth/logout", isAuthenticated, asyncWrapper(authController.logoutUser)); 
