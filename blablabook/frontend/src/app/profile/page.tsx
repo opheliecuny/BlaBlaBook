@@ -15,7 +15,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogDescription,
-  AlertDialogTrigger,
+  AlertDialogTrigger
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 
@@ -31,18 +31,18 @@ export default function ProfilePage() {
   const router = useRouter();
 
   useEffect(() => {
-  async function fetchProfile() {
-    const data = await getProfile();
-    const formattedDate = new Date(data.createdAt).toLocaleDateString("fr-FR", {
-      year: "numeric",
-      month: "long"
-    });
-    setUsername(data.username);
-    setEmail(data.email);
-    setDateJoined(formattedDate.toUpperCase());
-  }
-  fetchProfile();
-}, []);
+    async function fetchProfile() {
+      const data = await getProfile();
+      const formattedDate = new Date(data.createdAt).toLocaleDateString("fr-FR", {
+        year: "numeric",
+        month: "long"
+      });
+      setUsername(data.username);
+      setEmail(data.email);
+      setDateJoined(formattedDate.toUpperCase());
+    }
+    fetchProfile();
+  }, []);
 
   // Handlers
   async function handleProfileUpdate(e: React.SubmitEvent<HTMLFormElement>) {
@@ -116,8 +116,7 @@ export default function ProfilePage() {
             {/* Badge membre */}
             <div className="bg-secondary mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium">
               <User className="h-4 w-4" />
-              {/* TODO : Afficher la date d'inscription */}
-              MEMBRE DEPUIS {dateJoined}
+              <p className="text-xs">MEMBRE DEPUIS {dateJoined}</p>
             </div>
           </div>
         </div>
@@ -217,30 +216,29 @@ export default function ProfilePage() {
         </div>
 
         {/* Zone de danger */}
-        <div className="border-destructive/20 bg-destructive/5 flex items-center justify-between rounded-2xl border-2 p-8">
+        <div className="flex flex-col gap-6 sm:flex-row items-center justify-between rounded-2xl border-2 border-[var(--accent-alt)] bg-[var(--accent-alt)]/10 p-8">
           {/* Partie gauche - Icône et texte */}
           <div className="flex items-start space-x-4">
             {/* Icône d'alerte */}
-            <div className="bg-destructive text-destructive-foreground mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
-              <AlertTriangle className="h-6 w-6 text-white" />
+            <div className="bg-[var(--accent-alt)] text-white mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+              <AlertTriangle className="h-6 w-6" />
             </div>
 
             <div>
-              <h2 className="text-xl font-bold">Zone de danger</h2>
-              <p className="text-muted-foreground mt-1 text-lg font-medium">
+              <h2 className="text-xl font-bold text-[#A12C14]">Zone de danger</h2>
+              <p className="mt-1 text-lg font-medium text-[#A12C14]">
                 Supprimer mon compte
               </p>
-              <p className="text-muted-foreground mt-1 text-sm">
-                Cette action est irréversible. Toutes vos données seront
-                effacées.
+              <p className="mt-1 text-sm text-[var(--accent-alt)] font-medium">
+                Cette action est irréversible. Toutes vos données seront effacées.
               </p>
             </div>
           </div>
 
           {/* Partie droite : Bouton de suppression */}
           <AlertDialog>
-            <AlertDialogTrigger className="ml-4 shrink-0">
-                Supprimer définitivement
+            <AlertDialogTrigger className="ml-4 shrink-0 border-[var(--accent-alt)] bg-[var(--accent-alt)] text-white p-2 rounded-md">
+              Supprimer définitivement
             </AlertDialogTrigger>
 
             <AlertDialogContent>
