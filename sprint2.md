@@ -1,9 +1,9 @@
 # Sprint 2 — Plan de finition BlaBlaBook
 
 > **Date de rédaction** : 2026-03-22
-> **Dernière mise à jour** : 2026-03-23
+> **Dernière mise à jour** : 2026-03-24
 > **Phase** : Sprint 2 — Intégration, Tests, CI/CD, Déploiement
-> **Statut global** : MVP fonctionnel à ~85%, tests backend à 60% (45 tests), CI/CD absent, déploiement non configuré
+> **Statut global** : MVP fonctionnel à ~85%, tests backend ✅ COMPLÉTÉS (73 tests, 91% coverage), CI/CD ✅ CONFIGURÉ, déploiement non configuré
 
 ---
 
@@ -28,22 +28,34 @@
 
 | Priorité  | Tâche                                                                                           | Fichier(s) concerné(s)                                 |
 | --------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| 🔴 Haute   | **Page profil** : câbler l'appel API `PATCH /user/profile` et `GET /user/profile`              | `frontend/src/app/profile/page.tsx` + `userService.ts` |
+| 🔴 Haute   | **Page profil** : câbler l'appel API `PATCH /user/profile` et `GET /user/profile`               | `frontend/src/app/profile/page.tsx` + `userService.ts` |
 | 🔴 Haute   | **Notation (1–5 étoiles)** : UI manquante sur `/library` + `PATCH /library/:id` à enrichir      | `library/page.tsx`, `library.controller.ts`            |
 | 🔴 Haute   | **Avis personnel** : UI manquante sur `/library`                                                | `library/page.tsx`                                     |
 | 🟠 Moyenne | **Refresh token** : Logique de renouvellement absente (token stocké en BDD mais jamais utilisé) | `auth.controller.ts`, `auth.router.ts`                 |
 | 🟡 Basse   | **Confirmation de suppression livre** : Dialog de confirmation manquant                         | `library/page.tsx`                                     |
 | 🟡 Basse   | **Feedback visuel** : Remplacer `alert()` par des toast notifications                           | Toutes les pages avec formulaires                      |
 
-#### Complété aujourd'hui (23/03/2026) ✅
+#### Complété cette semaine ✅
 
-| Tâche | Fichier(s) concerné(s) |
-| ----- | ---------------------- |
-| ✅ **Suppression de compte** : Route backend `DELETE /user` implémentée | `user.controller.ts`, `user.router.ts` |
-| ✅ **Récupération profil** : Route backend `GET /user/profile` ajoutée | `user.controller.ts`, `user.router.ts` |
-| ✅ **Tests backend** : 45 tests Vitest (33 unitaires + 12 intégration) | Voir section 2.3 |
-| ✅ **Configuration Prisma** : `binaryTargets = ["native"]` ajouté | `prisma/schema.prisma` |
-| ✅ **Frontend** : Résolution conflit types `UpdateProfileResponse` | `frontend/src/types/` |
+**23/03/2026 :**
+
+- ✅ **Suppression de compte** : Route backend `DELETE /user` implémentée
+- ✅ **Récupération profil** : Route backend `GET /user/profile` ajoutée
+- ✅ **Configuration Prisma** : `binaryTargets = ["native"]` ajouté
+- ✅ **Frontend** : Résolution conflit types `UpdateProfileResponse`
+
+**24/03/2026 :**
+
+- ✅ **Tests backend COMPLÉTÉS** : 73 tests (33 unitaires + 40 intégration) - 100% succès
+- ✅ **Couverture optimale** : 91% statements, 87% branches, 100% functions, 93% lines
+- ✅ **Configuration Vitest** : fileParallelism: false, seuils adaptés, path aliases
+- ✅ **Architecture tests** : helpers (testServer, dbHelpers), isolation BDD
+- ✅ **asyncWrapper unifié** : tous controllers (auth, library, user)
+- ✅ **Gestion erreurs standardisée** : Zod → VALIDATION_ERROR, Prisma → NOT_FOUND
+- ✅ **CI/CD GitHub Actions** : 5 jobs (lint-backend, test-backend, build-backend, lint-frontend, build-frontend)
+- ✅ **PostgreSQL service** : Container PostgreSQL 17 pour tests d'intégration dans CI
+- ✅ **Codecov integration** : Upload automatique des rapports de couverture (optionnel)
+- ✅ **Documentation** : Mise à jour complète des guides CI/CD et tests Vitest
 
 #### Fonctionnel non-MVP (à exclure du sprint actuel)
 
@@ -129,96 +141,57 @@ export default defineConfig({
 - ✅ transformError (Zod, Prisma P2002/P2025, erreurs inconnues) — 7 tests
 - ✅ asyncWrapper capture erreurs async et appelle next() — 4 tests
 
-#### Tests d'intégration — 🚧 EN COURS (12/X tests)
+#### Tests d'intégration — ✅ COMPLÉTÉS (40 tests)
 
-**Prérequis** : ✅ `.env.test` créé, base `testdb` configurée, migrations appliquées
+**Prérequis** : ✅ `.env.test` créé, base `blablabook_test` configurée, migrations appliquées
 
 **✅ `tests/integration/api/auth.test.ts`** — 12 tests
 
-- ✅ POST /auth/register
-  - ✅ 201 avec email/password/username valides + cookies définis
-  - ✅ 409 si email déjà utilisé
-  - ✅ 400 si password trop court (< 8 chars)
-  - ✅ 400 si password sans majuscule
-  - ✅ 400 si passwords ne correspondent pas
-  - ✅ 400 si email invalide
+- ✅ POST /auth/register (6 tests) : success, email existant, validations password, confirm, email
+- ✅ POST /auth/login (4 tests) : success, user inexistant, mauvais password, email manquant
+- ✅ POST /auth/logout (2 tests) : success + suppression tokens BDD, 401 si non auth
 
-- ✅ POST /auth/login
-  - ✅ 200 avec cookie accessToken + refreshToken
-  - ✅ 401 si utilisateur n'existe pas
-  - ✅ 401 si mauvais mot de passe
-  - ✅ 400 si email manquant
+**✅ `tests/integration/api/library.test.ts`** — 16 tests
 
-- ✅ POST /auth/logout
-  - ✅ 204 et suppression cookies + refresh tokens BDD
-  - ✅ 401 si non authentifié
+- ✅ GET /library (3 tests) : liste vide, livres utilisateur, 401 sans token
+- ✅ POST /library (7 tests) : ajout success, statut défaut TO_READ, validations (titre, isbn), doublon 409, 401
+- ✅ PATCH /library/:id (4 tests) : update statut, validation statut invalide, 404 livre inexistant, 401
+- ✅ DELETE /library/:id (3 tests) : suppression, 404 inexistant, 401
 
-**❌ `tests/integration/api/library.test.ts`** — À créer
+**✅ `tests/integration/api/user.test.ts`** — 12 tests
 
-```ts
-// GET /library — auth requise
-// - ✅ 200 avec liste vide pour nouvel utilisateur
-// - ❌ 401 sans token
+- ✅ GET /user/profile (2 tests) : récupération profil, 401 sans token
+- ✅ PATCH /user/profile (7 tests) : update username/email/password (hashé), email déjà utilisé, validations password, 401
+- ✅ DELETE /user (3 tests) : suppression compte + refresh tokens, cascade library_items, 401
 
-// POST /library
-// - ✅ 201 avec données livre valides
-// - ❌ 400 si titre manquant
-// - ❌ 409 si livre déjà dans la bibliothèque
-
-// PATCH /library/:id
-// - ✅ 200 avec statut valid (TO_READ, READING, READ)
-// - ❌ 400 si statut invalide
-// - ❌ 403 si l'item n'appartient pas à l'utilisateur
-
-// DELETE /library/:id
-// - ✅ 204 si item supprimé
-// - ❌ 404 si item inconnu
-```
-
-**❌ `tests/integration/api/user.test.ts`** — À créer
-
-```ts
-// GET /user/profile
-// - ✅ 200 avec données profil
-// - ❌ 401 sans token
-
-// PATCH /user/profile
-// - ✅ 200 avec username modifié
-// - ❌ 409 si nouvel email déjà pris
-// - ❌ 401 sans token
-
-// DELETE /user
-// - ✅ 204 avec suppression compte + refresh tokens
-// - ❌ 401 sans token
-```
-
-#### Organisation des fichiers de test — ✅ CRÉÉ
+#### Organisation des fichiers de test — ✅ COMPLÉTÉE
 
 ```plaintext
 backend/
 └── tests/
+    ├── setup.ts                        # ✅ Configuration globale (.env.test)
     ├── helpers/                        # ✅ CRÉÉ
-    │   ├── testServer.ts               # ✅ Serveur Express de test
+    │   ├── testServer.ts               # ✅ Serveur Express de test + export app
     │   └── dbHelpers.ts                # ✅ cleanDatabase, createTestUser
-    ├── unit/                           # ✅ CRÉÉ
+    ├── unit/                           # ✅ CRÉÉ - 33 tests
     │   ├── utils/
     │   │   └── token.test.ts           # ✅ 8 tests
     │   ├── middlewares/
     │   │   └── auth.middleware.test.ts # ✅ 5 tests
     │   └── errors/
     │       └── errors.test.ts          # ✅ 20 tests
-    ├── integration/                    # ✅ CRÉÉ
+    ├── integration/                    # ✅ CRÉÉ - 40 tests
     │   └── api/
     │       ├── auth.test.ts            # ✅ 12 tests
-    │       ├── library.test.ts         # ❌ À créer
-    │       └── user.test.ts            # ❌ À créer
+    │       ├── library.test.ts         # ✅ 16 tests
+    │       └── user.test.ts            # ✅ 12 tests
     ├── auth.http                       # Tests manuels (existants)
     ├── book.http
     ├── library.http
     └── user.http
 ```
 
-**📊 Couverture actuelle : 45 tests (33 unitaires + 12 intégration) — ~40-50% du code**
+**📊 Couverture finale : 73 tests (33 unitaires + 40 intégration) — 91% statements, 87% branches**
 
 ### 2.4 Installation — Frontend (optionnel pour le sprint)
 
@@ -486,25 +459,28 @@ jobs:
 - [x] **Route GET /user/profile** : ✅ Ajouter la route de récupération du profil (fait 23/03)
 - [ ] **Notes et avis** : Ajouter l'UI étoiles + zone de texte dans `/library`, enrichir `PATCH /library/:id`
 
-### 🟠 Priorité 2 — Tests backend avec Vitest (2–3 jours) — 🚧 EN COURS (60% complété)
+### ✅ Priorité 2 — Tests backend avec Vitest — ✅ COMPLÉTÉ (24/03/2026)
 
-- [x] ✅ Installer Vitest + supertest dans le backend
-- [x] ✅ Créer `vitest.config.ts`
-- [x] ✅ Créer `.env.test` et configurer base de données de test
+- [x] ✅ Installer Vitest + supertest + @vitest/coverage-v8 + @vitest/ui
+- [x] ✅ Créer `vitest.config.ts` (fileParallelism: false, seuils adaptés, path aliases)
+- [x] ✅ Créer `.env.test` et configurer base de données de test (testdb)
+- [x] ✅ Créer `tests/setup.ts` (injection .env.test)
 - [x] ✅ Créer `tests/helpers/testServer.ts` et `dbHelpers.ts`
-- [x] ✅ Écrire `tests/integration/api/auth.test.ts` (register, login, logout) — 12 tests
-- [ ] ❌ Écrire `tests/integration/api/library.test.ts` (CRUD bibliothèque)
-- [ ] ❌ Écrire `tests/integration/api/user.test.ts` (profile, delete)
+- [x] ✅ Écrire `tests/integration/api/auth.test.ts` — 12 tests
+- [x] ✅ Écrire `tests/integration/api/library.test.ts` — 16 tests
+- [x] ✅ Écrire `tests/integration/api/user.test.ts` — 12 tests
 - [x] ✅ Écrire `tests/unit/utils/token.test.ts` — 8 tests
 - [x] ✅ Écrire `tests/unit/middlewares/auth.middleware.test.ts` — 5 tests
 - [x] ✅ Écrire `tests/unit/errors/errors.test.ts` — 20 tests
-- [ ] 🚧 Atteindre ~70% de couverture sur `src/` (actuellement ~40-50%)
+- [x] ✅ Configurer tsconfig.json (path aliases @, @tests)
+- [x] ✅ Unifier asyncWrapper sur tous les controllers
+- [x] ✅ Atteindre 91% coverage (dépasse largement l'objectif 70%)
 
-### 🟠 Priorité 3 — GitHub Actions CI (0,5 jour)
+### ✅ Priorité 3 — GitHub Actions CI — ✅ COMPLÉTÉ (24/03/2026)
 
-- [ ] Créer `.github/workflows/ci.yml` (lint + tests + build)
-- [ ] Configurer la protection de branche `main` sur GitHub
-- [ ] Vérifier que les checks CI s'affichent sur les PRs
+- [x] ✅ Créer `.github/workflows/ci.yml` (5 jobs: lint-backend, test-backend, build-backend, lint-frontend, build-frontend)
+- [x] ⚠️ Configurer la protection de branche `main` sur GitHub — **NON APPLICABLE** (fonctionnalité désactivée par l’organisation école, nécessite permissions admin)
+- [x] ⏸️ Vérifier que les checks CI s’affichent sur les PRs (à tester lors de la prochaine PR)
 
 ### 🟡 Priorité 4 — Déploiement (1 jour)
 
