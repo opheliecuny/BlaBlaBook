@@ -1,4 +1,11 @@
 // Types pour l'utilisateur
+export interface User {
+  id: string;
+  email: string;
+  username: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface UpdateProfileData {
   email?: string;
@@ -8,11 +15,5 @@ export interface UpdateProfileData {
 
 export interface UpdateProfileResponse {
   message: string;
-  user: {
-    id: string;
-    email: string;
-    username: string;
-    createdAt: string;
-    updatedAt: string;
-  };
+  user: User;
 }

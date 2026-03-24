@@ -7,21 +7,21 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import type { User } from "@/types/auth";
+import type { AuthUser } from "@/types/auth";
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (user: User) => void;
+  login: (user: AuthUser) => void;
   logout: () => void;
-  updateUser: (user: User) => void;
+  updateUser: (user: AuthUser) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Charger les données utilisateur depuis localStorage au montage
@@ -46,7 +46,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  function login(userData: User) {
+  function login(userData: AuthUser) {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
   }
@@ -56,7 +56,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.removeItem("user");
   }
 
-  function updateUser(userData: User) {
+  function updateUser(userData: AuthUser) {
     setUser(userData);
     localStorage.setItem("user", JSON.stringify(userData));
   }

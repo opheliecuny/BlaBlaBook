@@ -1,44 +1,100 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { User, Shield, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { deleteProfile, getProfile, updateProfile } from "@/services/userService";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   // Etat des formulaires
-  const [username, setUsername] = useState("John Doe");
-  const [email, setEmail] = useState("john.doe@email.com");
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [dateJoined, setDateJoined] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const router = useRouter();
+
+  useEffect(() => {
+  async function fetchProfile() {
+    const data = await getProfile();
+    const formattedDate = new Date(data.createdAt).toLocaleDateString("fr-FR", {
+      year: "numeric",
+      month: "long"
+    });
+    setUsername(data.username);
+    setEmail(data.email);
+    setDateJoined(formattedDate.toUpperCase());
+  }
+  fetchProfile();
+}, []);
+
   // Handlers
-  function handleProfileUpdate(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
-    console.log("Profile updated:", { username, email });
-    // TODO: API call
-  }
+  async function handleProfileUpdate(e: React.SubmitEvent<HTMLFormElement>) {
+    try {
+      e.preventDefault();
+      // TODO : vérifier court-circuitage
+      await updateProfile({ username, email });
 
-  function handlePasswordUpdate(e: React.SubmitEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      alert("Les mots de passe ne correspondent pas");
-      return;
+      toast.success("Informations personnelles mises à jour avec succès !", {
+        position: "top-center"
+      });
+    } catch (error) {
+      toast.error("Une erreur est survenue lors de la mise à jour du profil.", {
+        position: "top-center",
+        description: error instanceof Error ? error.message : "Une erreur réseau est survenue"
+      });
     }
-    console.log("Password updated");
-    // TODO: API call
   }
 
-  function handleAccountDelete() {
-    if (
-      window.confirm(
-        "Êtes-vous sûr de vouloir supprimer définitivement votre compte ? Cette action est irréversible.",
-      )
-    ) {
-      console.log("Account deleted");
-      // TODO: API call
+  async function handlePasswordUpdate(e: React.SubmitEvent<HTMLFormElement>) {
+    try {
+      e.preventDefault();
+
+      if (newPassword !== confirmPassword) {
+        toast.error("Le nouveau mot de passe et sa confirmation ne correspondent pas.", {
+          position: "top-center"
+        });
+        return;
+      }
+      // TODO : mettre en place une validation côté client
+      await updateProfile({ password: newPassword });
+      toast.success("Mot de passe mis à jour avec succès !", {
+        position: "top-center"
+      });
+    } catch (error) {
+      toast.error("Une erreur est survenue lors de la mise à jour du mot de passe.", {
+        position: "top-center"
+      });
+    }
+  }
+
+  async function handleAccountDelete() {
+    try {
+      await deleteProfile();
+      toast.success("Votre compte a été supprimé avec succès.", {
+        position: "top-center"
+      });
+      router.replace("/");
+    } catch (error) {
+      toast.error("Une erreur est survenue lors de la suppression du compte.", {
+        position: "top-center"
+      });
     }
   }
 
@@ -60,7 +116,8 @@ export default function ProfilePage() {
             {/* Badge membre */}
             <div className="bg-secondary mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium">
               <User className="h-4 w-4" />
-              MEMBRE DEPUIS JANVIER 2023
+              {/* TODO : Afficher la date d'inscription */}
+              MEMBRE DEPUIS {dateJoined}
             </div>
           </div>
         </div>
@@ -181,13 +238,30 @@ export default function ProfilePage() {
           </div>
 
           {/* Partie droite : Bouton de suppression */}
-          <Button
-            variant="destructive"
-            onClick={handleAccountDelete}
-            className="ml-4 shrink-0"
-          >
-            Supprimer définitivement
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger className="ml-4 shrink-0">
+                Supprimer définitivement
+            </AlertDialogTrigger>
+
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  Supprimer votre compte ?
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  Cette action est irréversible. Toutes vos données seront définitivement supprimées.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+
+              <div className="flex justify-end gap-2">
+                <AlertDialogCancel>Annuler</AlertDialogCancel>
+
+                <AlertDialogAction onClick={handleAccountDelete}>
+                  Supprimer
+                </AlertDialogAction>
+              </div>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </div>

@@ -1,6 +1,6 @@
 // Types pour l'authentification
 
-export interface User {
+export interface AuthUser {
   id: string;
   email: string;
   username: string;
