@@ -5,6 +5,7 @@ import { Menu } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
@@ -12,10 +13,12 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { logout as logoutService } from "@/services/authService";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function Navbar() {
   const { isAuthenticated, logout } = useAuth();
   const router = useRouter();
+  const [open, setOpen] = useState(false);
 
   async function handleLogout() {
     await logoutService();
@@ -67,30 +70,30 @@ export default function Navbar() {
 
         {/* Mobile menu */}
         <div className="ml-auto sm:hidden">
-          <Sheet>
+          <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger aria-label="Ouvrir le menu">
                 <Menu className="h-6 w-6" />
             </SheetTrigger>
 
             <SheetContent side="right" className="w-64 p-6">
               <nav className="flex flex-col gap-4 mt-6">
-                <Link className="text-center" href="/">Accueil</Link>
-                <Link className="text-center" href="/search">Rechercher</Link>
+                <Link className="text-center" href="/"  onClick={() => setOpen(false)}>Accueil</Link>               
+                <Link className="text-center" href="/search"  onClick={() => setOpen(false)}>Rechercher</Link>
 
                 {isAuthenticated ? (
                   <>
-                    <Link className="text-center" href="/library">Ma bibliothèque</Link>
-                    <Link className="text-center" href="/profile">Compte</Link>
-                    <Button className="text-center" onClick={handleLogout}>
+                    <Link className="text-center" href="/library" onClick={() => setOpen(false)}>Ma bibliothèque</Link>
+                    <Link className="text-center" href="/profile" onClick={() => setOpen(false)}>Compte</Link>
+                    <Button className="text-center" onClick={() => { handleLogout(); setOpen(false); }}>
                       Déconnexion
                     </Button>
                   </>
                 ) : (
                   <>
-                    <Link className="text-center" href="/login">
+                    <Link className="text-center" href="/login" onClick={() => setOpen(false)}>
                       Connexion
                     </Link>
-                    <Link className="text-center" href="/register">
+                    <Link className="text-center" href="/register" onClick={() => setOpen(false)}>
                       Inscription
                     </Link>
                   </>
