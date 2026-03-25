@@ -9,15 +9,15 @@ export const metadata: Metadata = {
 export default function LegalPage() {
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12">
+      <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12">
         {/* Header */}
         <header className="mb-8 border-b border-gray-100 pb-8">
           <h1 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 uppercase">
             Mentions Légales
           </h1>
-          <p className="text-sm text-gray-500 italic">
+          <time dateTime="2026-03-24" className="text-sm text-gray-500 italic">
             Dernière mise à jour : 24 mars 2026
-          </p>
+          </time>
         </header>
 
         {/* Content */}
@@ -74,7 +74,7 @@ export default function LegalPage() {
               Pour toute question, vous pouvez nous contacter à l’adresse
               suivante :
             </p>
-            <div className="mt-4 inline-block rounded-md border border-gray-200 bg-gray-50 p-4">
+            <address className="mt-4 inline-block rounded-md border border-gray-200 bg-gray-50 p-4">
               Email :{" "}
               <a
                 href="mailto:contact@blablabook.fr"
@@ -82,35 +82,40 @@ export default function LegalPage() {
               >
                 contact@blablabook.fr
               </a>
-            </div>
+            </address>
           </section>
         </div>
 
         {/* Footer Links */}
-        <footer className="mt-12 flex items-center justify-between border-t border-gray-100 pt-8">
+        <footer aria-label="Liens légaux" className="mt-12 flex items-center justify-between border-t border-gray-100 pt-8">
           <Link
             href="/"
             className="text-sm font-medium text-indigo-600 hover:underline"
+            aria-label="Retour à la page d'accueil"
           >
             ← Retour à l&apos;accueil
           </Link>
           <div className="flex items-center space-x-4">
             <Link
               href="/privacy"
-              className="text-xs text-gray-400 hover:text-gray-600"
+              className="text-xs text-gray-600 hover:text-gray-700"
+              aria-label="Voir la politique de confidentialité"
             >
               Politique de confidentialité
             </Link>
-            <div className="text-xs text-gray-600">|</div>
+            <div className="text-xs text-gray-600" aria-hidden="true">
+              |
+            </div>
             <Link
               href="/cgu"
-              className="text-xs text-gray-400 hover:text-gray-600"
+              className="text-xs text-gray-600 hover:text-gray-700"
+              aria-label="Voir les conditions générales d'utilisation"
             >
               CGU
             </Link>
           </div>
         </footer>
-      </div>
+      </article>
     </div>
   );
 }
