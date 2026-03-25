@@ -26,4 +26,11 @@ export interface BookSearchResult {
   publishedYear: number | null;
   coverThumbnail: string | null;
   category: string | null;
+  isbn?: string | null;
+}
+
+export interface BookSearchResponse {
+  results: BookSearchResult[];
+  total: number;
+  page: number;
 }

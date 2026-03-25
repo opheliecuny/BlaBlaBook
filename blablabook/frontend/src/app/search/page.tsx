@@ -16,21 +16,25 @@ interface BookResult {
   isbn: string | null;
 }
 
-async function fetchBooks(query: string): Promise<BookResult[]> {
+const ITEMS_PER_PAGE = 16;
+const MAX_PAGES = 50;
+
+async function fetchBooks(
+  query: string,
+  page: number
+): Promise<{ results: BookResult[]; total: number }> {
   try {
     const res = await fetch(
-      `${process.env.API_URL}/books/search?q=${encodeURIComponent(query)}`,
-      { cache: "no-store" }
+      `${process.env.API_URL}/books/search?q=${encodeURIComponent(query)}&page=${page}`,
+      { next: { revalidate: 60 } }
     );
-    if (!res.ok) return [];
+    if (!res.ok) return { results: [], total: 0 };
     const data = await res.json();
-    return data;
+    return { results: data.results ?? [], total: data.total ?? 0 };
   } catch {
-    return [];
+    return { results: [], total: 0 };
   }
 }
-
-const ITEMS_PER_PAGE = 8;
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const { q, page } = await searchParams;
@@ -39,12 +43,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
   const query = q?.trim() ?? "";
   const currentPage = Math.max(1, parseInt(page ?? "1", 10));
 
-  const allResults: BookResult[] = query ? await fetchBooks(query) : [];
-  const totalPages = Math.ceil(allResults.length / ITEMS_PER_PAGE);
-  const results = allResults.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
+  const { results, total } = query
+    ? await fetchBooks(query, currentPage)
+    : { results: [], total: 0 };
+
+  const totalPages = Math.min(MAX_PAGES, Math.ceil(total / ITEMS_PER_PAGE));
 
   return (
     <div className="py-10">
@@ -84,7 +87,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
               Résultats de recherche pour &quot;{query}&quot;
             </h1>
             <p className="text-sm text-muted-foreground mb-4 px-4 sm:px-12">
-              {allResults.length} résultat{allResults.length > 1 ? "s" : ""}
+              {total} résultat{total > 1 ? "s" : ""}
             </p>
 
             <div className="grid grid-cols-2 md:grid-cols-4 divide-y divide-border/50 [&>*]:border-r [&>*]:border-border/50 [&>*:nth-child(2n)]:border-r-0 md:[&>*:nth-child(2n)]:border-r md:[&>*:nth-child(4n)]:border-r-0">
@@ -162,7 +165,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </>
         )}
 
-        {hasQuery && allResults.length === 0 && (
+        {hasQuery && results.length === 0 && (
           <div className="text-center py-20">
             <p className="text-lg font-medium mb-2">
               Aucun résultat pour &quot;{query}&quot;

@@ -30,17 +30,18 @@ export async function getRandomBooks(req: Request, res: Response) {
 
 export async function searchBooks(req: Request, res: Response) {
   const query = req.query.q as string;
-  const limit = 15;
+  const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
+  const limit = 16;
 
   const result = await fetch(
-    `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=${limit}&fields=key,title,author_name,author_key,cover_i,first_publish_year,subject,isbn`,
+    `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}&fields=key,title,author_name,author_key,cover_i,first_publish_year,subject,isbn`,
     { headers: { "User-Agent": "MyAppName/1.0 (myemail@example.com)" } }
   );
 
   const data: OpenLibraryResponse = await result.json();
-  const { docs } = data;
+  const { docs, numFound } = data;
 
-  const selectedDatas = docs.map((doc) => ({
+  const results = docs.map((doc) => ({
     id: doc.key,
     title: doc.title,
     author: doc.author_name?.[0] ?? null,
@@ -53,7 +54,7 @@ export async function searchBooks(req: Request, res: Response) {
     isbn: doc.isbn?.[0] ?? null,
   }));
 
-  return res.send(selectedDatas);
+  return res.send({ results, total: numFound, page });
 }
 export async function getBookById(req: Request, res: Response) {
   const id = req.params.openLibraryId;
