@@ -484,8 +484,8 @@ jobs:
 
 ### 🟡 Priorité 4 — Déploiement (1 jour)
 
-- [ ] Créer la base de données sur Neon ou Supabase
-- [ ] Déployer le backend sur Railway ou Render
+- [ ] Créer la base de données sur Neon
+- [ ] Déployer le backend sur Render
 - [ ] Déployer le frontend sur Vercel
 - [ ] Configurer les variables d'environnement production
 - [ ] Appliquer les migrations (`db:migrate:deploy`)

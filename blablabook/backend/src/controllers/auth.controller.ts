@@ -78,6 +78,7 @@ export async function loginUser(req: Request, res: Response) {
   setRefreshTokenCookie(res, refreshToken);
 
   return res.status(200).json({
+    message: "Login successful",
     id: user.id,
     email: user.email,
     username: user.username
