@@ -29,12 +29,12 @@ export default async function HomePage() {
     <div>
       {/* Hero */}
       <section className="relative max-w-[88%] mx-auto px-6 sm:px-12 py-10 flex flex-col sm:flex-row items-center gap-12 overflow-hidden">
-        <div className="flex-1 relative z-10 bg-white/80 sm:bg-transparent p-6 rounded-xl mt-6 sm:mt-0">
+        <div className="flex-1 relative z-10 bg-white/80 sm:bg-transparent p-6 rounded-xl mt-6 sm:mt-0 max-w-[100%]">
           <span className="hidden sm:inline-flex text-xs font-semibold rounded px-2 py-1 mb-4 items-center gap-1.5 tag-terracotta-filled" style={{ color: "#E8927A" }}>
             <Bookmark size={11} aria-hidden="true" />
             Votre bibliothèque personnelle
           </span>
-          <h1 className="text-5xl font-normal mt-3 mb-4 text-shadow-xs text-center sm:text-left">BlaBlaBook</h1>
+          <h1 className="text-4xl sm:text-5xl font-normal mt-3 mb-4 text-shadow-xs text-center sm:text-left">BlaBlaBook</h1>
           <p className="max-w-md mb-8 mt-8 normal-case font-inter leading-tight text-center sm:text-justify text-[0.9375rem]">
             Une façon simple et agréable de ne plus jamais perdre le fil de vos lectures.
             <br />
@@ -42,16 +42,16 @@ export default async function HomePage() {
             bibliothèque personnelle : ajoutez vos ouvrages, suivez vos lectures
             et retrouvez en un instant les livres que vous aimez.
           </p>
-          <div className="flex gap-3 justify-center sm:justify-start">
+          <div className="flex gap-2 sm:gap-3 justify-center sm:justify-start">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center rounded-md bg-muted border border-[#9CA3AF] p-2 h-auto text-sm font-semibold text-foreground hover:bg-muted/70 text-center"
+              className="inline-flex items-center justify-center rounded-md bg-muted border border-[#9CA3AF] px-1 py-2 sm:p-2 h-auto text-sm font-semibold text-foreground hover:bg-muted/70 text-center"
             >
               Se connecter
             </Link>
             <Link
               href="/register"
-              className="inline-flex items-center justify-center rounded-md bg-[#E2725B] hover:bg-[#c85e48] p-2 h-auto text-sm font-semibold text-white text-center"
+              className="inline-flex items-center justify-center rounded-md bg-[#E2725B] hover:bg-[#c85e48] px-1 py-2 sm:p-2 h-auto text-sm font-semibold text-white text-center"
             >
               Créer un compte
             </Link>
@@ -69,9 +69,9 @@ export default async function HomePage() {
 
       {/* Livres du moment */}
       <section className="pt-4 pb-8">
-        <div className="max-w-[88%] mx-auto px-12 mb-0">
-          <h2 className="text-2xl font-bold mb-1">LIVRES DU MOMENT</h2>
-          <p className="text-xs text-muted-foreground tracking-widest">
+        <div className="sm:max-w-[88%] mx-auto px-12 mb-8 sm:mb-0 mt-8 sm:mt-0">
+          <h2 className="text-2xl font-bold mb-1 text-center sm:text-left">LIVRES DU MOMENT</h2>
+          <p className="text-xs text-muted-foreground tracking-widest text-center sm:text-left">
             SÉLECTION ALÉATOIRE
           </p>
         </div>
@@ -80,7 +80,7 @@ export default async function HomePage() {
             {randomBooks.length > 0 ? randomBooks.map((book, i) => {
               const bookId = book.id?.split("/").pop() ?? null;
               return (
-                <div key={i} className="flex flex-col p-12">
+                <div key={i} className="flex flex-col p-3 sm:p-8">
                   <BookCover
                     src={book.coverThumbnail}
                     alt={`Couverture de ${book.title}`}
