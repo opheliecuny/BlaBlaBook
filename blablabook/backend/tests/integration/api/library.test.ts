@@ -1,21 +1,16 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import { describe, it, expect, afterAll, beforeEach } from "vitest";
 import request from "supertest";
 import { app } from "@tests/helpers/testServer";
 import { prisma } from "@/utils/prismaClient";
 import { cleanDatabase, createTestUser } from "@tests/helpers/dbHelpers";
 
 describe("Library API Integration Tests", () => {
-  beforeAll(async () => {
-    await cleanDatabase();
-  });
-
   beforeEach(async () => {
     await cleanDatabase();
   });
 
   afterAll(async () => {
     await cleanDatabase();
-    await prisma.$disconnect();
   });
 
   describe("GET /library", () => {

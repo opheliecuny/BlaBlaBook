@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import { describe, it, expect, afterAll, beforeEach } from "vitest";
 import request from "supertest";
 import { app } from "@tests/helpers/testServer";
 import { prisma } from "@/utils/prismaClient";
@@ -6,17 +6,12 @@ import { cleanDatabase, createTestUser } from "@tests/helpers/dbHelpers";
 import argon2 from "argon2";
 
 describe("User API Integration Tests", () => {
-  beforeAll(async () => {
-    await cleanDatabase();
-  });
-
   beforeEach(async () => {
     await cleanDatabase();
   });
 
   afterAll(async () => {
     await cleanDatabase();
-    await prisma.$disconnect();
   });
 
   describe("GET /user/profile", () => {
@@ -164,7 +159,8 @@ describe("User API Integration Tests", () => {
         .send({ email: "user@example.com", password: "NewPassword123" })
         .expect(200);
 
-      expect(newLoginResponse.body.message).toBe("Login successful");
+      expect(newLoginResponse.body).toHaveProperty("id");
+      expect(newLoginResponse.body.email).toBe("user@example.com");
     });
 
     it("devrait retourner 400 si le nouvel email est déjà utilisé", async () => {

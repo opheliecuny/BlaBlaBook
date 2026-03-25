@@ -32,6 +32,7 @@ export default defineConfig({
       },
     },
     setupFiles: ["./tests/setup.ts"],
+    globalTeardown: "./tests/teardown.ts",
   },
   resolve: {
     alias: {

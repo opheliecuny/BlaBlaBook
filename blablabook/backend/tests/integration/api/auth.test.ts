@@ -1,21 +1,16 @@
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import request from "supertest";
-import type { Express } from "express";
-import { createTestServer } from "../../helpers/testServer";
+import { app } from "../../helpers/testServer";
 import { cleanDatabase, createTestUser } from "../../helpers/dbHelpers";
 import { prisma } from "../../../src/utils/prismaClient";
 
 describe("Auth API Integration Tests", () => {
-  let app: Express;
-
   beforeEach(async () => {
-    app = createTestServer();
     await cleanDatabase();
   });
 
   afterAll(async () => {
     await cleanDatabase();
-    await prisma.$disconnect();
   });
 
   describe("POST /auth/register", () => {
@@ -154,7 +149,12 @@ describe("Auth API Integration Tests", () => {
         .send(loginData)
         .expect(200);
 
-      expect(response.body.message).toBe("Login successful");
+      expect(response.body).toMatchObject({
+        email: loginData.email,
+        username: "testuser",
+      });
+      expect(response.body).toHaveProperty("id");
+      expect(response.body).not.toHaveProperty("password");
 
       // Vérifier que les cookies sont définis
       const cookies = response.headers["set-cookie"] as unknown as string[];
@@ -246,6 +246,38 @@ describe("Auth API Integration Tests", () => {
       const response = await request(app).post("/auth/logout").expect(401);
 
       expect(response.body.message).toBe("Token is missing");
+    });
+  });
+
+  describe("GET /auth/me", () => {
+    it("devrait retourner les infos de l'utilisateur connecté", async () => {
+      await createTestUser({
+        email: "me@example.com",
+        password: "Password123",
+        username: "meuser",
+      });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "me@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers["set-cookie"];
+
+      const response = await request(app)
+        .get("/auth/me")
+        .set("Cookie", cookies)
+        .expect(200);
+
+      expect(response.body).toMatchObject({
+        email: "me@example.com",
+        username: "meuser",
+      });
+      expect(response.body).toHaveProperty("id");
+      expect(response.body).not.toHaveProperty("password");
+    });
+
+    it("devrait retourner 401 si l'utilisateur n'est pas authentifié", async () => {
+      await request(app).get("/auth/me").expect(401);
     });
   });
 });

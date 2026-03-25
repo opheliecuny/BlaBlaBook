@@ -714,6 +714,82 @@ Rémi a mis à jour le backend dans la journée. Adaptation des 3 pages en cons�
 
 ---
 
+---
+
+### Séance 26 — Reviews PRs + décision déploiement (25/03/2026)
+
+**Travail réalisé :**
+
+**Pull + rebase sur main**
+- Connexion SSH GitHub bloquée (timeout port 22) — contournement via HTTPS
+- Rebase de `fix/ci-prisma-database-url` sur `main` : commits déjà upstream droppés automatiquement
+
+**Review PR #94 — Fix auth frontend (Rémi)**
+- Suppression du localStorage → `GET /auth/me` avec `credentials: "include"` (cookie httpOnly) : approche correcte
+- `loginUser` retourne désormais `{ id, email, username }` au lieu de `{ message }` → AuthContext correctement hydraté après connexion
+- Seeding corrigé : mots de passe vraiment hashés avec argon2 → `alice@example.com` / `password123` fonctionnel
+- Points cosmétiques mineurs : bloc `if` vide dans `authService.ts`, newlines EOF manquantes — non bloquants
+- PR approuvée ✅
+
+**Review PR #107 — Refactor CI/CD (Paul)**
+- Refactoring de 2 jobs → 5 jobs séparés : `lint-backend`, `test-backend`, `build-backend`, `lint-frontend`, `build-frontend`
+- Service PostgreSQL 17 avec health check pour les tests d'intégration en CI ✅
+- Node.js mis à jour 20 → 22, cache npm configuré
+- Upload Codecov optionnel (`fail_ci_if_error: false`)
+- Point signalé : `npm test` + `npm run test:coverage` dans `test-backend` lancent les tests deux fois — à corriger en suivi
+- PR approuvée ✅ (3 approvals : Ophélie, Rémi, Christopher)
+
+**Décision d'architecture déploiement**
+- BDD prod : **Neon** (PostgreSQL) — offre gratuite sans CB requise, recommandé par Amo
+- Backend : **Render** (Node.js + Express)
+- Frontend : **Vercel** (Next.js) — optimisé nativement, zéro config
+- Architecture cross-origin maintenue (cookies `sameSite: "none"` + `secure: true` déjà en place)
+
+**Tests backend — optimisations**
+- Fix assertions login cassées par PR #94 (`response.body.message` → `{ id, email, username }`) dans `auth.test.ts` et `user.test.ts`
+- Ajout tests `GET /auth/me` (happy path + 401)
+- `auth.test.ts` : migration vers `app` singleton (cohérence avec library/user)
+- `library.test.ts` + `user.test.ts` : suppression `beforeAll(cleanDatabase)` redondant
+- `globalTeardown` centralisé dans `tests/teardown.ts` — `prisma.$disconnect()` retiré des `afterAll` individuels
+- **Résultat : 75/75 tests ✅**
+
+**Tests frontend — setup + écriture**
+- Installation Vitest + @vitest/coverage-v8 + jsdom
+- `vitest.config.ts` : environment node par défaut, `@` alias, seuils couverture 80%
+- `lib/utils.test.ts` : 5 tests `cn()`
+- `lib/api.test.ts` : 10 tests `ApiClient` — jsdom, `vi.stubGlobal("fetch")`, branche 401 (redirect + localStorage)
+- `services/authService.test.ts` : 6 tests
+- `services/bookService.test.ts` : 8 tests (guard query vide inclus)
+- `services/libraryService.test.ts` : 4 tests
+- `services/userService.test.ts` : 5 tests
+- **Résultat : 38/38 tests ✅**
+
+**À faire ultérieurement**
+- CI frontend : ajouter `npm run test:coverage` dans le workflow GitHub Actions (une fois PR #107 mergée)
+
+---
+
+### Séance 27 — CI frontend + Docker init.sh + README (25/03/2026)
+
+**Travail réalisé :**
+
+**Ajout job CI `test-frontend` — PR #118**
+- Suite merge de PR #107 (CI Paul), ajout d'un job `test-frontend` dans `.github/workflows/ci.yml`
+- Job calqué sur `test-backend` : lint → test:coverage → Codecov upload (`flags: frontend`)
+- `build-frontend` mis à jour : `needs: [lint-frontend, test-frontend]`
+- Commit ajouté sur branche `test/backend-frontend-vitest` pour livrer tout ensemble
+
+**Fix `.env` Docker pour `init.sh`**
+- Variables manquantes dans `blablabook/.env` (racine Docker) : `FRONTEND_PORT`, `PORT`, `DATABASE_URL`, `ALLOWED_ORIGINS`, `JWT_SECRET`
+- `DATABASE_URL` en mode Docker utilise `@db:5432` (nom service) et non `@localhost:5433`
+- `ALLOWED_ORIGINS` corrigé vers `http://localhost:3000` (frontend, non backend)
+- Lancement complet via `bash init.sh` : BDD migrée + seedée, API + frontend up en Docker ✅
+
+**Mise à jour README**
+- Ajout structure du projet, instructions de lancement (Docker + manuel), lien docs
+
+---
+
 ## Bilan Sprint 0
 
 | Livrable | Emplacement | Statut |

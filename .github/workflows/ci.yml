@@ -186,12 +186,45 @@ jobs:
         run: npm run lint
         # Exécute le script de linting pour le frontend (Next.js).
 
+  # ─── Tests Frontend ─────────────────────────────────────────────────
+  test-frontend:
+    name: Frontend - Tests & Coverage
+    runs-on: ubuntu-latest
+    needs: [lint-frontend]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+          cache-dependency-path: blablabook/frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: blablabook/frontend
+        run: npm ci
+
+      - name: Run tests with coverage
+        working-directory: blablabook/frontend
+        run: npm run test:coverage
+
+      - name: Upload coverage to Codecov (optional)
+        uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: ./blablabook/frontend/coverage/lcov.info
+          flags: frontend
+          fail_ci_if_error: false
+
   # ─── Build Frontend ──────────────────────────────────────────────────
   build-frontend:
     name: Frontend - Build
     runs-on: ubuntu-latest
-    needs: [lint-frontend]
-    # Dépend de la réussite de `lint-frontend`.
+    needs: [lint-frontend, test-frontend]
+    # Dépend de la réussite de `lint-frontend` et `test-frontend`.
 
     env:
       NEXT_PUBLIC_API_URL: http://localhost:3000

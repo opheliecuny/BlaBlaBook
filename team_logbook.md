@@ -132,12 +132,14 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 ### 25/03/2026
 
+*Reviews des PRs ouvertes, décision d'architecture pour le déploiement.*
+
 #### Infos individuelles
 
 - **Ophélie :** Finalisation du responsive sur la page d'accueil et gestion des encoches en version mobile sur l'en-tête des pages. Ajout d'une page 404 générale personnalisée et début de review de la sémantique et de l'accessibilité des pages (halfway done).
 - **Rémi :**
 - **Paul :**
-- **Christopher :**
+- **Christopher :** Review et approbation PR #94 et #107. Tests backend : fix assertions login cassées (PR #94), ajout tests GET /auth/me, singleton app, centralisation prisma.$disconnect en globalTeardown — 75/75 ✅. Tests frontend : setup Vitest + jsdom, 38 tests — 38/38 ✅. Ajout job CI `test-frontend` dans PR #118 (suite merge #107). Optimisation recherche (issue #105) : pagination server-side, cache 60s, cap 50 pages, fix NaN — PR #121. Fix `.env` racine (`FRONTEND_PORT`, `DATABASE_URL` docker, `ALLOWED_ORIGINS`) + lancement complet via `init.sh`. Mise à jour README avec structure projet.
 
 ---
 
