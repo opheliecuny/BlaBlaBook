@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function CGUPage() {
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12">
+      <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm sm:p-10 md:p-12">
         {/* Header */}
         <header className="mb-8 border-b border-gray-100 pb-8">
           <h1 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 uppercase">
@@ -85,30 +85,29 @@ export default function CGUPage() {
         </div>
 
         {/* Footer links */}
-        <footer className="mt-12 flex items-center justify-between border-t border-gray-100 pt-8">
+        <footer className="mt-12 flex flex-col items-center gap-3 border-t border-gray-100 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/"
             className="text-sm font-medium text-indigo-600 hover:underline"
           >
             ← Retour à l{"'"}accueil
           </Link>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:divide-x sm:divide-gray-200">
             <Link
               href="/privacy"
-              className="text-xs text-gray-400 hover:text-gray-600"
+              className="text-sm text-gray-500 hover:text-gray-600 sm:pr-4"
             >
               Politique de confidentialité
             </Link>
-            <div className="text-xs text-gray-600">|</div>
             <Link
               href="/legal"
-              className="text-xs text-gray-400 hover:text-gray-600"
+              className="text-sm text-gray-500 hover:text-gray-600 sm:pl-4"
             >
               Mentions légales
             </Link>
           </div>
         </footer>
-      </div>
+      </article>
     </div>
   );
 }
