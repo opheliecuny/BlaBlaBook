@@ -27,7 +27,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="border-b border-border bg-background sticky top-0 z-50">
+    <header className="border-b border-border bg-background sticky top-0 z-50 pt-[env(safe-area-inset-top)]">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-6 min-w-0">
         
         {/* Logo */}
