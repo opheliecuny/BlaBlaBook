@@ -123,16 +123,14 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 #### Infos individuelles
 
-- **Ophélie :** Correction de la PR #97 pour passer les tests du CI mis en place. Gestion du responsive sur les composants Nav et Footer qui bloquaient les pages. Correction du contenu dans les pages Politique de confidentialité et Mentions Légales ainsi que du responsive. Début d'affinement du responsive sur la page d'accueil (Hero et CTA), reste à faire la section sélection du moment. 
+- **Ophélie :** Correction de la PR #97 pour passer les tests du CI mis en place. Gestion du responsive sur les composants Nav et Footer qui bloquaient les pages. Correction du contenu dans les pages Politique de confidentialité et Mentions Légales ainsi que du responsive. Début d'affinement du responsive sur la page d'accueil (Hero et CTA), reste à faire la section sélection du moment.
 - **Rémi :** Mis en place le responsive pour plusieurs pages (book:id, search, library, cgu) avec des petites modifications pour optimisation de l'UX et du visuel général.
-- **Paul :**
+- **Paul :** Finalisation complète des tests backend : ajout de 28 tests manquants (library.test.ts + user.test.ts), résolution problèmes d'isolation (fileParallelism: false), unification asyncWrapper sur tous les controllers, atteinte de 91% de couverture (73 tests au total). Configuration GitHub Actions CI/CD : 5 jobs séparés (lint-backend, test-backend avec PostgreSQL 17, build-backend, lint-frontend, build-frontend), Node.js 22, intégration Codecov. Mise à jour documentation complète : sprint2.md (statuts Priorités 2 et 3), guide CI/CD adapté au projet.
 - **Christopher :**
 
 ---
 
 ### 25/03/2026
-
-*Résumé*
 
 #### Infos individuelles
 
