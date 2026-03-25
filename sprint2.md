@@ -16,6 +16,8 @@
 | **Backend — API REST** | Toutes les routes `/auth`, `/books`, `/library`, `/user` sont implémentées et fonctionnelles |
 | **Backend — Sécurité** | Argon2, JWT + cookies httpOnly, Helmet, XSS Sanitizer, CORS, validation Zod                  |
 | **Backend — BDD**      | Schéma Prisma complet (4 tables), migrations, seed                                           |
+| **Backend — Tests**    | 73 tests Vitest (33 unitaires + 40 intégration), 91% coverage, CI-ready                      |
+| **CI/CD**              | GitHub Actions configuré (5 jobs: lint, tests, build), PostgreSQL service pour tests         |
 | **Frontend — Auth**    | Inscription, connexion, déconnexion, AuthContext, cookies httpOnly                           |
 | **Frontend — Pages**   | `/`, `/login`, `/register`, `/search`, `/book/:id`, `/library`, `/legal`, `/privacy`, `/cgu` |
 | **Frontend — API**     | `lib/api.ts`, services auth/book/library/user câblés sur l'API réelle                        |
@@ -146,6 +148,9 @@ export default defineConfig({
 **Prérequis** : ✅ `.env.test` créé, base `blablabook_test` configurée, migrations appliquées
 
 **✅ `tests/integration/api/auth.test.ts`** — 12 tests
+- ✅ POST /auth/register (6 tests) : success, email existant, validations password, confirm, email
+- ✅ POST /auth/login (4 tests) : success, user inexistant, mauvais password, email manquant
+- ✅ POST /auth/logout (2 tests) : success + suppression tokens BDD, 401 si non auth
 
 - ✅ POST /auth/register (6 tests) : success, email existant, validations password, confirm, email
 - ✅ POST /auth/login (4 tests) : success, user inexistant, mauvais password, email manquant
@@ -215,118 +220,28 @@ Les tests frontend sont de moindre priorité pour ce sprint. Privilégier les te
     └── deploy.yml     # Déploiement (sur merge dans main) — voir section 4
 ```
 
-### 3.2 Workflow CI (`.github/workflows/ci.yml`)
+### 3.2 Workflow CI (`.github/workflows/ci.yml`) — ✅ IMPLÉMENTÉ
 
 > **Important** : Les tests d'intégration backend nécessitent une base PostgreSQL.
-> GitHub Actions fournit des services Docker pour ça.
+> GitHub Actions fournit un service PostgreSQL 17 dans un conteneur Docker.
 
-```yaml
-name: CI
+Le workflow CI est organisé en **5 jobs indépendants** :
 
-on:
-  push:
-    branches: [main]
-  pull_request:
-    branches: [main]
+1. **lint-backend** — Vérification ESLint du backend
+2. **test-backend** — 73 tests Vitest avec PostgreSQL service + couverture
+3. **build-backend** — Compilation TypeScript (dépend de lint + test)
+4. **lint-frontend** — Vérification ESLint du frontend
+5. **build-frontend** — Build Next.js (dépend de lint)
 
-jobs:
-  # ─── Lint ────────────────────────────────────────────────────────────────
-  lint-backend:
-    name: Lint Backend
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: blablabook/backend
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: blablabook/backend/package-lock.json
-      - run: npm ci
-      - run: npm run lint
+**Caractéristiques clés :**
+- ✅ Node.js 22
+- ✅ Cache npm pour accélérer les builds
+- ✅ Service PostgreSQL 17 avec health checks
+- ✅ Prisma migrations + generation automatiques
+- ✅ Upload optionnel des rapports de couverture vers Codecov
+- ✅ Variables d'environnement de test (JWT_SECRET, DATABASE_URL)
 
-  lint-frontend:
-    name: Lint Frontend
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: blablabook/frontend
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: blablabook/frontend/package-lock.json
-      - run: npm ci
-      - run: npm run lint
-
-  # ─── Tests Backend ───────────────────────────────────────────────────────
-  test-backend:
-    name: Tests Backend
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: blablabook/backend
-
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_USER: test
-          POSTGRES_PASSWORD: test
-          POSTGRES_DB: blablabook_test
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-    env:
-      DATABASE_URL: postgresql://test:test@localhost:5432/blablabook_test
-      JWT_SECRET: ci-secret-key-for-tests
-      PORT: 3000
-
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: blablabook/backend/package-lock.json
-      - run: npm ci
-      - name: Appliquer les migrations Prisma
-        run: npm run db:migrate:deploy
-      - name: Générer le client Prisma
-        run: npm run db:generate
-      - name: Lancer les tests
-        run: npm test
-      - name: Rapport de couverture
-        run: npm run test:coverage
-
-  # ─── Build Frontend ──────────────────────────────────────────────────────
-  build-frontend:
-    name: Build Frontend
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: blablabook/frontend
-    env:
-      NEXT_PUBLIC_API_URL: http://localhost:3000
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: blablabook/frontend/package-lock.json
-      - run: npm ci
-      - run: npm run build
-```
+Voir [`.github/workflows/ci.yml`](.github/workflows/ci.yml) pour l'implémentation complète.
 
 ### 3.3 Protections de branche à activer sur GitHub
 
