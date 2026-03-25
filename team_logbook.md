@@ -134,7 +134,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 #### Infos individuelles
 
-- **Ophélie :**
+- **Ophélie :** Finalisation du responsive sur la page d'accueil et gestion des encoches en version mobile sur l'en-tête des pages. Ajout d'une page 404 générale personnalisée et début de review de la sémantique et de l'accessibilité des pages (halfway done).
 - **Rémi :**
 - **Paul :**
 - **Christopher :**
