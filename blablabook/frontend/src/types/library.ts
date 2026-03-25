@@ -6,14 +6,12 @@ export type ReadingStatus = "TO_READ" | "READING" | "READ";
 
 export interface LibraryItem {
   id: string;
-  userId: string;
-  bookId: string;
+  title: string;
+  author?: string;
+  thumbnail?: string;
   status: ReadingStatus;
-  rating?: number;
-  review?: string;
-  createdAt: string;
-  updatedAt: string;
-  book: Book;
+  openLibraryId: string; 
+  // plus de champ `book` imbriqué
 }
 
 export interface AddBookToLibraryData {

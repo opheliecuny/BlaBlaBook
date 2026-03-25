@@ -23,11 +23,11 @@ interface DisplayBook {
   author: string;
   cover: string;
   status: ReadingStatus;
+  openLibraryId: string;
 }
 
 export default function LibraryPage() {
   const router = useRouter();
-
   const [activeFilter, setActiveFilter] = useState<"ALL" | ReadingStatus>("ALL");
   const [books, setBooks] = useState<DisplayBook[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,7 +36,6 @@ export default function LibraryPage() {
 
   useEffect(() => {
     if (authLoading) return;
-
     if (!isAuthenticated) {
       router.replace("/login");
       return;
@@ -46,28 +45,25 @@ export default function LibraryPage() {
       .then((items) => {
         setBooks(
           items.map((item) => ({
-            bookId: item.bookId,
-            title: item.book.title,
-            author: item.book.author ?? "Auteur inconnu",
-            cover: item.book.thumbnail ?? "/default-cover.png",
+            bookId: item.id,
+            title: item.title,
+            author: item.author ?? "Auteur inconnu",
+            cover: item.thumbnail ?? "/default-cover.png",
             status: item.status,
+            openLibraryId: item.openLibraryId,
           }))
         );
       })
       .catch(console.error)
       .finally(() => setIsLoading(false));
-  }, [isAuthenticated, authLoading, router]);
+  }, [authLoading, isAuthenticated, router]);
 
-  // Calcul des statistiques
-  const stats = useMemo(
-    () => ({
-      toRead: books.filter((b) => b.status === "TO_READ").length,
-      reading: books.filter((b) => b.status === "READING").length,
-      read: books.filter((b) => b.status === "READ").length,
-      total: books.length,
-    }),
-    [books],
-  );
+  const stats = useMemo(() => ({
+    toRead: books.filter((b) => b.status === "TO_READ").length,
+    reading: books.filter((b) => b.status === "READING").length,
+    read: books.filter((b) => b.status === "READ").length,
+    total: books.length,
+  }), [books]);
 
   if (authLoading || !isAuthenticated) return null;
 
@@ -79,19 +75,13 @@ export default function LibraryPage() {
     );
   }
 
-  // Filtrage des livres
-  const filteredBooks =
-    activeFilter === "ALL"
-      ? books
-      : books.filter((b) => b.status === activeFilter);
+  const filteredBooks = activeFilter === "ALL" ? books : books.filter((b) => b.status === activeFilter);
 
   const handleStatusChange = async (bookId: string, newStatus: ReadingStatus) => {
     const previous = books;
-    setBooks((prev) =>
-      prev.map((book) =>
-        book.bookId === bookId ? { ...book, status: newStatus } : book,
-      ),
-    );
+    setBooks((prev) => prev.map((book) =>
+      book.bookId === bookId ? { ...book, status: newStatus } : book
+    ));
     try {
       await updateReadingStatus(bookId, { status: newStatus });
     } catch {
@@ -111,7 +101,6 @@ export default function LibraryPage() {
     }
   };
 
-  // Définir le mapping des statuts pour l'affichage en français
   const STATUS_LABELS: Record<ReadingStatus, string> = {
     TO_READ: "À lire",
     READING: "En cours",
@@ -120,13 +109,13 @@ export default function LibraryPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
+
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold">Ma bibliothèque</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Bonjour {user?.username} — {stats.total} livre{stats.total > 1 ? "s" : ""} dans
-            votre bibliothèque
+            Bonjour {user?.username} — {stats.total} livre{stats.total > 1 ? "s" : ""} dans votre bibliothèque
           </p>
         </div>
         <Link href="/search">
@@ -138,76 +127,53 @@ export default function LibraryPage() {
       </div>
 
       {/* Stats Cards */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <StatCard
-          icon={<Bookmark className="text-amber-500" size={20} />}
-          label="À lire"
-          count={stats.toRead}
-        />
-        <StatCard
-          icon={<BookOpen className="text-blue-500" size={20} />}
-          label="En cours"
-          count={stats.reading}
-        />
-        <StatCard
-          icon={<Check className="text-emerald-500" size={20} />}
-          label="Lus"
-          count={stats.read}
-        />
+      <div className="mb-8 grid grid-cols-3 gap-3 sm:gap-4">
+        <StatCard icon={<Bookmark className="text-amber-500" size={18} />} label="À lire" count={stats.toRead} />
+        <StatCard icon={<BookOpen className="text-blue-500" size={18} />} label="En cours" count={stats.reading} />
+        <StatCard icon={<Check className="text-emerald-500" size={18} />} label="Lus" count={stats.read} />
       </div>
 
       {/* Filtres */}
-      <div className="mb-8 flex flex-wrap gap-2">
-        <Button
-          variant={activeFilter === "ALL" ? "default" : "secondary"}
-          onClick={() => setActiveFilter("ALL")}
-          className="h-9 rounded-full px-5"
-        >
-          Tous
+      <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
+        <Button variant={activeFilter === "ALL" ? "default" : "secondary"} onClick={() => setActiveFilter("ALL")} className="h-9 rounded-full px-5 min-w-max">
+          Tous ({stats.total})
         </Button>
-        <Button
-          variant={activeFilter === "TO_READ" ? "default" : "secondary"}
-          onClick={() => setActiveFilter("TO_READ")}
-          className="h-9 rounded-full px-5"
-        >
-          À lire
+        <Button variant={activeFilter === "TO_READ" ? "default" : "secondary"} onClick={() => setActiveFilter("TO_READ")} className="h-9 rounded-full px-5 min-w-max">
+          À lire ({stats.toRead})
         </Button>
-        <Button
-          variant={activeFilter === "READING" ? "default" : "secondary"}
-          onClick={() => setActiveFilter("READING")}
-          className="h-9 rounded-full px-5"
-        >
-          En cours
+        <Button variant={activeFilter === "READING" ? "default" : "secondary"} onClick={() => setActiveFilter("READING")} className="h-9 rounded-full px-5 min-w-max">
+          En cours ({stats.reading})
         </Button>
-        <Button
-          variant={activeFilter === "READ" ? "default" : "secondary"}
-          onClick={() => setActiveFilter("READ")}
-          className="h-9 rounded-full px-5"
-        >
-          Lus
+        <Button variant={activeFilter === "READ" ? "default" : "secondary"} onClick={() => setActiveFilter("READ")} className="h-9 rounded-full px-5 min-w-max">
+          Lus ({stats.read})
         </Button>
       </div>
 
-      {/* Grille de livres */}
+      {/* Grille livres */}
       {filteredBooks.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 divide-x divide-gray-200/50 -mx-4">
           {filteredBooks.map((book) => (
             <div
               key={book.bookId}
-              className="bg-card group flex flex-col rounded-xl border p-2 shadow-sm transition-all hover:shadow-md"
+              className={`
+        flex flex-col px-4 py-6 bg-background
+        border-b border-gray-200/50
+
+        [&:nth-last-child(-n+2)]:border-b-0
+        lg:[&:nth-last-child(-n+3)]:border-b-0
+        xl:[&:nth-last-child(-n+4)]:border-b-0
+      `}
             >
-              {/* Couverture avec bouton de suppression */}
-              <div className="relative mb-4 h-80 overflow-hidden rounded-lg">
+              <div className="group relative mb-3 h-64 sm:h-80 md:h-96 lg:h-[420px] xl:h-[480px] overflow-hidden rounded-lg">
                 <Image
                   src={book.cover}
                   alt={book.title}
-                  fill={true}
+                  fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 />
-                {/* Bouton de suppression */}
                 <Button
                   variant="destructive"
                   size="icon"
@@ -218,40 +184,23 @@ export default function LibraryPage() {
                 </Button>
               </div>
 
-              {/* Titre et auteur */}
-              <h3 className="line-clamp-1 text-lg font-bold">{book.title}</h3>
-              <p className="text-muted-foreground mb-4 text-sm">
-                {book.author}
-              </p>
+              <h3 className="line-clamp-1 text-sm sm:text-base lg:text-lg font-bold">{book.title}</h3>
+              <p className="text-muted-foreground mb-4 text-sm">{book.author}</p>
 
-              {/* Zone d'actions */}
               <div className="mt-auto space-y-3">
-                <div className="space-y-1.5">
-                  <label className="text-muted-foreground px-1 text-[12px] font-bold tracking-wider">
-                    Changer le statut
-                  </label>
-                  <Select
-                    value={book.status}
-                    onValueChange={(value) =>
-                      handleStatusChange(book.bookId, value as ReadingStatus)
-                    }
-                  >
-                    <SelectTrigger className="bg-background w-full">
-                      <SelectValue>{STATUS_LABELS[book.status]}</SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="TO_READ">À lire</SelectItem>
-                      <SelectItem value="READING">En cours</SelectItem>
-                      <SelectItem value="READ">Lu</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                <Select value={book.status} onValueChange={(value) => handleStatusChange(book.bookId, value as ReadingStatus)}>
+                  <SelectTrigger className="bg-background w-full">
+                    <SelectValue>{STATUS_LABELS[book.status]}</SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="TO_READ">À lire</SelectItem>
+                    <SelectItem value="READING">En cours</SelectItem>
+                    <SelectItem value="READ">Lu</SelectItem>
+                  </SelectContent>
+                </Select>
 
-                <Link href={`/book/${book.bookId}`} className="mt-4 block">
-                  <Button
-                    variant="secondary"
-                    className="hover:bg-accent w-full"
-                  >
+                <Link href={`/book/${book.openLibraryId}`}>
+                  <Button className="w-full active:scale-95 active:bg-gray-100 transition-all hover:bg-[#D1D5DB]" variant="secondary">
                     Voir le détail
                   </Button>
                 </Link>
@@ -264,46 +213,31 @@ export default function LibraryPage() {
   );
 }
 
-// Sous-composant StatCard
-function StatCard({
-  icon,
-  label,
-  count,
-}: {
+// StatCard
+function StatCard({ icon, label, count }: {
   icon: React.ReactNode;
   label: string;
   count: number;
 }) {
   return (
-    <div className="bg-card flex items-center gap-4 rounded-xl border p-4 shadow-sm">
-      <div className="bg-background rounded-full p-2.5 shadow-sm">{icon}</div>
-      <div>
-        <p className="text-muted-foreground text-sm font-bold tracking-wider uppercase">
-          {label}
-        </p>
-        <p className="text-xl font-bold">
-          {count}{" "}
-          <span className="text-muted-foreground text-sm font-normal">
-            livre{count > 1 ? "s" : ""}
-          </span>
-        </p>
+    <div className="bg-white rounded-xl border border-gray-200 p-3 flex flex-col">
+      <div className="self-start">{icon}</div>
+      <div className="flex flex-col items-center justify-center text-center mt-1">
+        <p className="text-2xl font-bold">{count}</p>
+        <p className="text-muted-foreground text-sm">{label}</p>
       </div>
     </div>
   );
 }
 
-// Sous-composant EmptyState
+// EmptyState
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed py-20 text-center">
       <Search className="text-muted-foreground mb-4 h-10 w-10 opacity-20" />
-      <p className="text-muted-foreground font-medium">
-        Aucun livre trouvé dans cette catégorie.
-      </p>
+      <p className="text-muted-foreground font-medium">Aucun livre trouvé dans cette catégorie.</p>
       <Link href="/search" className="mt-4">
-        <Button variant="outline" size="sm">
-          Explorer le catalogue
-        </Button>
+        <Button variant="outline" size="sm">Explorer le catalogue</Button>
       </Link>
     </div>
   );
