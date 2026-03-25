@@ -15,15 +15,15 @@ export default function CGUPage() {
           <h1 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 uppercase">
             Conditions Générales d{"'"}Utilisation
           </h1>
-          <p className="text-sm text-gray-500 italic">
+          <time dateTime="2026-03-16" className="text-sm text-gray-500 italic">
             Dernière mise à jour : 16 mars 2026
-          </p>
+          </time>
         </header>
 
         {/* Content */}
         <div className="space-y-8 text-gray-600">
-          <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">1. Objet</h2>
+          <section aria-labelledby="section-objet">
+            <h2 id="section-objet" className="mb-3 text-xl font-medium text-gray-800">1. Objet</h2>
             <p>
               Les présentes Conditions Générales d{"'"}Utilisation ont pour
               objet l{"'"}encadrement juridique des modalités de mise à
@@ -33,8 +33,8 @@ export default function CGUPage() {
             </p>
           </section>
 
-          <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">
+          <section aria-labelledby="section-acces">
+            <h2 id="section-acces" className="mb-3 text-xl font-medium text-gray-800">
               2. Accès au site
             </h2>
             <p>
@@ -46,8 +46,8 @@ export default function CGUPage() {
             </p>
           </section>
 
-          <section className="rounded-lg border-l-4 border-blue-500 bg-blue-50 p-6">
-            <h2 className="mb-3 text-xl font-medium text-blue-800">
+          <section aria-labelledby="section-propriete" className="rounded-lg border-l-4 border-blue-500 bg-blue-50 p-6">
+            <h2 id="section-propriete" className="mb-3 text-xl font-medium text-blue-800">
               3. Propriété Intellectuelle
             </h2>
             <p className="text-blue-900/80">
@@ -58,8 +58,8 @@ export default function CGUPage() {
             </p>
           </section>
 
-          <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">
+          <section aria-labelledby="section-responsabilite">
+            <h2 id="section-responsabilite" className="mb-3 text-xl font-medium text-gray-800">
               4. Responsabilité
             </h2>
             <p>
@@ -71,8 +71,8 @@ export default function CGUPage() {
             </p>
           </section>
 
-          <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">
+          <section aria-labelledby="section-droit">
+            <h2 id="section-droit" className="mb-3 text-xl font-medium text-gray-800">
               5. Droit applicable
             </h2>
             <p>
@@ -85,23 +85,26 @@ export default function CGUPage() {
         </div>
 
         {/* Footer links */}
-        <footer className="mt-12 flex flex-col items-center gap-3 border-t border-gray-100 pt-8 sm:flex-row sm:items-center sm:justify-between">
+        <footer aria-label="Liens légaux" className="mt-12 flex flex-col items-center gap-3 border-t border-gray-100 pt-8 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/"
             className="text-sm font-medium text-indigo-600 hover:underline"
+            aria-label="Retour à la page d'accueil"
           >
             ← Retour à l{"'"}accueil
           </Link>
           <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:divide-x sm:divide-gray-200">
             <Link
               href="/privacy"
-              className="text-sm text-gray-500 hover:text-gray-600 sm:pr-4"
+              className="text-sm text-gray-600 hover:text-gray-700 sm:pr-4"
+              aria-label="Voir la politique de confidentialité"
             >
               Politique de confidentialité
             </Link>
             <Link
               href="/legal"
-              className="text-sm text-gray-500 hover:text-gray-600 sm:pl-4"
+              className="text-sm text-gray-600 hover:text-gray-700 sm:pl-4"
+              aria-label="Voir les mentions légales"
             >
               Mentions légales
             </Link>
