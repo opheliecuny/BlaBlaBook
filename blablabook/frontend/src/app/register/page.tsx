@@ -68,7 +68,7 @@ export default function RegisterPage() {
 
 
   return (
-    <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center px-4">
+    <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center px-4 py-10">
       <div className="border-border w-full max-w-md rounded-xl border bg-white p-10 shadow-xl">
         <h1 className="mb-1 text-center text-2xl font-bold uppercase">
           Créer un compte
