@@ -47,6 +47,9 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --color-btn-subtle: #e5e7eb;
+  --color-btn-subtle-hover: #d1d5db;
+  --color-btn-subtle-active: #c4c9d0;
 }
 
 :root {
@@ -66,6 +69,7 @@
   --accent: #d4a5a5;
   --accent-foreground: #1f2937;
   --accent-alt: #e2725b;
+  --accent-alt-hover: #c85e48;
   --destructive: oklch(0.577 0.245 27.325);
   --border: #e5e7eb;
   --input: #e5e7eb;
@@ -124,14 +128,17 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground font-sans;
   }
+
   h1,
   h2,
   h3 {
     font-family: var(--font-playfair), serif;
   }
+
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
@@ -142,6 +149,7 @@
   .tag-terracotta {
     color: #e2725b;
   }
+
   .tag-terracotta-filled {
     color: #e2725b;
     background-color: #fbf0ee;

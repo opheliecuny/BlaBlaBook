@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12">
         {/* Header */}
         <header className="mb-8 border-b border-gray-100 pb-8">
-          <h1 className="mb-4 text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 uppercase">
+          <h1 className="mb-4 text-2xl sm:text-3xl font-bold tracking-tight text-foreground uppercase">
             Politique de Confidentialité
           </h1>
           <time dateTime="2026-03-24" className="text-sm text-gray-500 italic">
@@ -69,7 +69,7 @@ export default function PrivacyPage() {
             <h2 id="security-title" className="mb-3 text-xl font-medium text-indigo-800">
               4. Sécurité
             </h2>
-            <p className="text-indigo-900/80">
+            <p>
               La sécurité de vos données est notre priorité. Nous mettons en œuvre des mesures techniques pour protéger vos informations personnelles contre tout accès non autorisé.
             </p>
           </section>
@@ -113,7 +113,7 @@ export default function PrivacyPage() {
         <footer className="mt-12 flex items-center justify-between border-t border-gray-100 pt-8">
           <Link
             href="/"
-            className="text-sm font-medium text-indigo-600 hover:underline"
+            className="text-sm font-medium text-primary hover:underline"
           >
             ← Retour à l&apos;accueil
           </Link>

@@ -12,7 +12,7 @@ export default function LegalPage() {
       <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12">
         {/* Header */}
         <header className="mb-8 border-b border-gray-100 pb-8">
-          <h1 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 uppercase">
+          <h1 className="mb-4 text-3xl font-bold tracking-tight text-foreground uppercase">
             Mentions Légales
           </h1>
           <time dateTime="2026-03-24" className="text-sm text-gray-500 italic">
@@ -78,7 +78,7 @@ export default function LegalPage() {
               Email :{" "}
               <a
                 href="mailto:contact@blablabook.fr"
-                className="font-bold text-indigo-600 hover:underline"
+                className="font-bold text-primary hover:underline"
               >
                 contact@blablabook.fr
               </a>

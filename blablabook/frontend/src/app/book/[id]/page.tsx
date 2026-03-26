@@ -50,7 +50,7 @@ export default async function BookPage({ params }: BookPageProps) {
 
   if (!book) {
     return (
-      <div className="max-w-[88%] mx-auto px-12 py-20 text-center">
+      <div className="sm:max-w-7xl mx-auto px-6 sm:px-12 py-20 text-center">
         <p className="text-lg font-medium mb-2">Livre introuvable</p>
         <Link href="/search" className="text-sm text-primary hover:underline" aria-label="Retour à la page de recherche de livres">
           Retour à la recherche
@@ -68,7 +68,7 @@ export default async function BookPage({ params }: BookPageProps) {
   const coverUrl = book.coverThumbnail ?? null;
 
 return (
-  <div className="max-w-[88%] mx-auto px-4 sm:px-6 md:px-8 py-8 md:py-10">
+  <div className="sm:max-w-7xl mx-auto px-6 sm:px-12 py-8 md:py-10">
     <div className="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">
 
       {/* Colonne gauche : couverture + actions */}
@@ -109,7 +109,7 @@ return (
         {/* Tag genre — desktop uniquement */}
         {genre && (
           <div className="hidden md:block">
-            <span className="text-xs font-medium rounded-md px-3 py-1 bg-[#E2725B] text-white uppercase tracking-wide">
+            <span className="text-xs font-medium rounded-md px-3 py-1 bg-[var(--accent-alt)] text-white uppercase tracking-wide">
               {genre}
             </span>
           </div>

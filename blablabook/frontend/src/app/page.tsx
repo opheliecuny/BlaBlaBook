@@ -45,13 +45,13 @@ export default async function HomePage() {
           <div className="flex gap-2 sm:gap-3 justify-around sm:justify-start">
             <Link
               href="/login"
-              className="inline-flex items-center justify-center rounded-md bg-muted border border-[#E2725B] sm:border-[#9CA3AF] p-2 h-auto text-sm font-semibold text-[#E2725B] sm:text-foreground hover:bg-muted/70 text-center"
+              className="inline-flex items-center justify-center rounded-md bg-muted border border-[var(--accent-alt)] sm:border-input p-2 h-auto text-sm font-semibold text-[var(--accent-alt)] sm:text-foreground hover:bg-muted/70 text-center"
             >
               Se connecter
             </Link>
             <Link
               href="/register"
-              className="inline-flex items-center justify-center rounded-md bg-[#E2725B] hover:bg-[#c85e48] p-2 h-auto text-sm font-semibold text-white text-center"
+              className="inline-flex items-center justify-center rounded-md bg-[var(--accent-alt)] hover:bg-[var(--accent-alt-hover)] p-2 h-auto text-sm font-semibold text-white text-center"
             >
               Créer un compte
             </Link>
@@ -129,7 +129,7 @@ export default async function HomePage() {
 
       {/* CTA Recherche */}
       <section className="sm:max-w-7xl mx-auto px-6 sm:px-12 py-8">
-        <div className="bg-[#EEF2FF] border border-[#C7D2FE] rounded-xl p-12 flex flex-col items-center gap-6 w-full">
+        <div className="bg-primary/5 border border-primary/20 rounded-xl p-12 flex flex-col items-center gap-6 w-full">
           <h2 className="text-2xl font-bold text-center">
             Vous cherchez un livre en particulier ?
           </h2>
@@ -147,7 +147,7 @@ export default async function HomePage() {
             />
             <button
               type="submit"
-              className="h-10 rounded-full bg-[#E2725B] hover:bg-[#c85e48] text-white text-sm font-semibold px-8 w-full sm:w-auto"
+              className="h-10 rounded-full bg-[var(--accent-alt)] hover:bg-[var(--accent-alt-hover)] text-white text-sm font-semibold px-8 w-full sm:w-auto"
             >
               Rechercher
             </button>

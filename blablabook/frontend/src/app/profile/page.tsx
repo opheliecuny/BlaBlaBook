@@ -234,7 +234,7 @@ export default function ProfilePage() {
               <p className="mt-1 text-lg font-medium text-[#A12C14]">
                 Supprimer mon compte
               </p>
-              <p className="mt-1 text-sm text-[var(--accent-alt)] font-medium">
+              <p className="mt-1 text-sm text-destructive/70 font-medium">
                 Cette action est irréversible. Toutes vos données seront effacées.
               </p>
             </div>

@@ -8,11 +8,11 @@ export const metadata: Metadata = {
 
 export default function CGUPage() {
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
       <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm sm:p-10 md:p-12">
         {/* Header */}
         <header className="mb-8 border-b border-gray-100 pb-8">
-          <h1 className="mb-4 text-3xl font-bold tracking-tight text-gray-900 uppercase">
+          <h1 className="mb-4 text-3xl font-bold tracking-tight text-foreground uppercase">
             Conditions Générales d{"'"}Utilisation
           </h1>
           <time dateTime="2026-03-16" className="text-sm text-gray-500 italic">
@@ -50,7 +50,7 @@ export default function CGUPage() {
             <h2 id="section-propriete" className="mb-3 text-xl font-medium text-blue-800">
               3. Propriété Intellectuelle
             </h2>
-            <p className="text-blue-900/80">
+            <p>
               Les marques, logos, signes ainsi que tous les contenus du site
               (textes, images, son...) font l{"'"}objet d{"'"}une protection par
               le Code de la propriété intellectuelle et plus particulièrement

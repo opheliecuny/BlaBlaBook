@@ -51,7 +51,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="py-10">
-      <div className="max-w-[88%] mx-auto">
+      <div className="sm:max-w-7xl mx-auto px-6 sm:px-12">
 
         <form action="/search" method="GET" className="flex flex-col sm:flex-row gap-2 mb-10 px-4 sm:px-12" role="search">
           <label htmlFor="search-input" className="sr-only">

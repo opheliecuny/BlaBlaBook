@@ -17,7 +17,7 @@ export default function ExpandableDescription({ description }: Props) {
             </p>
             <button
                 onClick={() => setExpanded(!expanded)}
-                className="md:hidden mt-1 w-full flex items-center justify-center gap-2 border border-[#E2725B] rounded-lg py-2 text-sm text-muted-foreground bg-muted hover:bg-muted/80 transition-colors"
+                className="md:hidden mt-1 w-full flex items-center justify-center gap-2 border border-[var(--accent-alt)] rounded-lg py-2 text-sm text-muted-foreground bg-muted hover:bg-muted/80 transition-colors"
             >
                 {expanded ? "Lire moins" : "Lire plus"}
                 <span className={`transition-transform duration-200 ${expanded ? "rotate-180" : ""}`}>
