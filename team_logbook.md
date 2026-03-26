@@ -145,14 +145,14 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 ### 26/03/2026
 
-*Résumé*
+*Fix tests frontend bookService suite pagination PR #121. Reviews PRs Paul (#127/#128/#129).*
 
 #### Infos individuelles
 
 - **Ophélie :**
 - **Rémi :**
 - **Paul :**
-- **Christopher :**
+- **Christopher :** Sync `main` + suppression branche `test/backend-frontend-vitest`. Fix 3 tests `bookService.test.ts` cassés suite PR #121 (pagination : retour `BookSearchResponse`, URL `&page=1`) — 39/39 ✅ — PR #130. Review PRs Paul : #127 ✅ OK, #128 bug `api.ts` fallback port signalé, #129 périmètre trop large signalé.
 
 ---
 

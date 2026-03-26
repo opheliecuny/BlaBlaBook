@@ -805,3 +805,25 @@ Rémi a mis à jour le backend dans la journée. Adaptation des 3 pages en cons�
 | Config VS Code équipe | `.vscode/settings.json` | ✅ |
 
 ---
+
+---
+
+### Séance 28 — Fix tests frontend + reviews PRs (26/03/2026)
+
+**Travail réalisé :**
+
+**Synchronisation main**
+- Pull `main` après merge PR #118 — réception des changements équipe : déploiement Neon/Render/Vercel (#126), page 404 (#125), pagination recherche (#121), responsive header/homepage
+- Suppression branche `test/backend-frontend-vitest` (locale + distante) — squash merge effectué, travail intégré dans `main`
+
+**Fix tests frontend — PR #130**
+- Diagnostic : 3 tests `bookService.test.ts` échouaient suite à la PR #121 (pagination server-side) qui avait modifié `searchBooks` sans mettre à jour les tests
+- Causes : retour `{ results, total, page }` au lieu de `[]` pour query vide, URL `&page=1` ajoutée, signature `page = 1` non testée
+- Corrections appliquées : assertions alignées sur le nouveau type `BookSearchResponse`, ajout test paramètre `page` explicite
+- **Résultat : 39/39 tests ✅**
+- PR #130 ouverte, reviewers ajoutés
+
+**Review PRs Paul (#127, #128, #129)**
+- #127 (init.sh) : ✅ OK à merger — détection OS, timeout curl sur endpoint réel
+- #128 (.env) : ⚠️ bug dans `api.ts` — fallback `3001` → `3000` (pointe frontend au lieu du backend) — signalé à Paul
+- #129 (fix vulnérabilité Next.js 16.2.1) : ⚠️ périmètre trop large (inclut les mêmes changements que #128 + bug `api.ts`) — signalé à Paul pour scinder

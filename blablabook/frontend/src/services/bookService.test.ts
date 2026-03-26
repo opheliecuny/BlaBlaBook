@@ -34,31 +34,39 @@ describe("bookService", () => {
   });
 
   describe("searchBooks()", () => {
-    it("retourne [] si la query est vide", async () => {
+    it("retourne { results: [], total: 0, page: 1 } si la query est vide", async () => {
       const result = await searchBooks("");
-      expect(result).toEqual([]);
+      expect(result).toEqual({ results: [], total: 0, page: 1 });
       expect(mockApiClient.get).not.toHaveBeenCalled();
     });
 
-    it("retourne [] si la query ne contient que des espaces", async () => {
+    it("retourne { results: [], total: 0, page: 1 } si la query ne contient que des espaces", async () => {
       const result = await searchBooks("   ");
-      expect(result).toEqual([]);
+      expect(result).toEqual({ results: [], total: 0, page: 1 });
       expect(mockApiClient.get).not.toHaveBeenCalled();
     });
 
-    it("appelle GET /books/search avec la query encodée", async () => {
-      mockApiClient.get.mockResolvedValueOnce([]);
+    it("appelle GET /books/search avec la query encodée et page par défaut", async () => {
+      mockApiClient.get.mockResolvedValueOnce({ results: [], total: 0, page: 1 });
       await searchBooks("harry potter");
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        "/books/search?q=harry%20potter",
+        "/books/search?q=harry%20potter&page=1",
+      );
+    });
+
+    it("appelle GET /books/search avec le numéro de page fourni", async () => {
+      mockApiClient.get.mockResolvedValueOnce({ results: [], total: 0, page: 3 });
+      await searchBooks("harry potter", 3);
+      expect(mockApiClient.get).toHaveBeenCalledWith(
+        "/books/search?q=harry%20potter&page=3",
       );
     });
 
     it("retourne les résultats de recherche", async () => {
-      const books = [{ id: "1", title: "Harry Potter" }];
-      mockApiClient.get.mockResolvedValueOnce(books);
+      const response = { results: [{ id: "1", title: "Harry Potter" }], total: 1, page: 1 };
+      mockApiClient.get.mockResolvedValueOnce(response);
       const result = await searchBooks("harry");
-      expect(result).toEqual(books);
+      expect(result).toEqual(response);
     });
   });
 

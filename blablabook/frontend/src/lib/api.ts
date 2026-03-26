@@ -1,6 +1,6 @@
 // Configuration de l'API client pour les appels au backend
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 /**
  * Classe pour gérer les appels API avec gestion d'erreurs et authentification

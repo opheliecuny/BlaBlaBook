@@ -51,7 +51,8 @@ services:
     ports:
       - "${FRONTEND_PORT}:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:${PORT}
+      - NEXT_PUBLIC_API_URL=http://localhost:${PORT} # browser (frontend) besoin de l'URL complète pour accéder à l'API
+      - API_URL=http://api:${PORT} # RSC (dans le conteneur frontend) peut utiliser le nom de service "api" pour accéder à l'API
     command: sh -c "npm install && npm run dev"
     restart: unless-stopped
     depends_on:
