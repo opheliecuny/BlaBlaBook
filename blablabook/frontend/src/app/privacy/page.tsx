@@ -9,15 +9,15 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12">
+      <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12">
         {/* Header */}
         <header className="mb-8 border-b border-gray-100 pb-8">
           <h1 className="mb-4 text-2xl sm:text-3xl font-bold tracking-tight text-gray-900 uppercase">
             Politique de Confidentialité
           </h1>
-          <p className="text-sm text-gray-500 italic">
+          <time dateTime="2026-03-24" className="text-sm text-gray-500 italic">
             Dernière mise à jour : 24 mars 2026
-          </p>
+          </time>
           <p className="mt-4 text-sm leading-relaxed text-gray-700">
             La présente politique de confidentialité décrit comment l{"'"}application
             <strong> BlaBlaBook</strong> collecte, utilise et protège les données personnelles de ses utilisateurs.
@@ -65,8 +65,8 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <section className="rounded-lg border-l-4 border-indigo-500 bg-indigo-50 p-6">
-            <h2 className="mb-3 text-xl font-medium text-indigo-800">
+          <section aria-labelledby="security-title" role="region" className="rounded-lg border-l-4 border-indigo-500 bg-indigo-50 p-6">
+            <h2 id="security-title" className="mb-3 text-xl font-medium text-indigo-800">
               4. Sécurité
             </h2>
             <p className="text-indigo-900/80">
@@ -93,17 +93,18 @@ export default function PrivacyPage() {
             <p className="mt-2">
               Pour exercer vos droits, contactez-nous à :
             </p>
-            <div className="mt-4 inline-block rounded-md border border-gray-200 bg-gray-50 p-4">
+            <address className="mt-4 inline-block rounded-md border border-gray-200 bg-gray-50 p-4">
               Email :{" "}
               <a
                 href="mailto:contact@blablabook.fr"
                 className="font-bold text-indigo-600 hover:underline"
+                aria-label="Envoyer un email à contact@blablabook.fr"
               >
                 contact@blablabook.fr
               </a>
-            </div>
+            </address>
             <p className="mt-2 text-sm text-gray-500">
-              Vous pouvez également contacter la <strong>CNIL</strong> pour toute réclamation concernant vos données personnelles.
+              Vous pouvez également contacter la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">CNIL</a> pour toute réclamation concernant vos données personnelles.
             </p>
           </section>
         </div>
@@ -119,20 +120,24 @@ export default function PrivacyPage() {
           <div className="flex items-center space-x-4">
             <Link
               href="/cgu"
-              className="text-xs text-gray-400 hover:text-gray-600"
+              className="text-xs text-gray-600 hover:text-gray-700"
+              aria-label="Voir les Conditions Générales d'Utilisation"
             >
               CGU
             </Link>
-            <div className="text-xs text-gray-600">|</div>
+            <div className="text-xs text-gray-600" aria-hidden="true">
+              |
+            </div>
             <Link
               href="/legal"
-              className="text-xs text-gray-400 hover:text-gray-600"
+              className="text-xs text-gray-600 hover:text-gray-700"
+              aria-label="Voir les Mentions Légales"
             >
               Mentions Légales
             </Link>
           </div>
         </footer>
-      </div>
+      </article>
     </div>
   );
 }
