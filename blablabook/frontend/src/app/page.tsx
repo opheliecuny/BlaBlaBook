@@ -68,60 +68,62 @@ export default async function HomePage() {
       </section>
 
       {/* Livres du moment */}
-      <section className="py-8 sm:max-w-7xl mx-auto px-5 sm:px-10">
+      <section aria-labelledby="livres-du-moment" className="py-8 sm:max-w-7xl mx-auto px-5 sm:px-10">
         <div className="px-2 mb-8 sm:mb-0 mt-8 sm:mt-0">
-          <h2 className="text-2xl font-bold mb-1 text-center sm:text-left">LIVRES DU MOMENT</h2>
+          <h2 id="livres-du-moment" className="text-2xl font-bold mb-1 text-center sm:text-left">LIVRES DU MOMENT</h2>
           <p className="text-xs text-muted-foreground tracking-widest text-center sm:text-left">
             SÉLECTION ALÉATOIRE
           </p>
         </div>
         <div className="mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4">
+          <ul className="grid grid-cols-2 md:grid-cols-4">
             {randomBooks.length > 0 ? randomBooks.map((book, i) => {
               const bookId = book.id?.split("/").pop() ?? null;
               return (
-                <div key={i} className="flex flex-col p-3 sm:p-8">
+                <li key={i} className="flex flex-col p-3 sm:p-8">
                   <BookCover
                     src={book.coverThumbnail}
                     alt={`Couverture de ${book.title}`}
                     className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
                   />
                   <div className="flex flex-col flex-1 mt-3">
-                    <p className="font-bold text-base leading-snug font-playfair">{book.title}</p>
+                    <h3 className="font-bold text-base leading-snug font-playfair">{book.title}</h3>
                     <p className="text-xs text-muted-foreground mt-1">{book.author ?? "Auteur inconnu"}</p>
                     <div className="mt-auto pt-4">
                       <Link
                         href={bookId ? `/book/${bookId}` : `/search?q=${encodeURIComponent(book.title)}`}
                         className="inline-flex items-center justify-center rounded-md bg-[#E5E7EB] px-3 py-1.5 text-xs font-medium hover:bg-[#D1D5DB] w-full"
+                        aria-label={`Voir le détail du livre ${book.title}`}
                       >
                         Voir le détail
                       </Link>
                     </div>
                   </div>
-                </div>
+                </li>
               );
             }) : [1, 2, 3, 4].map((i) => (
-              <div key={i} className="flex flex-col p-12">
+              <li key={i} className="flex flex-col p-12">
                 <BookCover
                   src={null}
                   alt="Couverture non disponible"
                   className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
                 />
                 <div className="flex flex-col flex-1 mt-3">
-                  <p className="font-bold text-base leading-snug font-playfair">Titre du livre</p>
+                  <h3 className="font-bold text-base leading-snug font-playfair">Titre du livre</h3>
                   <p className="text-xs text-muted-foreground mt-1">Auteur</p>
                   <div className="mt-auto pt-4">
                     <Link
                       href="/search"
                       className="inline-flex items-center justify-center rounded-md bg-[#E5E7EB] px-3 py-1.5 text-xs font-medium hover:bg-[#D1D5DB] w-full"
+                      aria-label="Voir le détail du livre"
                     >
                       Voir le détail
                     </Link>
                   </div>
                 </div>
-              </div>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
@@ -131,7 +133,7 @@ export default async function HomePage() {
           <h2 className="text-2xl font-bold text-center">
             Vous cherchez un livre en particulier ?
           </h2>
-          <form action="/search" className="flex flex-col sm:flex-row gap-2 w-full max-w-md">
+          <form role="search" action="/search" className="flex flex-col sm:flex-row gap-2 w-full max-w-md">
             <label htmlFor="search" className="sr-only">
               Rechercher un livre ou un auteur
             </label>
@@ -141,6 +143,7 @@ export default async function HomePage() {
               type="text"
               placeholder="Rechercher un livre, un auteur,..."
               className="w-full sm:flex-1 border border-border rounded-full px-4 h-10 text-sm outline-none focus:border-primary bg-white"
+              autoComplete="off"
             />
             <button
               type="submit"
