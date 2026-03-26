@@ -50,7 +50,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     <div className="py-10">
       <div className="max-w-[88%] mx-auto">
 
-        <form action="/search" method="GET" className="flex flex-col sm:flex-row gap-2 mb-10 px-4 sm:px-12">
+        <form action="/search" method="GET" className="flex flex-col sm:flex-row gap-2 mb-10 px-4 sm:px-12" role="search">
           <label htmlFor="search-input" className="sr-only">
             Rechercher un livre ou un auteur
           </label>
@@ -61,14 +61,22 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             defaultValue={q ?? ""}
             placeholder="Rechercher un livre, un auteur..."
             className="w-full border border-border rounded-full px-4 h-10 text-sm outline-none focus:border-primary"
+            autoComplete="off"
           />
           <button
             type="submit"
             className="h-10 rounded-full bg-[#E2725B] hover:bg-[#c85e48] text-white text-xs font-medium px-8 shrink-0 w-full sm:w-auto"
+            aria-label="Lancer la recherche"
           >
             Rechercher
           </button>
         </form>
+
+        <h1 className="text-2xl font-bold mb-1 px-4 sm:px-12">
+          {hasQuery
+            ? `Résultats de recherche pour "${query}"`
+            : "Recherche de livres"}
+        </h1>
 
         {!hasQuery && (
           <div className="text-center py-20">
@@ -80,25 +88,22 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         {hasQuery && results.length > 0 && (
           <>
-            <h1 className="text-2xl font-bold mb-1 px-4 sm:px-12">
-              Résultats de recherche pour &quot;{query}&quot;
-            </h1>
             <p className="text-sm text-muted-foreground mb-4 px-4 sm:px-12">
               {allResults.length} résultat{allResults.length > 1 ? "s" : ""}
             </p>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 divide-y divide-border/50 [&>*]:border-r [&>*]:border-border/50 [&>*:nth-child(2n)]:border-r-0 md:[&>*:nth-child(2n)]:border-r md:[&>*:nth-child(4n)]:border-r-0">
+            <ul className="grid grid-cols-2 md:grid-cols-4 divide-y divide-border/50 [&>*]:border-r [&>*]:border-border/50 [&>*:nth-child(2n)]:border-r-0 md:[&>*:nth-child(2n)]:border-r md:[&>*:nth-child(4n)]:border-r-0">
               {results.map((book) => {
                 const bookId = book.id.split("/").pop() ?? book.id;
                 return (
-                  <div key={book.id} className="flex flex-col px-4 py-6 sm:px-8 sm:py-12">
+                  <li key={book.id} className="flex flex-col px-4 py-6 sm:px-8 sm:py-12">
                     <BookCover
                       src={book.coverThumbnail}
                       alt={`Couverture de ${book.title}`}
                       className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
                     />
                     <div className="flex flex-col flex-1 mt-3">
-                      <p className="font-bold text-sm leading-snug font-playfair">{book.title}</p>
+                      <h2 className="font-bold text-sm leading-snug font-playfair">{book.title}</h2>
                       <p className="text-xs text-muted-foreground mt-1">{book.author ?? "Auteur inconnu"}</p>
                       <div className="mt-auto pt-4 flex flex-col gap-2">
                         {book.category && (
@@ -110,6 +115,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                           <Link
                             href={`/book/${bookId}`}
                             className="flex items-center justify-center rounded-md bg-[#E5E7EB] py-1.5 text-xs font-medium hover:bg-[#D1D5DB] active:bg-[#C4C9D0] w-full sm:grow"
+                            aria-label={`Voir le détail du livre ${book.title}`}
                           >
                             Voir le détail
                           </Link>
@@ -125,13 +131,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
 
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-6 mt-12 px-4 sm:px-12">
+              <nav aria-label="pagination" className="flex items-center justify-center gap-6 mt-12 px-4 sm:px-12">
                 <Link
                   href={`/search?q=${encodeURIComponent(query)}&page=${Math.max(1, currentPage - 1)}`}
                   className="inline-flex items-center gap-2 border border-primary rounded px-4 h-8 text-xs font-medium hover:bg-primary/5"
@@ -157,7 +163,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     <line x1="11" y1="5" x2="1" y2="5" />
                   </svg>
                 </Link>
-              </div>
+              </nav>
             )}
           </>
         )}
