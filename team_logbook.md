@@ -150,7 +150,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 #### Infos individuelles
 
 - **Ophélie :**
-- **Rémi :**
+- **Rémi :**Corrigé mon problème docker qui n'en était pas un (*en supprimant .next et mes node_modules qui logiquement devaient être corrompus*). Repassé le code au peigne fin pour vérifier la cohérence du visuel général (c-à-d couleurs, padding, margin, :hover, :active, etc) et essayé d'harmonisé le tout autant que possible.
 - **Paul :**
 - **Christopher :** Sync `main` + suppression branche `test/backend-frontend-vitest`. Fix 3 tests `bookService.test.ts` cassés suite PR #121 (pagination : retour `BookSearchResponse`, URL `&page=1`) — 39/39 ✅ — PR #130. Review PRs Paul : #127 ✅ OK, #128 bug `api.ts` fallback port signalé, #129 périmètre trop large signalé.
 
