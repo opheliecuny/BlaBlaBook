@@ -37,9 +37,13 @@ export default function LoginPage() {
       router.push("/library");
     } catch (err) {
       if (err instanceof Error) {
-        setError(err.message);
+        if (err.message.includes("401")) {
+          setError("Email ou mot de passe incorrect");
+        } else {
+          setError("Impossible de se connecter pour le moment. Réessayez plus tard.");
+        }
       } else {
-        setError("Une erreur est survenue lors de la connexion");
+        setError("Une erreur inattendue est survenue.");
       }
     } finally {
       setIsLoading(false);
@@ -48,17 +52,17 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center px-4 py-10">
-      <div className="border-border w-full max-w-md rounded-xl border bg-white p-10 shadow-xl">
-        <h1 className="mb-1 text-center text-2xl font-bold uppercase">
+      <section aria-labelledby="login-title" className="border-border w-full max-w-md rounded-xl border bg-white p-10 shadow-xl">
+        <h1 id="login-title" className="mb-1 text-center text-2xl font-bold uppercase">
           Connexion
         </h1>
         <p className="text-muted-foreground mb-8 text-center text-sm">
           Veuillez vous connecter pour accéder à votre compte BlaBlaBook.
         </p>
 
-        <form onSubmit={handleLogin} className="flex flex-col gap-5">
+        <form onSubmit={handleLogin} className="flex flex-col gap-5" aria-labelledby="login-title">
           {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+            <div role="alert" aria-live="assertive" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
               {error}
             </div>
           )}
@@ -73,6 +77,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              autoComplete="email"
             />
           </div>
 
@@ -86,6 +91,7 @@ export default function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              autoComplete="current-password"
             />
           </div>
 
@@ -93,6 +99,7 @@ export default function LoginPage() {
             type="submit"
             className="hover:bg-primary/80 mt-2 w-full"
             disabled={isLoading}
+            aria-busy={isLoading}
           >
             {isLoading ? "Connexion en cours..." : "Se connecter"}
           </Button>
@@ -100,11 +107,11 @@ export default function LoginPage() {
 
         <p className="text-muted-foreground mt-6 text-center text-sm">
           Pas encore de compte ?{" "}
-          <Link href="/register" className="text-primary hover:underline">
+          <Link href="/register" className="text-primary hover:underline" aria-label="Créer un compte BlaBlaBook">
             Créer un compte
           </Link>
         </p>
-      </div>
+      </section>
     </div>
   );
 }

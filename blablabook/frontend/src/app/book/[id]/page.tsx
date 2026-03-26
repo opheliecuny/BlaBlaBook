@@ -52,7 +52,7 @@ export default async function BookPage({ params }: BookPageProps) {
     return (
       <div className="max-w-[88%] mx-auto px-12 py-20 text-center">
         <p className="text-lg font-medium mb-2">Livre introuvable</p>
-        <Link href="/search" className="text-sm text-primary hover:underline">
+        <Link href="/search" className="text-sm text-primary hover:underline" aria-label="Retour à la page de recherche de livres">
           Retour à la recherche
         </Link>
       </div>
@@ -77,15 +77,17 @@ return (
         {/* Tag genre au dessus de la cover — mobile uniquement */}
         {genre && (
           <div className="self-start md:hidden">
-            <span className="text-xs font-medium rounded-md px-3 py-1 bg-[#E2725B] text-white uppercase tracking-wide">
-              {genre}
-            </span>
+            <p aria-label={`Genre : ${genre}`}>
+              <span className="text-xs font-medium rounded-md px-3 py-1 bg-[#E2725B] text-white uppercase tracking-wide">
+                {genre}
+              </span>
+            </p>
           </div>
         )}
 
         <BookCover
           src={coverUrl}
-          alt={`Couverture de ${book.title}`}
+          alt={`Couverture du livre ${book.title}`}
           className="w-56 sm:w-64 md:w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
         />
         <div className="w-full">
@@ -116,12 +118,15 @@ return (
         <h1 className="text-2xl md:text-3xl font-bold leading-snug">{book.title}</h1>
 
         {authorName && (
-          <Link
-            href={`/search?q=${encodeURIComponent(authorName)}`}
-            className="text-base text-primary hover:underline w-fit"
-          >
-            {authorName}
-          </Link>
+          <p>
+            Par {""}
+            <Link
+              href={`/search?q=${encodeURIComponent(authorName)}`}
+              className="text-base text-primary hover:underline w-fit"
+            >
+              <span className="underline">{authorName}</span>
+            </Link>
+          </p>
         )}
 
         {book.publishedYear && (
@@ -132,7 +137,7 @@ return (
 
         {description && (
           <div className="mt-2">
-            <hr className="border-t border-border mb-3" />
+            <hr className="border-t border-border mb-3" aria-hidden="true" />
             <ExpandableDescription description={description} />
           </div>
         )}
