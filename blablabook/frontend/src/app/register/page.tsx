@@ -79,7 +79,11 @@ export default function RegisterPage() {
 
         <form onSubmit={handleRegister} className="flex flex-col gap-5">
           {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+            <div
+              role="alert"
+              aria-live="assertive"
+              className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600"
+            >
               {error}
             </div>
           )}
@@ -139,32 +143,38 @@ export default function RegisterPage() {
             />
           </div>
 
-          <div className="mt-1 flex items-start gap-2">
-            <Checkbox
-              id="terms"
-              checked={acceptTerms}
-              onCheckedChange={(checked) => setAcceptTerms(checked === true)}
-            />
-            <label
-              htmlFor="terms"
-              className="cursor-pointer text-sm leading-none"
-            >
-              J{"'"}accepte les{" "}
-              <Link href="/cgu" className="text-primary hover:underline">
-                Conditions d{"'"}utilisation
-              </Link>{" "}
-              et la{" "}
-              <Link href="/legal" className="text-primary hover:underline">
-                Politique de confidentialité
-              </Link>
-              .
-            </label>
+          <div className="mt-1 flex items-start gap-2" role="group" aria-labelledby="terms-label">
+            <p className="text-sm flex items-center gap-2 leading-none">
+              <Checkbox
+                id="terms"
+                checked={acceptTerms}
+                onCheckedChange={(checked) => setAcceptTerms(checked === true)}
+              />
+              <label
+                htmlFor="terms"
+                className="cursor-pointer text-sm leading-none"
+                id="terms-label"
+              >
+                <span>
+                  J{"'"}accepte les{" "}
+                  <Link href="/cgu" className="text-primary hover:underline">
+                    Conditions d{"'"}utilisation
+                  </Link>{" "}
+                  et la{" "}
+                  <Link href="/legal" className="text-primary hover:underline">
+                    Politique de confidentialité
+                  </Link>
+                  .
+                </span>
+              </label>
+            </p>
           </div>
 
           <Button
             type="submit"
             className="hover:bg-primary/80 mt-2 w-full"
             disabled={isLoading}
+            aria-busy={isLoading}
           >
             {isLoading ? "Inscription en cours..." : "S'inscrire"}
           </Button>
