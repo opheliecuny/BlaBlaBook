@@ -3,7 +3,7 @@ import z from "zod";
 import argon2 from "argon2";
 import { generateAuthenticationTokens, saveRefreshTokenInDatabase, setAccessTokenCookie, setRefreshTokenCookie, replaceRefreshTokenInDatabase } from "../utils/token";
 import { prisma } from "../utils/prismaClient";
-import { ConflictError } from "../errors";
+import { ConflictError, UnauthorizedError } from "../errors";
 
 export async function registerUser(req: Request, res: Response) {
 
@@ -63,11 +63,11 @@ export async function loginUser(req: Request, res: Response) {
 
   const user = await prisma.user.findFirst({ where: { email } });
   if (!user) {
-    return res.status(401).json({ message: "Email and password do not match" });
+    throw new UnauthorizedError("User does not exist");
   }
   const isMatching = await argon2.verify(user.password, password);
   if (!isMatching) {
-    return res.status(401).json({ message: "Email and password do not match" });
+    throw new UnauthorizedError("Invalid credentials");
   }
 
   const { accessToken, refreshToken } = generateAuthenticationTokens(user);
@@ -104,7 +104,7 @@ export async function getMe(req: Request, res: Response) {
     select: { id: true, email: true, username: true },
   });
 
-  if (!user) return res.status(404).json({ message: "User not found" });
+  if (!user) throw new UnauthorizedError("User does not exist");
 
   return res.status(200).json(user);
 }

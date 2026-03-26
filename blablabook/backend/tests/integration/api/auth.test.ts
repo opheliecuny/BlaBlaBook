@@ -178,7 +178,7 @@ describe("Auth API Integration Tests", () => {
         .send(loginData)
         .expect(401);
 
-      expect(response.body.message).toBe("Email and password do not match");
+      expect(response.body.message).toBe("User does not exist");
     });
 
     it("devrait retourner 401 si le password est incorrect", async () => {
@@ -197,7 +197,7 @@ describe("Auth API Integration Tests", () => {
         .send(loginData)
         .expect(401);
 
-      expect(response.body.message).toBe("Email and password do not match");
+      expect(response.body.message).toBe("Invalid credentials");
     });
 
     it("devrait retourner 400 si l'email est manquant", async () => {
@@ -245,7 +245,7 @@ describe("Auth API Integration Tests", () => {
     it("devrait retourner 401 si l'utilisateur n'est pas authentifié", async () => {
       const response = await request(app).post("/auth/logout").expect(401);
 
-      expect(response.body.message).toBe("Token is missing");
+      expect(response.body.message).toBe("No token provided");
     });
   });
 

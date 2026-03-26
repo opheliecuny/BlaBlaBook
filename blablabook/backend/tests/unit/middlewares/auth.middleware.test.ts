@@ -30,76 +30,68 @@ describe("Auth Middleware", () => {
   });
 
   describe("isAuthenticated", () => {
-    it("devrait retourner 401 si le token est manquant", () => {
+    it("devrait throw si le token est manquant", () => {
       mockRequest.cookies = {};
 
-      isAuthenticated(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
-
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        message: "Token is missing",
-      });
-      expect(mockNext).not.toHaveBeenCalled();
+      expect(() => {
+        isAuthenticated(
+          mockRequest as Request,
+          mockResponse as Response,
+          mockNext,
+        );
+      }).toThrow("No token provided");
     });
 
-    it("devrait retourner 401 si le token est invalide", () => {
+    it("devrait throw si token invalide", () => {
       mockRequest.cookies = {
         accessToken: "invalid-token",
       };
 
-      isAuthenticated(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
-
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        message: "Token is not valid or expired",
+      vi.spyOn(jwt, "verify").mockImplementation(() => {
+        throw new Error("invalid");
       });
-      expect(mockNext).not.toHaveBeenCalled();
+
+      expect(() => {
+        isAuthenticated(
+          mockRequest as Request,
+          mockResponse as Response,
+          mockNext,
+        );
+      }).toThrow("Token is not valid or expired");
     });
 
-    it("devrait retourner 401 si le token est expiré", () => {
-      // Créer un token expiré
+    it("devrait throw si le token est expiré", () => {
       const expiredToken = jwt.sign(
         { userId: "test-user-id" },
         "test-secret-key-minimum-32-characters-long-for-testing",
-        { expiresIn: "-1h" }, // Token expiré il y a 1 heure
+        { expiresIn: "-1h" },
       );
 
       mockRequest.cookies = {
         accessToken: expiredToken,
       };
 
-      isAuthenticated(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      expect(() => {
+        isAuthenticated(
+          mockRequest as Request,
+          mockResponse as Response,
+          mockNext,
+        );
+      }).toThrow("Token is not valid or expired");
 
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        message: "Token is not valid or expired",
-      });
       expect(mockNext).not.toHaveBeenCalled();
     });
 
     it("devrait définir req.user et appeler next() si le token est valide", () => {
       const userId = "550e8400-e29b-41d4-a716-446655440000";
-      const validToken = jwt.sign(
-        { userId },
-        "test-secret-key-minimum-32-characters-long-for-testing",
-        { expiresIn: "1h" },
-      );
 
       mockRequest.cookies = {
-        accessToken: validToken,
+        accessToken: "valid-token",
       };
+
+      vi.spyOn(jwt, "verify").mockReturnValue({
+        userId,
+      } as any);
 
       isAuthenticated(
         mockRequest as Request,
@@ -108,22 +100,20 @@ describe("Auth Middleware", () => {
       );
 
       expect(mockRequest.user).toEqual({ id: userId });
-      expect(mockNext).toHaveBeenCalled();
-      expect(mockResponse.status).not.toHaveBeenCalled();
-      expect(mockResponse.json).not.toHaveBeenCalled();
+      expect(mockNext).toHaveBeenCalledTimes(1);
     });
 
     it("devrait gérer correctement un token avec un payload différent", () => {
       const userId = "another-user-id";
-      const validToken = jwt.sign(
-        { userId, extra: "data" },
-        "test-secret-key-minimum-32-characters-long-for-testing",
-        { expiresIn: "2h" },
-      );
 
       mockRequest.cookies = {
-        accessToken: validToken,
+        accessToken: "valid-token",
       };
+
+      vi.spyOn(jwt, "verify").mockReturnValue({
+        userId,
+        extra: "data",
+      } as any);
 
       isAuthenticated(
         mockRequest as Request,
@@ -132,7 +122,7 @@ describe("Auth Middleware", () => {
       );
 
       expect(mockRequest.user).toEqual({ id: userId });
-      expect(mockNext).toHaveBeenCalled();
+      expect(mockNext).toHaveBeenCalledTimes(1);
     });
   });
 });

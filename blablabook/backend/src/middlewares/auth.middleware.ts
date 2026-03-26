@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { config } from "../../config";
+import { UnauthorizedError } from "@/errors";
 
 export function isAuthenticated(
   req: Request,
@@ -10,7 +11,7 @@ export function isAuthenticated(
   const token = req.cookies?.accessToken;
 
   if (typeof token === "undefined") {
-    return res.status(401).json({ message: "Token is missing" });
+    throw new UnauthorizedError("No token provided");
   }
 
   try {
@@ -22,6 +23,6 @@ export function isAuthenticated(
 
     next();
   } catch (_error) {
-    return res.status(401).json({ message: "Token is not valid or expired" });
+    throw new UnauthorizedError("Token is not valid or expired");
   }
 }

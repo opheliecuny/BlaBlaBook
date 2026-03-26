@@ -1,5 +1,6 @@
 import type { Request, Response } from "express";
 import type { OpenLibraryResponse } from "../@types/index";
+import { NotFoundError } from "@/errors";
 
 export async function getRandomBooks(req: Request, res: Response) {
 
@@ -69,7 +70,7 @@ export async function getBookById(req: Request, res: Response) {
   const doc = data.docs?.[0];
 
   if (!doc) {
-    return res.status(404).send({ error: "Book not found" });
+    throw new NotFoundError("Book not found");
   }
 
   const selectedDatas = {
