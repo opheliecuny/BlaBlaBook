@@ -1,0 +1,39 @@
+name: Deploy to Production
+
+# ─── Déclencheur du workflow ───────────────────────────────────────────────────
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: # Permet déclenchement manuel
+
+jobs:
+  # ─── Job 1 : Déployer Backend sur Render ───────────────────────────────────────────────────
+  deploy-backend:
+    name: Deploy Backend (Render)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        # Récupère le code de la branche principale
+
+      - name: Trigger Render Deploy Hook (Backend)
+        run: |
+          curl -X POST ${{ secrets.RENDER_BACKEND_DEPLOY_HOOK }}
+        # Envoie une requête POST au webhook de déploiement de Render pour le backend
+
+  # ─── Job 2 : Déployer Frontend sur Render ───────────────────────────────────────────────────
+  deploy-frontend:
+    name: Deploy Frontend (Render)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        # Récupère le code de la branche principale
+
+      - name: Trigger Render Deploy Hook (Frontend)
+        run: |
+          curl -X POST ${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK }}
+        # Envoie une requête POST au webhook de déploiement de Render pour le frontend
