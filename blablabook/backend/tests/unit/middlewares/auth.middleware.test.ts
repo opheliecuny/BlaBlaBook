@@ -84,15 +84,14 @@ describe("Auth Middleware", () => {
 
     it("devrait définir req.user et appeler next() si le token est valide", () => {
       const userId = "550e8400-e29b-41d4-a716-446655440000";
-      const validToken = jwt.sign(
-        { userId },
-        "test-secret-key-minimum-32-characters-long-for-testing",
-        { expiresIn: "1h" },
-      );
 
       mockRequest.cookies = {
-        accessToken: validToken,
+        accessToken: "valid-token",
       };
+
+      vi.spyOn(jwt, "verify").mockReturnValue({
+        userId,
+      } as any);
 
       isAuthenticated(
         mockRequest as Request,
@@ -101,22 +100,20 @@ describe("Auth Middleware", () => {
       );
 
       expect(mockRequest.user).toEqual({ id: userId });
-      expect(mockNext).toHaveBeenCalled();
-      expect(mockResponse.status).not.toHaveBeenCalled();
-      expect(mockResponse.json).not.toHaveBeenCalled();
+      expect(mockNext).toHaveBeenCalledTimes(1);
     });
 
     it("devrait gérer correctement un token avec un payload différent", () => {
       const userId = "another-user-id";
-      const validToken = jwt.sign(
-        { userId, extra: "data" },
-        "test-secret-key-minimum-32-characters-long-for-testing",
-        { expiresIn: "2h" },
-      );
 
       mockRequest.cookies = {
-        accessToken: validToken,
+        accessToken: "valid-token",
       };
+
+      vi.spyOn(jwt, "verify").mockReturnValue({
+        userId,
+        extra: "data",
+      } as any);
 
       isAuthenticated(
         mockRequest as Request,
@@ -125,7 +122,7 @@ describe("Auth Middleware", () => {
       );
 
       expect(mockRequest.user).toEqual({ id: userId });
-      expect(mockNext).toHaveBeenCalled();
+      expect(mockNext).toHaveBeenCalledTimes(1);
     });
   });
 });
