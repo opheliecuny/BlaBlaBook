@@ -163,7 +163,7 @@ describe("User API Integration Tests", () => {
       expect(newLoginResponse.body.email).toBe("user@example.com");
     });
 
-    it("devrait retourner 400 si le nouvel email est déjà utilisé", async () => {
+    it("devrait retourner 409 si le nouvel email est déjà utilisé", async () => {
       // Créer deux utilisateurs
       await createTestUser({
         email: "user1@example.com",
@@ -191,7 +191,7 @@ describe("User API Integration Tests", () => {
         .patch("/user/profile")
         .set("Cookie", cookies)
         .send({ email: "user2@example.com" })
-        .expect(400);
+        .expect(409);
     });
 
     it("devrait retourner 400 si le password est trop court", async () => {
