@@ -2,10 +2,11 @@ import type { Request, Response } from "express";
 import z from "zod";
 import { prisma } from "../utils/prismaClient";
 import argon2 from "argon2";
+import { ConflictError, UnauthorizedError } from "@/errors";
 
 export async function getUserProfile(req: Request, res: Response) {
   const userId = req.user?.id;
-  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+  if (!userId) throw new UnauthorizedError("User is not authenticated");
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -19,7 +20,7 @@ export async function getUserProfile(req: Request, res: Response) {
   });
 
   if (!user) {
-    return res.status(404).json({ message: "User not found" });
+    throw new UnauthorizedError("User does not exist");
   }
 
   return res.status(200).json(user);
@@ -41,7 +42,7 @@ export async function updateUser(req: Request, res: Response) {
   const data = await updateUserBodySchema.parseAsync(req.body);
 
   const userId = req.user?.id;
-  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+  if (!userId) throw new UnauthorizedError("User is not authenticated");
 
   if (data.email) {
     const existingUser = await prisma.user.findFirst({
@@ -49,7 +50,7 @@ export async function updateUser(req: Request, res: Response) {
       where: { email: data.email, NOT: {id: userId} }
     });
     if (existingUser) {
-      return res.status(400).json("Email already in use by another account");
+      throw new ConflictError("Email already in use by another account");
     }
   }
 
@@ -65,7 +66,7 @@ export async function updateUser(req: Request, res: Response) {
 
 export async function deleteUser(req: Request, res: Response) {
   const userId = req.user?.id;
-  if (!userId) return res.status(401).json({ message: "Unauthorized" });
+  if (!userId) throw new UnauthorizedError("User is not authenticated");
 
   // Supprimer les refresh tokens de l'utilisateur
   await prisma.refresh_token.deleteMany({
