@@ -12,6 +12,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
 import { Bookmark, BookOpen, Check, Plus, Trash2, Search } from "lucide-react";
 import { getLibrary, updateReadingStatus, deleteBookFromLibrary } from "@/services/libraryService";
 import type { ReadingStatus } from "@/types/library";
@@ -90,14 +101,12 @@ export default function LibraryPage() {
   };
 
   const handleDeleteBook = async (bookId: string) => {
-    if (confirm("Voulez-vous vraiment supprimer ce livre de votre bibliothèque ?")) {
-      const previous = books;
-      setBooks((prev) => prev.filter((book) => book.bookId !== bookId));
-      try {
-        await deleteBookFromLibrary(bookId);
-      } catch {
-        setBooks(previous);
-      }
+    const previous = books;
+    setBooks((prev) => prev.filter((book) => book.bookId !== bookId));
+    try {
+      await deleteBookFromLibrary(bookId);
+    } catch {
+      setBooks(previous);
     }
   };
 
@@ -120,17 +129,17 @@ export default function LibraryPage() {
         </div>
         <Link href="/search">
           <Button className="gap-2 shadow-sm">
-            <Plus size={18} />
+            <Plus size={18} aria-hidden="true" />
             Ajouter un livre
           </Button>
         </Link>
       </div>
 
       {/* Stats Cards */}
-      <div className="mb-8 grid grid-cols-3 gap-3 sm:gap-4">
-        <StatCard icon={<Bookmark className="text-amber-500" size={18} />} label="À lire" count={stats.toRead} />
-        <StatCard icon={<BookOpen className="text-blue-500" size={18} />} label="En cours" count={stats.reading} />
-        <StatCard icon={<Check className="text-emerald-500" size={18} />} label="Lus" count={stats.read} />
+      <div role="group" aria-label="Statistiques de lecture" className="mb-8 grid grid-cols-3 gap-3 sm:gap-4">
+        <StatCard icon={<Bookmark className="text-amber-500" size={18} aria-hidden="true" />} label="À lire" count={stats.toRead} />
+        <StatCard icon={<BookOpen className="text-blue-500" size={18} aria-hidden="true" />} label="En cours" count={stats.reading} />
+        <StatCard icon={<Check className="text-emerald-500" size={18} aria-hidden="true" />} label="Lus" count={stats.read} />
       </div>
 
       {/* Filtres */}
@@ -153,9 +162,9 @@ export default function LibraryPage() {
       {filteredBooks.length === 0 ? (
         <EmptyState />
       ) : (
-        <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 divide-x divide-gray-200/50 -mx-4">
+        <ul className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 divide-x divide-gray-200/50 -mx-4">
           {filteredBooks.map((book) => (
-            <div
+            <li
               key={book.bookId}
               className={`
         flex flex-col px-4 py-6 bg-background
@@ -169,19 +178,39 @@ export default function LibraryPage() {
               <div className="group relative mb-3 h-64 sm:h-80 md:h-96 lg:h-[420px] xl:h-[480px] overflow-hidden rounded-lg">
                 <Image
                   src={book.cover}
-                  alt={book.title}
+                  alt={`Couverture du livre ${book.title}`}
                   fill
                   className="object-cover transition-transform duration-300 group-hover:scale-105"
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 />
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="text-destructive hover:bg-accent absolute top-2 right-2 h-8 w-8 rounded-full border-none bg-white shadow-sm"
-                  onClick={() => handleDeleteBook(book.bookId)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger
+                    className="absolute top-2 right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm"
+                    aria-label={`Supprimer ${book.title}`}
+                  >
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
+                  </AlertDialogTrigger>
+
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Supprimer ce livre ?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Le livre &quot;{book.title}&quot; sera supprimé définitivement de votre bibliothèque.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => handleDeleteBook(book.bookId)}
+                      >
+                        Supprimer
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               </div>
 
               <h3 className="line-clamp-1 text-sm sm:text-base lg:text-lg font-bold">{book.title}</h3>
@@ -189,6 +218,10 @@ export default function LibraryPage() {
 
               <div className="mt-auto space-y-3">
                 <Select value={book.status} onValueChange={(value) => handleStatusChange(book.bookId, value as ReadingStatus)}>
+                  {/* Label uniquement pour les lecteurs d'écran */}
+                  <label htmlFor={`status-${book.bookId}`} className="sr-only">
+                    Statut de lecture pour {book.title}
+                  </label>
                   <SelectTrigger className="bg-background w-full">
                     <SelectValue>{STATUS_LABELS[book.status]}</SelectValue>
                   </SelectTrigger>
@@ -200,14 +233,14 @@ export default function LibraryPage() {
                 </Select>
 
                 <Link href={`/book/${book.openLibraryId}`}>
-                  <Button className="w-full active:scale-95 active:bg-gray-100 transition-all hover:bg-[#D1D5DB]" variant="secondary">
+                  <Button className="w-full active:scale-95 active:bg-gray-100 transition-all hover:bg-[#D1D5DB]" variant="secondary" aria-label={`Voir le détail de ${book.title}`}>
                     Voir le détail
                   </Button>
                 </Link>
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
@@ -221,11 +254,13 @@ function StatCard({ icon, label, count }: {
 }) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-3 flex flex-col">
-      <div className="self-start">{icon}</div>
-      <div className="flex flex-col items-center justify-center text-center mt-1">
-        <p className="text-2xl font-bold">{count}</p>
-        <p className="text-muted-foreground text-sm">{label}</p>
+      <div className="self-start" aria-hidden="true">
+        {icon}
       </div>
+      <dl className="flex flex-col items-center justify-center text-center mt-1">
+        <dd className="text-2xl font-bold">{count}</dd>
+        <dt className="text-muted-foreground text-sm">{label}</dt>
+      </dl>
     </div>
   );
 }
@@ -234,7 +269,7 @@ function StatCard({ icon, label, count }: {
 function EmptyState() {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed py-20 text-center">
-      <Search className="text-muted-foreground mb-4 h-10 w-10 opacity-20" />
+      <Search className="text-muted-foreground mb-4 h-10 w-10 opacity-20" aria-hidden="true" />
       <p className="text-muted-foreground font-medium">Aucun livre trouvé dans cette catégorie.</p>
       <Link href="/search" className="mt-4">
         <Button variant="outline" size="sm">Explorer le catalogue</Button>

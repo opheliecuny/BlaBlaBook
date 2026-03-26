@@ -39,7 +39,7 @@ export default function ProfilePage() {
       });
       setUsername(data.username);
       setEmail(data.email);
-      setDateJoined(formattedDate.toUpperCase());
+      setDateJoined(formattedDate);
     }
     fetchProfile();
   }, []);
@@ -102,11 +102,11 @@ export default function ProfilePage() {
     <div className="bg-background min-h-screen px-4 py-12 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-4xl space-y-6">
         {/* Header - Profil utilisateur */}
-        <div className="bg-card rounded-2xl border p-8 shadow-sm">
+        <section className="bg-card rounded-2xl border p-8 shadow-sm">
           <div className="flex flex-col items-center text-center">
             {/* Avatar */}
             <div className="bg-primary mb-4 flex h-24 w-24 items-center justify-center rounded-full">
-              <User className="text-primary-foreground h-12 w-12" />
+              <User className="text-primary-foreground h-12 w-12" aria-hidden="true" />
             </div>
 
             {/* Nom et email */}
@@ -115,17 +115,17 @@ export default function ProfilePage() {
 
             {/* Badge membre */}
             <div className="bg-secondary mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium">
-              <User className="h-4 w-4" />
-              <p className="text-xs">MEMBRE DEPUIS {dateJoined}</p>
+              <User className="h-4 w-4" aria-hidden="true" />
+              <p className="text-xs uppercase">Membre depuis {dateJoined}</p>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Section Informations personnelles */}
-        <div className="bg-card rounded-2xl border p-8 shadow-sm">
+        <section aria-labelledby="profile-info" className="bg-card rounded-2xl border p-8 shadow-sm">
           <div className="mb-6 flex items-center gap-3">
-            <User className="h-5 w-5" />
-            <h2 className="text-xl font-semibold">Informations personnelles</h2>
+            <User className="h-5 w-5" aria-hidden="true" />
+            <h2 id="profile-info" className="text-xl font-semibold">Informations personnelles</h2>
           </div>
 
           <form onSubmit={handleProfileUpdate} className="space-y-6">
@@ -138,6 +138,7 @@ export default function ProfilePage() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Votre pseudo"
+                autoComplete="username"
               />
             </div>
 
@@ -150,6 +151,7 @@ export default function ProfilePage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Votre email"
+                autoComplete="email"
               />
             </div>
 
@@ -158,13 +160,13 @@ export default function ProfilePage() {
               Enregistrer les modifications
             </Button>
           </form>
-        </div>
+        </section>
 
         {/* Section Sécurité */}
-        <div className="bg-card rounded-2xl border p-8 shadow-sm">
+        <section aria-labelledby="security-title" className="bg-card rounded-2xl border p-8 shadow-sm">
           <div className="mb-6 flex items-center gap-3">
-            <Shield className="h-5 w-5" />
-            <h2 className="text-xl font-semibold">Sécurité</h2>
+            <Shield className="h-5 w-5" aria-hidden="true" />
+            <h2 id="security-title" className="text-xl font-semibold">Sécurité</h2>
           </div>
 
           <form onSubmit={handlePasswordUpdate} className="space-y-6">
@@ -177,6 +179,7 @@ export default function ProfilePage() {
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
                 placeholder="••••••••••••"
+                autoComplete="current-password"
               />
             </div>
 
@@ -190,6 +193,7 @@ export default function ProfilePage() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="••••••••••••"
+                  autoComplete="new-password"
                 />
               </div>
 
@@ -204,6 +208,7 @@ export default function ProfilePage() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••••••"
+                  autoComplete="new-password"
                 />
               </div>
             </div>
@@ -213,19 +218,19 @@ export default function ProfilePage() {
               Mettre à jour le mot de passe
             </Button>
           </form>
-        </div>
+        </section>
 
         {/* Zone de danger */}
-        <div className="flex flex-col gap-6 sm:flex-row items-center justify-between rounded-2xl border-2 border-[var(--accent-alt)] bg-[var(--accent-alt)]/10 p-8">
+        <section aria-labelledby="danger-zone" className="flex flex-col gap-6 sm:flex-row items-center justify-between rounded-2xl border-2 border-[var(--accent-alt)] bg-[var(--accent-alt)]/10 p-8">
           {/* Partie gauche - Icône et texte */}
           <div className="flex items-start space-x-4">
             {/* Icône d'alerte */}
             <div className="bg-[var(--accent-alt)] text-white mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
-              <AlertTriangle className="h-6 w-6" />
+              <AlertTriangle className="h-6 w-6" aria-hidden="true" />
             </div>
 
             <div>
-              <h2 className="text-xl font-bold text-[#A12C14]">Zone de danger</h2>
+              <h2 id="danger-zone" className="text-xl font-bold text-[#A12C14]">Zone de danger</h2>
               <p className="mt-1 text-lg font-medium text-[#A12C14]">
                 Supprimer mon compte
               </p>
@@ -237,7 +242,7 @@ export default function ProfilePage() {
 
           {/* Partie droite : Bouton de suppression */}
           <AlertDialog>
-            <AlertDialogTrigger className="ml-4 shrink-0 border-[var(--accent-alt)] bg-[var(--accent-alt)] text-white p-2 rounded-md">
+            <AlertDialogTrigger className="ml-4 shrink-0 border-[var(--accent-alt)] bg-[var(--accent-alt)] text-white p-2 rounded-md" aria-label="Supprimer le compte">
               Supprimer définitivement
             </AlertDialogTrigger>
 
@@ -260,7 +265,7 @@ export default function ProfilePage() {
               </div>
             </AlertDialogContent>
           </AlertDialog>
-        </div>
+        </section>
       </div>
     </div>
   );
