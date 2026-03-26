@@ -30,69 +30,56 @@ describe("Auth Middleware", () => {
   });
 
   describe("isAuthenticated", () => {
-    it("devrait retourner 401 si le token est manquant", () => {
+    it("devrait throw si le token est manquant", () => {
       mockRequest.cookies = {};
 
-      isAuthenticated(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
-
-      expect(() =>
+      expect(() => {
         isAuthenticated(
           mockRequest as Request,
           mockResponse as Response,
           mockNext,
-        ),
-      ).toThrow("No token provided");
+        );
+      }).toThrow("No token provided");
     });
 
-    it("devrait retourner 401 si le token est invalide", () => {
+    it("devrait throw si token invalide", () => {
       mockRequest.cookies = {
         accessToken: "invalid-token",
       };
 
-      isAuthenticated(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
+      vi.spyOn(jwt, "verify").mockImplementation(() => {
+        throw new Error("invalid");
+      });
 
-      expect(() =>
+      expect(() => {
         isAuthenticated(
           mockRequest as Request,
           mockResponse as Response,
           mockNext,
-        ),
-      ).toThrow("Token is not valid or expired");
+        );
+      }).toThrow("Token is not valid or expired");
     });
 
-    it("devrait retourner 401 si le token est expiré", () => {
-      // Créer un token expiré
+    it("devrait throw si le token est expiré", () => {
       const expiredToken = jwt.sign(
         { userId: "test-user-id" },
         "test-secret-key-minimum-32-characters-long-for-testing",
-        { expiresIn: "-1h" }, // Token expiré il y a 1 heure
+        { expiresIn: "-1h" },
       );
 
       mockRequest.cookies = {
         accessToken: expiredToken,
       };
 
-      isAuthenticated(
-        mockRequest as Request,
-        mockResponse as Response,
-        mockNext,
-      );
-
-      expect(() =>
+      expect(() => {
         isAuthenticated(
           mockRequest as Request,
           mockResponse as Response,
           mockNext,
-        ),
-      ).toThrow("Token is not valid or expired");
+        );
+      }).toThrow("Token is not valid or expired");
+
+      expect(mockNext).not.toHaveBeenCalled();
     });
 
     it("devrait définir req.user et appeler next() si le token est valide", () => {
