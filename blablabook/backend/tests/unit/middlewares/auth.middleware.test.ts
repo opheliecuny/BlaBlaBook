@@ -39,11 +39,13 @@ describe("Auth Middleware", () => {
         mockNext,
       );
 
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        message: "Token is missing",
-      });
-      expect(mockNext).not.toHaveBeenCalled();
+      expect(() =>
+        isAuthenticated(
+          mockRequest as Request,
+          mockResponse as Response,
+          mockNext,
+        ),
+      ).toThrow("No token provided");
     });
 
     it("devrait retourner 401 si le token est invalide", () => {
@@ -57,11 +59,13 @@ describe("Auth Middleware", () => {
         mockNext,
       );
 
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        message: "Token is not valid or expired",
-      });
-      expect(mockNext).not.toHaveBeenCalled();
+      expect(() =>
+        isAuthenticated(
+          mockRequest as Request,
+          mockResponse as Response,
+          mockNext,
+        ),
+      ).toThrow("Token is not valid or expired");
     });
 
     it("devrait retourner 401 si le token est expiré", () => {
@@ -82,11 +86,13 @@ describe("Auth Middleware", () => {
         mockNext,
       );
 
-      expect(mockResponse.status).toHaveBeenCalledWith(401);
-      expect(mockResponse.json).toHaveBeenCalledWith({
-        message: "Token is not valid or expired",
-      });
-      expect(mockNext).not.toHaveBeenCalled();
+      expect(() =>
+        isAuthenticated(
+          mockRequest as Request,
+          mockResponse as Response,
+          mockNext,
+        ),
+      ).toThrow("Token is not valid or expired");
     });
 
     it("devrait définir req.user et appeler next() si le token est valide", () => {
