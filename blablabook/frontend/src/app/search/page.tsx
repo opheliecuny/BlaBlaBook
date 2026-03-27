@@ -110,8 +110,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                       <p className="text-xs text-muted-foreground mt-1">{book.author ?? "Auteur inconnu"}</p>
                       <div className="mt-auto pt-4 flex flex-col gap-2">
                         {book.category && (
-                          <span className="text-base border rounded px-2 py-0.5 w-fit tag-terracotta">
-                            {book.category}
+                          <span className="relative group text-base border rounded px-2 py-0.5 w-fit tag-terracotta">
+                            {book.category.length > 20
+                              ? `${book.category.slice(0, 17)}...`
+                              : book.category}
+
+                            <span className="absolute hidden group-hover:block left-0 -top-8 bg-white text-gray-800 text-xs px-2 py-1 rounded shadow-md border whitespace-nowrap z-10">
+                              {book.category}
+                            </span>
                           </span>
                         )}
                         <div className="flex flex-col lg:flex-row gap-2 w-full">

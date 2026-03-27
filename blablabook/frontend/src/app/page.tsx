@@ -12,7 +12,7 @@ interface RandomBook {
 
 async function fetchRandomBooks(): Promise<RandomBook[]> {
   try {
-    const res = await fetch(`${process.env.API_URL}/book`, {
+    const res = await fetch(`${process.env.API_URL}/books`, {
       cache: "no-store",
     });
     if (!res.ok) return [];
