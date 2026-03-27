@@ -101,28 +101,12 @@ export default async function HomePage() {
                   </div>
                 </li>
               );
-            }) : [1, 2, 3, 4].map((i) => (
-              <li key={i} className="flex flex-col p-12">
-                <BookCover
-                  src={null}
-                  alt="Couverture non disponible"
-                  className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
-                />
-                <div className="flex flex-col flex-1 mt-3">
-                  <h3 className="font-bold text-base leading-snug font-playfair">Titre du livre</h3>
-                  <p className="text-xs text-muted-foreground mt-1">Auteur</p>
-                  <div className="mt-auto pt-4">
-                    <Link
-                      href="/search"
-                      className="inline-flex items-center justify-center rounded-md bg-[#E5E7EB] px-3 py-1.5 text-xs font-medium hover:bg-[#D1D5DB] w-full"
-                      aria-label="Voir le détail du livre"
-                    >
-                      Voir le détail
-                    </Link>
-                  </div>
-                </div>
-              </li>
-            ))}
+            }) : 
+              <div className="my-17 col-span-full flex flex-col items-center border border-border rounded-xl p-12" role="status">
+                <p className="text-center text-muted-foreground col-span-full">Une erreur est survenue lors du chargement des livres.</p>
+                <p className="text-center text-muted-foreground col-span-full">Veuillez réessayer plus tard.</p>
+              </div>
+            }
           </ul>
         </div>
       </section>

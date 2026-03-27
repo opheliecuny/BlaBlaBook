@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { register } from "@/services/authService";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -21,6 +22,8 @@ export default function RegisterPage() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   async function handleRegister(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -66,6 +69,12 @@ export default function RegisterPage() {
     }
   }
 
+  const score = [
+    password.length >= 8,
+    /[A-Z]/.test(password),
+    /[0-9]/.test(password),
+    /[^A-Za-z0-9]/.test(password),
+  ].filter(Boolean).length;
 
   return (
     <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center px-4 py-10">
@@ -118,29 +127,89 @@ export default function RegisterPage() {
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="password">Mot de passe</Label>
-            <Input
-              id="password"
-              name="password"
-              type="password"
-              placeholder="••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="new-password"
-              required
-            />
+
+            <div className="relative">
+              <Input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+                className="pr-10"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword((v) => !v)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+
+            {/* Indicateur de force */}
+            <div className="h-1 w-full bg-gray-200 rounded mt-2">
+              <div
+                className={`h-full transition-all rounded ${score <= 1
+                  ? "w-1/4 bg-red-500"
+                  : score === 2
+                    ? "w-2/4 bg-orange-400"
+                    : score === 3
+                      ? "w-3/4 bg-yellow-400"
+                      : "w-full bg-green-500"
+                  }`}
+              />
+            </div>
+
+            {/* Texte critères */}
+            <p className="text-xs text-muted-foreground">
+              Votre mot de passe doit contenir au moins :
+            </p>
+
+            {/* Liste critères */}
+            <ul className="text-xs space-y-1 mt-1 list-disc pl-5">
+              <li className={password.length >= 8 ? "text-green-600" : "text-gray-500"}>
+                8 caractères
+              </li>
+              <li className={/[A-Z]/.test(password) ? "text-green-600" : "text-gray-500"}>
+                Une majuscule
+              </li>
+              <li className={/[0-9]/.test(password) ? "text-green-600" : "text-gray-500"}>
+                Un chiffre
+              </li>
+              <li className={/[^A-Za-z0-9]/.test(password) ? "text-green-600" : "text-gray-500"}>
+                Un caractère spécial
+              </li>
+            </ul>
           </div>
 
           <div className="flex flex-col gap-1.5">
             <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-            <Input
-              id="confirmPassword"
-              type="password"
-              placeholder="••••••"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              autoComplete="new-password"
-              required
-            />
+
+            <div className="relative">
+              <Input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                placeholder="••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                autoComplete="new-password"
+                required
+                className="pr-10"
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword((v) => !v)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <div className="mt-1 flex items-start gap-2" role="group" aria-labelledby="terms-label">
