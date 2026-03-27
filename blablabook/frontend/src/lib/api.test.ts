@@ -91,16 +91,14 @@ describe("ApiClient", () => {
       await expect(apiClient.get("/library")).rejects.toThrow("Forbidden");
     });
 
-    it("redirige vers /login et nettoie le localStorage sur 401", async () => {
+    it("redirige vers /login sur 401", async () => {
       vi.stubGlobal("location", { href: "" });
-      localStorage.setItem("user", JSON.stringify({ id: "1" }));
 
       mockFetch.mockReturnValueOnce(mockResponse({ message: "Non autorisé" }, 401));
 
       await expect(apiClient.get("/library")).rejects.toThrow("Non autorisé");
 
       expect(window.location.href).toBe("/login");
-      expect(localStorage.getItem("user")).toBeNull();
     });
 
     it("lève une erreur réseau si fetch échoue", async () => {

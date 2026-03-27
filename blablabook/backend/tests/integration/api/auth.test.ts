@@ -29,6 +29,7 @@ describe("Auth API Integration Tests", () => {
 
       expect(response.body).toHaveProperty("id");
       expect(response.body.email).toBe(userData.email);
+      expect(response.body.username).toBe(userData.username);
       expect(response.body).not.toHaveProperty("password");
 
       // Vérifier que les cookies sont définis

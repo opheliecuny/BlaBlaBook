@@ -49,6 +49,7 @@ export async function registerUser(req: Request, res: Response) {
   return res.status(201).json({
     id: user.id,
     email: user.email,
+    username: user.username,
   });
 };
 

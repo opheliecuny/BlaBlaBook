@@ -45,10 +45,9 @@ class ApiClient {
           message: "Une erreur est survenue",
         }));
 
-        // Si 401 (Unauthorized), supprimer les données utilisateur et rediriger vers login
+        // Si 401 (Unauthorized), rediriger vers login (le rechargement réinitialise l'AuthContext)
         if (response.status === 401) {
           if (typeof window !== "undefined") {
-            localStorage.removeItem("user");
             window.location.href = "/login";
           }
         }
