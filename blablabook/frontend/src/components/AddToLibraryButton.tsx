@@ -28,6 +28,7 @@ export default function AddToLibraryButton({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [added, setAdded] = useState(false);
+  const [error, setError] = useState(false);
 
   async function handleClick() {
     if (!isAuthenticated) {
@@ -36,6 +37,7 @@ export default function AddToLibraryButton({
     }
 
     setLoading(true);
+    setError(false);
     try {
       await addBookToLibrary({
         isbn: isbn ?? `ol-${bookId}`,
@@ -50,7 +52,7 @@ export default function AddToLibraryButton({
 
       setAdded(true);
     } catch {
-      // Erreur silencieuse — l'utilisateur peut réessayer
+      setError(true);
     } finally {
       setLoading(false);
     }
@@ -61,12 +63,18 @@ export default function AddToLibraryButton({
       type="button"
       onClick={handleClick}
       disabled={authLoading || loading || added}
-      className="flex items-center justify-center rounded-md bg-primary text-primary-foreground px-3 py-1.5 text-xs font-medium hover:bg-primary/90 whitespace-nowrap shrink-0 disabled:opacity-60"
+      className={`flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium whitespace-nowrap shrink-0 disabled:opacity-60 ${
+        error
+          ? "bg-red-500 hover:bg-red-600 text-white"
+          : "bg-primary text-primary-foreground hover:bg-primary/90"
+      }`}
     >
       {loading ? (
         "..."
       ) : added ? (
         "✓ Ajouté"
+      ) : error ? (
+        "Erreur — réessayer"
       ) : (
         <>
           <span

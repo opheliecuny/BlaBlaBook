@@ -29,9 +29,11 @@ export default function AddToLibraryPanel({
   const [status, setStatus] = useState<ReadingStatus>("TO_READ");
   const [loading, setLoading] = useState(false);
   const [added, setAdded] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleAdd() {
     setLoading(true);
+    setError(null);
     try {
       await addBookToLibrary({
         isbn: isbn ?? `ol-${openLibraryId}`,
@@ -45,7 +47,7 @@ export default function AddToLibraryPanel({
       });
       setAdded(true);
     } catch {
-      // Erreur silencieuse — l'utilisateur peut réessayer
+      setError("Erreur lors de l'ajout. Veuillez réessayer.");
     } finally {
       setLoading(false);
     }
@@ -72,18 +74,21 @@ export default function AddToLibraryPanel({
       </div>
 
       {isAuthenticated ? (
-        <button
-          type="button"
-          onClick={handleAdd}
-          disabled={loading || added || authLoading}
-          className="w-full inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-5 py-2 text-[0.65rem] font-medium hover:bg-primary/90 whitespace-nowrap disabled:opacity-60"
-        >
-          {loading
-            ? "Ajout en cours..."
-            : added
-              ? "✓ Ajouté à ma bibliothèque"
-              : "+ Ajouter à ma bibliothèque"}
-        </button>
+        <>
+          <button
+            type="button"
+            onClick={handleAdd}
+            disabled={loading || added || authLoading}
+            className="w-full inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-5 py-2 text-[0.65rem] font-medium hover:bg-primary/90 whitespace-nowrap disabled:opacity-60"
+          >
+            {loading
+              ? "Ajout en cours..."
+              : added
+                ? "✓ Ajouté à ma bibliothèque"
+                : "+ Ajouter à ma bibliothèque"}
+          </button>
+          {error && <p className="text-xs text-red-500">{error}</p>}
+        </>
       ) : (
         <Link
           href="/login"
