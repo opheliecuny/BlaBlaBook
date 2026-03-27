@@ -27,6 +27,7 @@ import { Bookmark, BookOpen, Check, Plus, Trash2, Search } from "lucide-react";
 import { getLibrary, updateReadingStatus, deleteBookFromLibrary } from "@/services/libraryService";
 import type { ReadingStatus } from "@/types/library";
 import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 interface DisplayBook {
   bookId: string;
@@ -43,10 +44,11 @@ export default function LibraryPage() {
   const [books, setBooks] = useState<DisplayBook[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { isAuthenticated, isLoading: authLoading, user } = useAuth();
+  const { isAuthenticated, isLoading: authLoading, authError, user } = useAuth();
 
   useEffect(() => {
     if (authLoading) return;
+    if (authError) return; // erreur réseau — on ne redirige pas, on affiche un message
     if (!isAuthenticated) {
       router.replace("/login");
       return;
@@ -67,7 +69,7 @@ export default function LibraryPage() {
       })
       .catch(console.error)
       .finally(() => setIsLoading(false));
-  }, [authLoading, isAuthenticated, router]);
+  }, [authLoading, isAuthenticated, authError, router]);
 
   const stats = useMemo(() => ({
     toRead: books.filter((b) => b.status === "TO_READ").length,
@@ -76,7 +78,18 @@ export default function LibraryPage() {
     total: books.length,
   }), [books]);
 
-  if (authLoading || !isAuthenticated) return null;
+  if (authLoading) return null;
+
+  if (authError) {
+    return (
+      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
+        <p className="text-muted-foreground text-sm">Impossible de vérifier votre session. Vérifiez votre connexion.</p>
+        <Button variant="outline" onClick={() => window.location.reload()}>Réessayer</Button>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) return null;
 
   if (isLoading) {
     return (
@@ -95,18 +108,23 @@ export default function LibraryPage() {
     ));
     try {
       await updateReadingStatus(bookId, { status: newStatus });
+      toast.success("Statut mis à jour.", { position: "bottom-right" });
     } catch {
       setBooks(previous);
+      toast.error("Impossible de mettre à jour le statut.", { position: "bottom-right" });
     }
   };
 
   const handleDeleteBook = async (bookId: string) => {
     const previous = books;
+    const deleted = books.find((b) => b.bookId === bookId);
     setBooks((prev) => prev.filter((book) => book.bookId !== bookId));
     try {
       await deleteBookFromLibrary(bookId);
+      toast.success(`"${deleted?.title}" supprimé de votre bibliothèque.`, { position: "bottom-right" });
     } catch {
       setBooks(previous);
+      toast.error("Impossible de supprimer le livre.", { position: "bottom-right" });
     }
   };
 

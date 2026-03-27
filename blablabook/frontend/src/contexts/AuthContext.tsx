@@ -14,6 +14,7 @@ interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  authError: boolean;
   login: (user: AuthUser) => void;
   logout: () => void;
   updateUser: (user: AuthUser) => void;
@@ -24,6 +25,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [authError, setAuthError] = useState(false);
 
   // Le token est maintenant dans un cookie httpOnly et n'est plus stocké ici
   useEffect(() => {
@@ -36,8 +38,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           const userData = await res.json();
           setUser(userData);
         }
+        // res.status 401 = non authentifié → user reste null → isAuthenticated = false (comportement correct)
       } catch (error) {
+        // Erreur réseau (backend inaccessible) — on ne sait pas si l'utilisateur est connecté
         console.error("Erreur lors de la vérification de session :", error);
+        setAuthError(true);
       } finally {
         setIsLoading(false);
       }
@@ -62,6 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     user,
     isAuthenticated: !!user, // L'utilisateur est authentifié si user est présent (le token est dans les cookies)
     isLoading,
+    authError,
     login,
     logout,
     updateUser,
