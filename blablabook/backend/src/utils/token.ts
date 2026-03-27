@@ -45,8 +45,8 @@ export function setAccessTokenCookie(res: Response, accessToken: Token) {
     maxAge: accessToken.expiresInMS, // 1h
 
     // Pour des cookies sécurisés cross-origin il faut :
-    secure: true,     // les cookies cross-origin, c'est seulement en HTTPS !
-    sameSite: "none"  // les cookies cross-origin, c'est forcement entre plusieurs origins
+    secure: process.env.NODE_ENV === "production", // HTTPS uniquement en prod, HTTP autorisé en dev
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax" // cross-origin en prod, lax en dev
     // Et ne pas oublier de faire en sorte que les CORS autorise l'envoie de "credentials"
   });
 }
@@ -55,8 +55,8 @@ export function setRefreshTokenCookie(res: Response, refreshToken: Token) {
   res.cookie("refreshToken", refreshToken.token, {
     httpOnly: true,
     maxAge: refreshToken.expiresInMS, // 7j
-    secure: true,
-    sameSite: "none",
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     path: "/api/auth/refresh" // Sécurité : le cookie s'enverra (front -> back) uniquement via cette route, pas les autres routes (limite les transferts de ce cookie)
   });
 }

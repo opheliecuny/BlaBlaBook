@@ -271,17 +271,15 @@ describe("Auth API Integration Tests", () => {
         c.startsWith("refreshToken="),
       );
 
-      // accessToken doit être effacé avec secure + samesite=none
+      // accessToken doit être effacé avec samesite=lax (dev/test env)
       expect(accessTokenCookie).toBeDefined();
       expect(accessTokenCookie).toMatch(/Max-Age=0/i);
-      expect(accessTokenCookie).toMatch(/Secure/i);
-      expect(accessTokenCookie).toMatch(/SameSite=None/i);
+      expect(accessTokenCookie).toMatch(/SameSite=Lax/i);
 
       // refreshToken doit être effacé avec le bon path
       expect(refreshTokenCookie).toBeDefined();
       expect(refreshTokenCookie).toMatch(/Max-Age=0/i);
-      expect(refreshTokenCookie).toMatch(/Secure/i);
-      expect(refreshTokenCookie).toMatch(/SameSite=None/i);
+      expect(refreshTokenCookie).toMatch(/SameSite=Lax/i);
       expect(refreshTokenCookie).toMatch(/Path=\/api\/auth\/refresh/i);
     });
 

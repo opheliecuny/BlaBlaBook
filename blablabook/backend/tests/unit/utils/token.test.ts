@@ -124,8 +124,8 @@ describe("Token Utils", () => {
         {
           httpOnly: true,
           maxAge: mockAccessToken.expiresInMS,
-          secure: true,
-          sameSite: "none",
+          secure: false,
+          sameSite: "lax",
         },
       );
     });
@@ -151,8 +151,8 @@ describe("Token Utils", () => {
         {
           httpOnly: true,
           maxAge: mockRefreshToken.expiresInMS,
-          secure: true,
-          sameSite: "none",
+          secure: false,
+          sameSite: "lax",
           path: "/api/auth/refresh",
         },
       );

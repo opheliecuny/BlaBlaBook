@@ -93,8 +93,9 @@ export async function logoutUser(req: Request, res: Response) {
     await prisma.refresh_token.deleteMany({ where: { userId: userId } });
   }
 
-  res.cookie("accessToken", "", { httpOnly: true, maxAge: 0, secure: true, sameSite: "none" });
-  res.cookie("refreshToken", "", { httpOnly: true, maxAge: 0, secure: true, sameSite: "none", path: "/api/auth/refresh" });
+  const isProduction = process.env.NODE_ENV === "production";
+  res.cookie("accessToken", "", { httpOnly: true, maxAge: 0, secure: isProduction, sameSite: isProduction ? "none" : "lax" });
+  res.cookie("refreshToken", "", { httpOnly: true, maxAge: 0, secure: isProduction, sameSite: isProduction ? "none" : "lax", path: "/api/auth/refresh" });
 
   res.status(204).send({ message: "Successfully logged out" });
 }
