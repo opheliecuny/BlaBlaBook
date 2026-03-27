@@ -161,7 +161,7 @@ describe("Books API Integration Tests", () => {
       } as Response);
 
       const response = await request(app).get("/books/OL999W").expect(404);
-      expect(response.body).toHaveProperty("error", "Book not found");
+      expect(response.body).toHaveProperty("message", "Book not found");
     });
 
     it("devrait retourner null pour les champs optionnels absents", async () => {

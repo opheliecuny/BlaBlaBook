@@ -24,6 +24,7 @@ export const errorHandler = (
       traceId,
       path: err.path || req.originalUrl,
       method: err.method || req.method,
+      ...(err.details !== undefined && { details: err.details }),
     });
   }
 

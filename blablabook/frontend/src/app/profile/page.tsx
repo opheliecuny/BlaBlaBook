@@ -72,8 +72,7 @@ export default function ProfilePage() {
         });
         return;
       }
-      // TODO : mettre en place une validation côté client
-      await updateProfile({ password: newPassword });
+      await updateProfile({ password: newPassword, currentPassword });
       toast.success("Mot de passe mis à jour avec succès !", {
         position: "top-center"
       });

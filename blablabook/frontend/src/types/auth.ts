@@ -29,5 +29,6 @@ export interface AuthResponse {
 export interface UpdateProfileRequest {
   email?: string;
   password?: string;
+  currentPassword?: string;
   username?: string;
 }

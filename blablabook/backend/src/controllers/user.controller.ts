@@ -36,8 +36,12 @@ export async function updateUser(req: Request, res: Response) {
       .regex(/[a-z]/, "password should contain at least a lowercase caracter")
       .regex(/[A-Z]/, "password should contain at least a uppercase caracter")
       .optional(),
+    currentPassword: z.string().optional(),
     username: z.string().min(1).optional()
-  });
+  }).refine(
+    (data) => !data.password || data.currentPassword,
+    { message: "Current password is required to set a new password", path: ["currentPassword"] }
+  );
 
   const data = await updateUserBodySchema.parseAsync(req.body);
 
@@ -55,10 +59,20 @@ export async function updateUser(req: Request, res: Response) {
   }
 
   if (data.password) {
+    const user = await prisma.user.findUnique({ where: { id: userId } });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isCurrentPasswordValid = await argon2.verify(user.password, data.currentPassword!);
+    if (!isCurrentPasswordValid) {
+      return res.status(401).json({ message: "Current password is incorrect" });
+    }
+
     data.password = await argon2.hash(data.password);
   }
 
-  const updatedUser = await prisma.user.update({ where: { id: userId }, data });
+  const { currentPassword: _currentPassword, ...updateData } = data;
+
+  const updatedUser = await prisma.user.update({ where: { id: userId }, data: updateData });
 
   return res.status(200).json({ message: "User updated successfully", user: updatedUser });
 

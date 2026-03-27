@@ -134,11 +134,11 @@ describe("User API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Mettre à jour le password
+      // Mettre à jour le password avec le mot de passe actuel
       await request(app)
         .patch("/user/profile")
         .set("Cookie", cookies)
-        .send({ password: "NewPassword123" })
+        .send({ password: "NewPassword123", currentPassword: "OldPassword123" })
         .expect(200);
 
       // Vérifier que le nouveau password est hashé en BDD
@@ -161,6 +161,43 @@ describe("User API Integration Tests", () => {
 
       expect(newLoginResponse.body).toHaveProperty("id");
       expect(newLoginResponse.body.email).toBe("user@example.com");
+    });
+
+    it("devrait retourner 400 si currentPassword est absent lors du changement de mot de passe", async () => {
+      await createTestUser({ email: "user@example.com", password: "Password123", username: "testuser" });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "user@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
+
+      const response = await request(app)
+        .patch("/user/profile")
+        .set("Cookie", cookies)
+        .send({ password: "NewPassword123" })
+        .expect(400);
+
+      expect(response.body.message).toBe("Validation error");
+      expect(response.body.details[0].message).toBe("Current password is required to set a new password");
+    });
+
+    it("devrait retourner 401 si currentPassword est incorrect", async () => {
+      await createTestUser({ email: "user@example.com", password: "Password123", username: "testuser" });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "user@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
+
+      const response = await request(app)
+        .patch("/user/profile")
+        .set("Cookie", cookies)
+        .send({ password: "NewPassword123", currentPassword: "WrongPassword123" })
+        .expect(401);
+
+      expect(response.body.message).toBe("Current password is incorrect");
     });
 
     it("devrait retourner 409 si le nouvel email est déjà utilisé", async () => {

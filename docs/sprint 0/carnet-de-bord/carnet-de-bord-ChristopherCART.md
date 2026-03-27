@@ -827,3 +827,37 @@ Rémi a mis à jour le backend dans la journée. Adaptation des 3 pages en cons�
 - #127 (init.sh) : ✅ OK à merger — détection OS, timeout curl sur endpoint réel
 - #128 (.env) : ⚠️ bug dans `api.ts` — fallback `3001` → `3000` (pointe frontend au lieu du backend) — signalé à Paul
 - #129 (fix vulnérabilité Next.js 16.2.1) : ⚠️ périmètre trop large (inclut les mêmes changements que #128 + bug `api.ts`) — signalé à Paul pour scinder
+
+---
+
+### Séance 29 — Audit codebase + série de fixes sécurité/qualité (26/03/2026)
+
+**Travail réalisé :**
+
+**Audit complet du codebase**
+- Analyse systématique de tous les fichiers frontend et backend
+- 35 problèmes identifiés : bugs critiques, manques fonctionnels, sécurité, UX, dette technique
+- Liste documentée dans `CLAUDE.md` avec cases à cocher
+
+**PR #136 — Fix cookies logout (`fix/logout-cookie-clearing`)**
+- Diagnostic : `logoutUser` effaçait les cookies sans les attributs de création (`secure`, `sameSite`, `path`)
+- `refreshToken` avait `path: "/api/auth/refresh"` à la création → navigateur ne reconnaissait pas le même cookie → persistait 7 jours après déconnexion
+- Fix : attributs identiques à la création dans les deux `res.cookie("...", "", {})`
+- Tests ajoutés : `book.test.ts` (12 tests GET /books, /search, /:id avec mock `fetch`) + assertion cookies logout dans `auth.test.ts`
+
+**PR #137 — Fix username register + dead code 401 (`fix/auth-register-username`)**
+- `POST /auth/register` ne retournait que `{ id, email }` → username toujours fallback email dans l'AuthContext
+- Fix backend : ajout `username` dans la réponse de `registerUser`
+- `api.ts` handler 401 appelait `localStorage.removeItem("user")` inutilement (tokens en cookies httpOnly)
+- Fix frontend : suppression du code mort, test mis à jour
+
+**PR #138 — Feedback erreur boutons "+ Biblio" (`fix/add-to-library-error-feedback`)**
+- `AddToLibraryPanel` et `AddToLibraryButton` avaient un `catch` vide → erreur invisible
+- `AddToLibraryPanel` : message d'erreur rouge sous le bouton, effacé à la prochaine tentative
+- `AddToLibraryButton` : bouton passe rouge avec "Erreur — réessayer" (format compact)
+
+**PR #139 — Fix currentPassword ignoré (`fix/profile-current-password`)**
+- `profile/page.tsx` collectait `currentPassword` mais ne l'envoyait jamais → changement mdp sans vérification
+- Backend `user.controller.ts` : ajout `currentPassword` au schema Zod (requis si `password` fourni), vérification `argon2.verify` avant hash — 401 si incorrect
+- Frontend : `currentPassword` transmis dans `updateProfile`, type `UpdateProfileRequest` mis à jour
+- 2 nouveaux tests : currentPassword absent → 400, currentPassword incorrect → 401
