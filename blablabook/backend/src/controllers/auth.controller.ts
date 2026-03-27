@@ -92,8 +92,8 @@ export async function logoutUser(req: Request, res: Response) {
     await prisma.refresh_token.deleteMany({ where: { userId: userId } });
   }
 
-  res.cookie("accessToken", "", { httpOnly: true, maxAge: 0 });
-  res.cookie("refreshToken", "", { httpOnly: true, maxAge: 0 });
+  res.cookie("accessToken", "", { httpOnly: true, maxAge: 0, secure: true, sameSite: "none" });
+  res.cookie("refreshToken", "", { httpOnly: true, maxAge: 0, secure: true, sameSite: "none", path: "/api/auth/refresh" });
 
   res.status(204).send({ message: "Successfully logged out" });
 }

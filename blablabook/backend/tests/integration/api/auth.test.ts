@@ -242,6 +242,48 @@ describe("Auth API Integration Tests", () => {
       expect(refreshTokens.length).toBe(0);
     });
 
+    it("devrait effacer les cookies avec les attributs corrects", async () => {
+      await createTestUser({
+        email: "logout-cookies@example.com",
+        password: "Password123",
+      });
+
+      const loginResponse = await request(app).post("/auth/login").send({
+        email: "logout-cookies@example.com",
+        password: "Password123",
+      });
+
+      const cookies = loginResponse.headers["set-cookie"];
+
+      const logoutResponse = await request(app)
+        .post("/auth/logout")
+        .set("Cookie", cookies)
+        .expect(204);
+
+      const setCookieHeaders = logoutResponse.headers["set-cookie"] as unknown as string[];
+      expect(setCookieHeaders).toBeDefined();
+
+      const accessTokenCookie = setCookieHeaders.find((c: string) =>
+        c.startsWith("accessToken="),
+      );
+      const refreshTokenCookie = setCookieHeaders.find((c: string) =>
+        c.startsWith("refreshToken="),
+      );
+
+      // accessToken doit être effacé avec secure + samesite=none
+      expect(accessTokenCookie).toBeDefined();
+      expect(accessTokenCookie).toMatch(/Max-Age=0/i);
+      expect(accessTokenCookie).toMatch(/Secure/i);
+      expect(accessTokenCookie).toMatch(/SameSite=None/i);
+
+      // refreshToken doit être effacé avec le bon path
+      expect(refreshTokenCookie).toBeDefined();
+      expect(refreshTokenCookie).toMatch(/Max-Age=0/i);
+      expect(refreshTokenCookie).toMatch(/Secure/i);
+      expect(refreshTokenCookie).toMatch(/SameSite=None/i);
+      expect(refreshTokenCookie).toMatch(/Path=\/api\/auth\/refresh/i);
+    });
+
     it("devrait retourner 401 si l'utilisateur n'est pas authentifié", async () => {
       const response = await request(app).post("/auth/logout").expect(401);
 
