@@ -18,9 +18,9 @@ app.use(cookieParser());
 
 app.use(xssSanitizer);
 app.use(helmetMiddleware);
-app.use(globalRateLimit);
 
 // Endpoint de santé pour Render Health Check + UptimeRobot
+// Placé avant le rate limiting pour éviter les faux 429
 // Teste la connexion à la base de données Neon
 app.get("/health", async (req, res) => {
   try {
@@ -41,6 +41,8 @@ app.get("/health", async (req, res) => {
     });
   }
 });
+
+app.use(globalRateLimit);
 
 app.use(apiRouter);
 
