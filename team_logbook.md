@@ -145,27 +145,23 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 ### 26/03/2026
 
-*Fix tests frontend bookService suite pagination PR #121. Reviews PRs Paul (#127/#128/#129).*
-
 #### Infos individuelles
 
 - **Ophélie :** audit d'accessibilité et de sémantique terminé sur toutes les pages en front. Ajout d'un alert dialog lors de la suppression d'un livre au lieu d'un simple confirm pour améliorer l'UX et l'accessibilité. Harmonisation des erreurs en back (utilisation des classes puis de l'errorHandler dans tous les cas) => modification des tests sur le middleware d'authentification pour coller aux modifications.
-- **Rémi :**Corrigé mon problème docker qui n'en était pas un (*en supprimant .next et mes node_modules qui logiquement devaient être corrompus*). Repassé le code au peigne fin pour vérifier la cohérence du visuel général (c-à-d couleurs, padding, margin, :hover, :active, etc) et essayé d'harmonisé le tout autant que possible.
-- **Paul :**
+- **Rémi :** Corrigé mon problème docker qui n'en était pas un (*en supprimant .next et mes node_modules qui logiquement devaient être corrompus*). Repassé le code au peigne fin pour vérifier la cohérence du visuel général (c-à-d couleurs, padding, margin, :hover, :active, etc) et essayé d'harmonisé le tout autant que possible.
+- **Paul :** Déploiement frontend sur Render (Vercel abandonné : plan payant obligatoire pour dépôts d'organisation privés). Résolution des erreurs de build successives : dépendances Tailwind CSS manquantes, suppression du mode `output: "standalone"` incompatible avec la config Render, démarrage via `npm run start`. Identification de la cause racine de l'absence d'appel OpenLibrary en production : variable `API_URL` manquante pour les Server Components (différente de `NEXT_PUBLIC_API_URL`). Ajout des deux variables sur Render frontend. Création du workflow GitHub Actions de déploiement continu (`deploy.yml`) avec deploy hooks Render pour backend et frontend. Documentation complète du mode opératoire de déploiement (guide adapté Render front + back).
 - **Christopher :** Sync `main` + suppression branche `test/backend-frontend-vitest`. Fix 3 tests `bookService.test.ts` cassés suite PR #121 (pagination : retour `BookSearchResponse`, URL `&page=1`) — 39/39 ✅ — PR #130. Review PRs Paul : #127 ✅ OK, #128 bug `api.ts` fallback port signalé, #129 périmètre trop large signalé. Audit complet du codebase (bugs, manques fonctionnels, sécurité, UX). Série de fixes : cookies logout mal effacés — `secure`/`sameSite`/`path` manquants (PR #136) ; username absent de la réponse register + dead code localStorage 401 (PR #137) ; erreur silencieuse sur boutons "+ Biblio" — feedback visuel ajouté (PR #138) ; `currentPassword` ignoré au changement de mdp — vérification argon2 côté backend (PR #139). Tests backend ajoutés : `book.test.ts` (12 tests GET /books, /search, /:id avec mock fetch) + assertions logout cookies + 2 nouveaux cas user (currentPassword absent/incorrect).
 
 ---
 
 ### 27/03/2026
 
-*Résumé*
-
 #### Infos individuelles
 
 - **Ophélie :** Amélioration générale de l'UX avec notamment un message d'erreur plutôt que des placeholders sur la page d'accueil lorsque le fetch vers l'API ne fonctionne pas. Sur la page de recherche les genres sont coupés si trop longs avec possibilité de l'afficher en entier au survol. Indications précises avec un indicateur de force sur l'entrée du mot de passe lors de l'inscription et possibilité de cacher ou afficher le contenu des input de type password.
 - **Rémi :**
-- **Paul :**
-- **Christopher :**
+- **Paul :** Refonte complète du guide de déploiement (12 sections mises à jour) : migration architecture Vercel → Render, documentation des deux variables d'environnement frontend (`NEXT_PUBLIC_API_URL` + `API_URL`), CI/CD simplifié avec deux deploy hooks Render, troubleshooting enrichi. Ajout endpoint `GET /health` dans le backend (test connexion Neon via `prisma.$queryRaw`, réponse `status/db/timestamp/uptime`) pour Render Health Check. Configuration du Health Check Path `/health` sur Render et création des 2 monitors UptimeRobot (backend + frontend) pour éviter le cold start du free tier.
+- **Christopher :** Implémentation du rate limiting global (`express-rate-limit`) et corrections sécurité cookies (PR #140). Fix : effacement cookies au logout (#136), username manquant au register (#137), feedback visuel ajout bibliothèque (#138), vérification `currentPassword` avant mise à jour profil (#139), distinction erreur réseau vs 401 dans `AuthContext` (#141). Correction assertion 404 dans `book.test.ts` (#145).
 
 ---
 

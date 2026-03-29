@@ -1,9 +1,9 @@
 # Sprint 2 — Plan de finition BlaBlaBook
 
 > **Date de rédaction** : 2026-03-22
-> **Dernière mise à jour** : 2026-03-24
+> **Dernière mise à jour** : 2026-03-29
 > **Phase** : Sprint 2 — Intégration, Tests, CI/CD, Déploiement
-> **Statut global** : MVP fonctionnel à ~85%, tests backend ✅ COMPLÉTÉS (73 tests, 91% coverage), CI/CD ✅ CONFIGURÉ, déploiement non configuré
+> **Statut global** : MVP ✅ DÉPLOYÉ EN PRODUCTION, tests backend ✅ (73 tests, 91% coverage), CI/CD ✅ CONFIGURÉ, déploiement ✅ NEON + RENDER (backend + frontend)
 
 ---
 
@@ -11,53 +11,86 @@
 
 ### 1.1 Ce qui est fait ✅
 
-| Domaine                | Détail                                                                                       |
-| ---------------------- | -------------------------------------------------------------------------------------------- |
-| **Backend — API REST** | Toutes les routes `/auth`, `/books`, `/library`, `/user` sont implémentées et fonctionnelles |
-| **Backend — Sécurité** | Argon2, JWT + cookies httpOnly, Helmet, XSS Sanitizer, CORS, validation Zod                  |
-| **Backend — BDD**      | Schéma Prisma complet (4 tables), migrations, seed                                           |
-| **Backend — Tests**    | 73 tests Vitest (33 unitaires + 40 intégration), 91% coverage, CI-ready                      |
-| **CI/CD**              | GitHub Actions configuré (5 jobs: lint, tests, build), PostgreSQL service pour tests         |
-| **Frontend — Auth**    | Inscription, connexion, déconnexion, AuthContext, cookies httpOnly                           |
-| **Frontend — Pages**   | `/`, `/login`, `/register`, `/search`, `/book/:id`, `/library`, `/legal`, `/privacy`, `/cgu` |
-| **Frontend — API**     | `lib/api.ts`, services auth/book/library/user câblés sur l'API réelle                        |
-| **Docker**             | `docker-compose.yml` avec db, adminer, api, frontend                                         |
-| **Doc**                | Cahier des charges, guide Git, template PR                                                   |
+| Domaine                   | Détail                                                                                                           |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Backend — API REST**    | Toutes les routes `/auth`, `/books`, `/library`, `/user` implémentées et fonctionnelles                          |
+| **Backend — Sécurité**    | Argon2, JWT + cookies httpOnly, Helmet, XSS Sanitizer, CORS, validation Zod, rate limiting (global/auth/search)  |
+| **Backend — BDD**         | Schéma Prisma complet (4 tables), migrations, seed                                                               |
+| **Backend — Tests**       | 73 tests Vitest (33 unitaires + 40 intégration), 91% coverage, CI-ready                                          |
+| **Backend — Monitoring**  | Endpoint `GET /health` (test Neon + uptime), exempt du rate limiting, Render Health Check configuré              |
+| **CI/CD**                 | GitHub Actions : 5 jobs CI (`ci.yml`) + deploy hooks Render (`deploy.yml`)                                       |
+| **Frontend — Auth**       | Inscription, connexion, déconnexion, AuthContext, cookies httpOnly, distinction erreur réseau vs 401             |
+| **Frontend — Pages**      | `/`, `/login`, `/register`, `/search`, `/book/:id`, `/library`, `/profile`, `/legal`, `/privacy`, `/cgu`, `/404` |
+| **Frontend — API**        | `lib/api.ts`, services auth/book/library/user câblés sur l'API réelle                                            |
+| **Frontend — Responsive** | Toutes les pages responsive (mobile + desktop)                                                                   |
+| **Frontend — UX**         | Alert dialog suppression livre, feedback erreur "+ Biblio", indicateur force mdp, pagination server-side         |
+| **Frontend — A11y**       | Audit accessibilité et sémantique complet sur toutes les pages                                                   |
+| **Déploiement**           | Neon (PostgreSQL 17, EU) + Render backend + Render frontend — application en production                          |
+| **Monitoring**            | UptimeRobot (2 monitors : API `/health` + Frontend `/`) — keep-alive free tier                                   |
+| **Docker**                | `docker-compose.yml` avec db, adminer, api, frontend                                                             |
+| **Doc**                   | Cahier des charges, guide Git, guide déploiement complet (Render + Neon + UptimeRobot)                           |
 
 ### 1.2 Ce qui reste à faire 🚧
 
-#### Fonctionnel manquant (MVP)
+#### Fonctionnel manquant (hors MVP déployé)
 
-| Priorité  | Tâche                                                                                           | Fichier(s) concerné(s)                                 |
-| --------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| 🔴 Haute   | **Page profil** : câbler l'appel API `PATCH /user/profile` et `GET /user/profile`               | `frontend/src/app/profile/page.tsx` + `userService.ts` |
-| 🔴 Haute   | **Notation (1–5 étoiles)** : UI manquante sur `/library` + `PATCH /library/:id` à enrichir      | `library/page.tsx`, `library.controller.ts`            |
-| 🔴 Haute   | **Avis personnel** : UI manquante sur `/library`                                                | `library/page.tsx`                                     |
-| 🟠 Moyenne | **Refresh token** : Logique de renouvellement absente (token stocké en BDD mais jamais utilisé) | `auth.controller.ts`, `auth.router.ts`                 |
-| 🟡 Basse   | **Confirmation de suppression livre** : Dialog de confirmation manquant                         | `library/page.tsx`                                     |
-| 🟡 Basse   | **Feedback visuel** : Remplacer `alert()` par des toast notifications                           | Toutes les pages avec formulaires                      |
+| Priorité  | Tâche                                                                                           | Fichier(s) concerné(s)                      |
+| --------- | ----------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| 🟠 Moyenne | **Notation (1–5 étoiles)** : UI manquante sur `/library` + `PATCH /library/:id` à enrichir      | `library/page.tsx`, `library.controller.ts` |
+| 🟠 Moyenne | **Avis personnel** : UI manquante sur `/library`                                                | `library/page.tsx`                          |
+| 🟠 Moyenne | **Refresh token** : Logique de renouvellement absente (token stocké en BDD mais jamais utilisé) | `auth.controller.ts`, `auth.router.ts`      |
+| 🟡 Basse   | **Toast notifications** : Remplacer alertes par composant toast shadcn/ui                       | Toutes les pages avec formulaires           |
 
 #### Complété cette semaine ✅
 
 **23/03/2026 :**
 
-- ✅ **Suppression de compte** : Route backend `DELETE /user` implémentée
-- ✅ **Récupération profil** : Route backend `GET /user/profile` ajoutée
-- ✅ **Configuration Prisma** : `binaryTargets = ["native"]` ajouté
-- ✅ **Frontend** : Résolution conflit types `UpdateProfileResponse`
+- ✅ **Suppression de compte** : Route backend `DELETE /user` implémentée (#91)
+- ✅ **Récupération profil** : Route backend `GET /user/profile` ajoutée (#92)
+- ✅ **Tests backend** : premiers tests unitaires auth middleware + token (#90, #93, #95)
+- ✅ **CI GitHub Actions** : mise en place lint + build (#86), corrections TypeScript (#87, #88, #89)
 
 **24/03/2026 :**
 
-- ✅ **Tests backend COMPLÉTÉS** : 73 tests (33 unitaires + 40 intégration) - 100% succès
+- ✅ **Tests backend COMPLÉTÉS** : 73 tests (33 unitaires + 40 intégration) — 100% succès (#103)
 - ✅ **Couverture optimale** : 91% statements, 87% branches, 100% functions, 93% lines
-- ✅ **Configuration Vitest** : fileParallelism: false, seuils adaptés, path aliases
-- ✅ **Architecture tests** : helpers (testServer, dbHelpers), isolation BDD
 - ✅ **asyncWrapper unifié** : tous controllers (auth, library, user)
 - ✅ **Gestion erreurs standardisée** : Zod → VALIDATION_ERROR, Prisma → NOT_FOUND
 - ✅ **CI/CD GitHub Actions** : 5 jobs (lint-backend, test-backend, build-backend, lint-frontend, build-frontend)
-- ✅ **PostgreSQL service** : Container PostgreSQL 17 pour tests d'intégration dans CI
-- ✅ **Codecov integration** : Upload automatique des rapports de couverture (optionnel)
-- ✅ **Documentation** : Mise à jour complète des guides CI/CD et tests Vitest
+- ✅ **Page profil câblée** : `GET /user/profile` + `PATCH /user/profile` connectés au frontend (#97)
+- ✅ **Responsive** : header/footer, book:id, search, library, CGU (#99, #106, #108)
+
+**25/03/2026 :**
+
+- ✅ **Déploiement Neon** : base PostgreSQL 17 créée et migrée (région EU)
+- ✅ **Déploiement backend Render** : API Express déployée sans Docker (tsx), migrations auto au démarrage
+- ✅ **Tests frontend** : Vitest + jsdom, 38 tests (Christopher, #118)
+- ✅ **Pagination server-side** : recherche optimisée avec cache 60s, cap 50 pages (#121)
+- ✅ **Page 404** : page personnalisée ajoutée (#125)
+- ✅ **Responsive final** : homepage, header safe area mobile (#123, #124)
+
+**26/03/2026 :**
+
+- ✅ **Déploiement frontend Render** : migration Vercel → Render (Vercel nécessite plan payant pour orgs privées)
+- ✅ **Fix API_URL** : variable `API_URL` ajoutée pour Server Components (cause de l'absence d'appels OpenLibrary)
+- ✅ **Workflow deploy.yml** : déploiement continu avec deploy hooks Render backend + frontend (#143)
+- ✅ **Audit accessibilité** : sémantique et a11y sur toutes les pages (Ophélie)
+- ✅ **Harmonisation erreurs backend** : `AppError` dans tous les controllers + tests mis à jour
+- ✅ **Cohérence visuelle** : couleurs, padding, hover, active harmonisés (#133)
+- ✅ **Fixes tests** : `bookService.test.ts` pagination (#130)
+
+**27/03/2026 :**
+
+- ✅ **Rate limiting** : `express-rate-limit` global (100 req/15min) + auth (10 req/15min) + search (30 req/min) (#140)
+- ✅ **Sécurité cookies** : fix logout (`secure`/`sameSite`/`path`), username register, vérification `currentPassword` (#136, #137, #139)
+- ✅ **UX** : feedback visuel "+ Biblio", distinction erreur réseau vs 401, indicateur force mdp, genres tronqués (#138, #141)
+- ✅ **Guide déploiement refondu** : 12 sections mises à jour (architecture, CORS, variables, CI/CD, troubleshooting) (#144)
+
+**28/03/2026 :**
+
+- ✅ **Endpoint `/health`** : test connexion Neon via `prisma.$queryRaw`, exempt du rate limiting (#153, #154)
+- ✅ **Render Health Check** : path `/health` configuré — redémarrage automatique si service down
+- ✅ **UptimeRobot** : 2 monitors (API `/health` + Frontend `/`) — keep-alive free tier
 
 #### Fonctionnel non-MVP (à exclure du sprint actuel)
 
@@ -258,121 +291,101 @@ Aller dans **Settings → Branches → Add rule** pour `main` :
 
 ---
 
-## 4. Déploiement
+## 4. Déploiement ✅ EN PRODUCTION
 
-### 4.1 Architecture cible recommandée (gratuit/low-cost)
+### 4.1 Architecture déployée
 
-| Composant           | Service recommandé                                             | Raison                                                           |
-| ------------------- | -------------------------------------------------------------- | ---------------------------------------------------------------- |
-| **Base de données** | [Neon](https://neon.tech) ou [Supabase](https://supabase.com)  | PostgreSQL managé, free tier généreux                            |
-| **Backend**         | [Railway](https://railway.app) ou [Render](https://render.com) | Déploiement depuis GitHub, variables d'env, Node.js natif        |
-| **Frontend**        | [Vercel](https://vercel.com)                                   | Plateforme native Next.js, déploiement automatique depuis GitHub |
+| Composant           | Service                                | URL                                          |
+| ------------------- | -------------------------------------- | -------------------------------------------- |
+| **Base de données** | [Neon](https://neon.tech)              | PostgreSQL 17, région EU Central (Frankfurt) |
+| **Backend**         | [Render](https://render.com)           | `https://blablabook-api.onrender.com`        |
+| **Frontend**        | [Render](https://render.com)           | `https://blablabook-front.onrender.com`      |
+| **Monitoring**      | [UptimeRobot](https://uptimerobot.com) | 2 monitors — keep-alive free tier            |
 
-### 4.2 Variables d'environnement à configurer en production
+> **Note** : Vercel initialement prévu pour le frontend, abandonné car nécessite plan payant pour les dépôts d'organisation privés.
 
-**Backend (Railway/Render)**
+### 4.2 Variables d'environnement en production
+
+**Backend (Render)**
 
 ```env
 NODE_ENV=production
 PORT=3000
-DATABASE_URL=<URL_Neon_ou_Supabase>
+DATABASE_URL=<URL_Neon>
 JWT_SECRET=<clé_aléatoire_forte_256_bits>
-ALLOWED_ORIGINS=https://<ton-domaine-vercel>.vercel.app
+ALLOWED_ORIGINS=https://blablabook-front.onrender.com
 ```
 
-**Frontend (Vercel)**
+**Frontend (Render)**
 
 ```env
-NEXT_PUBLIC_API_URL=https://<ton-domaine-backend>.railway.app
+NEXT_PUBLIC_API_URL=https://blablabook-api.onrender.com   # Client Components (navigateur)
+API_URL=https://blablabook-api.onrender.com               # Server Components (SSR)
+NODE_ENV=production
 ```
 
-### 4.3 Corrections nécessaires avant déploiement
+> **Important** : deux variables URL sont nécessaires — `NEXT_PUBLIC_API_URL` est baked dans le bundle navigateur, `API_URL` est disponible uniquement côté serveur (Server Components comme `/search/page.tsx`).
 
-#### Problème CORS : le frontend Docker utilise `http://localhost`
+### 4.3 Configuration Render
 
-Dans `docker-compose.yml` ligne 54 :
+**Backend** :
+
+- Root Directory : `blablabook/backend`
+- Build Command : `npm install && npx prisma generate`
+- Start Command : `npx prisma migrate deploy && npx tsx index.ts`
+- Health Check Path : `/health`
+
+**Frontend** :
+
+- Root Directory : `blablabook/frontend`
+- Build Command : `npm install && npm run build`
+- Start Command : `npm run start`
+
+### 4.4 Workflow de déploiement automatique (`.github/workflows/deploy.yml`) ✅
 
 ```yaml
-# Actuel (incorrect pour la prod)
-- NEXT_PUBLIC_API_URL=http://localhost:${PORT}
-```
-
-En production, `localhost` du frontend Docker ne peut pas atteindre le backend.
-→ Utiliser l'URL publique du backend en prod.
-
-#### Cookies `sameSite: "none"` nécessitent HTTPS
-
-Dans `backend/src/utils/token.ts`, les cookies sont configurés avec `secure: true` et `sameSite: "none"`.
-→ Valable uniquement si le backend et le frontend sont sur des domaines différents **et** en HTTPS.
-→ En production, s'assurer que les deux services sont derrière HTTPS.
-
-#### Migration Prisma au démarrage
-
-Ajouter au script de démarrage production du backend :
-
-```json
-{
-  "scripts": {
-    "start:prod": "npm run db:migrate:deploy && node dist/index.js"
-  }
-}
-```
-
-### 4.4 Workflow de déploiement automatique (`.github/workflows/deploy.yml`)
-
-> Ce workflow se déclenche uniquement après un merge dans `main` **et** si la CI est verte.
-
-```yaml
-name: Deploy
+name: Deploy to Production
 
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 jobs:
   deploy-backend:
-    name: Deploy Backend
+    name: Deploy Backend (Render)
     runs-on: ubuntu-latest
-    needs: []  # Ajouter : needs: [test-backend] si fusionné avec ci.yml
     steps:
       - uses: actions/checkout@v4
-      # Railway : utiliser le CLI ou le webhook de déploiement
-      - name: Deploy to Railway
-        run: curl -X POST ${{ secrets.RAILWAY_DEPLOY_WEBHOOK }}
+      - name: Trigger Render Deploy Hook (Backend)
+        run: curl -X POST ${{ secrets.RENDER_BACKEND_DEPLOY_HOOK }}
 
   deploy-frontend:
-    name: Deploy Frontend (Vercel)
+    name: Deploy Frontend (Render)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      # Vercel déploie automatiquement depuis GitHub — aucune action manuelle requise
-      # Alternativement, utiliser le CLI Vercel :
-      - uses: amondnet/vercel-action@v25
-        with:
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          working-directory: blablabook/frontend
-          vercel-args: '--prod'
+      - name: Trigger Render Deploy Hook (Frontend)
+        run: curl -X POST ${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK }}
 ```
 
-**Secrets GitHub à configurer** (Settings → Secrets and variables → Actions) :
+**Secrets GitHub configurés** (Settings → Secrets and variables → Actions) :
 
-- `RAILWAY_DEPLOY_WEBHOOK` — URL de déploiement Railway
-- `VERCEL_TOKEN` — Token API Vercel
-- `VERCEL_ORG_ID` — ID de l'organisation Vercel
-- `VERCEL_PROJECT_ID` — ID du projet Vercel
+- `RENDER_BACKEND_DEPLOY_HOOK` — Deploy hook Render backend
+- `RENDER_FRONTEND_DEPLOY_HOOK` — Deploy hook Render frontend
 
 ---
 
-## 5. Backlog priorisé — Tâches par ordre d'importance
+## 5. Backlog priorisé — Tâches par ordre d’importance
 
-### 🔴 Priorité 1 — Compléter le MVP (1–2 jours)
+### ✅ Priorité 1 — Compléter le MVP — ✅ COMPLÉTÉ
 
-- [ ] **Profile page** : Implémenter l'appel `userService.updateProfile()` et `getUserProfile()` dans `app/profile/page.tsx`
-- [x] **Route DELETE /user** : ✅ Ajouter la route de suppression de compte dans le backend (fait 23/03)
-- [x] **Route GET /user/profile** : ✅ Ajouter la route de récupération du profil (fait 23/03)
-- [ ] **Notes et avis** : Ajouter l'UI étoiles + zone de texte dans `/library`, enrichir `PATCH /library/:id`
+- [x] ✅ **Profile page** : `GET /user/profile` + `PATCH /user/profile` câblés (Ophélie, 24/03 — #97)
+- [x] ✅ **Route DELETE /user** : route de suppression de compte (Paul, 23/03 — #91)
+- [x] ✅ **Route GET /user/profile** : route de récupération du profil (Paul, 23/03 — #92)
+- [x] ✅ **Confirmation suppression livre** : alert dialog shadcn/ui (Ophélie, 26/03)
+- [x] ✅ **Feedback visuel "+ Biblio"** : message d’erreur si ajout échoue (Christopher, 27/03 — #138)
+- [ ] **Notes et avis** : UI étoiles + zone de texte dans `/library` — reporté sprint 3
 
 ### ✅ Priorité 2 — Tests backend avec Vitest — ✅ COMPLÉTÉ (24/03/2026)
 
@@ -389,33 +402,36 @@ jobs:
 - [x] ✅ Écrire `tests/unit/errors/errors.test.ts` — 20 tests
 - [x] ✅ Configurer tsconfig.json (path aliases @, @tests)
 - [x] ✅ Unifier asyncWrapper sur tous les controllers
-- [x] ✅ Atteindre 91% coverage (dépasse largement l'objectif 70%)
+- [x] ✅ Atteindre 91% coverage (dépasse largement l’objectif 70%)
 
 ### ✅ Priorité 3 — GitHub Actions CI — ✅ COMPLÉTÉ (24/03/2026)
 
 - [x] ✅ Créer `.github/workflows/ci.yml` (5 jobs: lint-backend, test-backend, build-backend, lint-frontend, build-frontend)
-- [x] ⚠️ Configurer la protection de branche `main` sur GitHub — **NON APPLICABLE** (fonctionnalité désactivée par l’organisation école, nécessite permissions admin)
-- [x] ⏸️ Vérifier que les checks CI s’affichent sur les PRs (à tester lors de la prochaine PR)
+- [x] ⚠️ Protection de branche `main` — **NON APPLICABLE** (désactivée par l’organisation école)
+- [x] ✅ Checks CI visibles sur les PRs
 
-### 🟡 Priorité 4 — Déploiement (1 jour)
+### ✅ Priorité 4 — Déploiement — ✅ COMPLÉTÉ (25–26/03/2026)
 
-- [ ] Créer la base de données sur Neon
-- [ ] Déployer le backend sur Render
-- [ ] Déployer le frontend sur Vercel
-- [ ] Configurer les variables d'environnement production
-- [ ] Appliquer les migrations (`db:migrate:deploy`)
-- [ ] Tester le flux complet en prod (register → login → add book → logout)
-- [ ] Créer `.github/workflows/deploy.yml`
-- [ ] Ajouter les secrets GitHub
+- [x] ✅ Créer la base de données sur Neon (PostgreSQL 17, EU Central)
+- [x] ✅ Déployer le backend sur Render (tsx, sans Docker)
+- [x] ✅ Déployer le frontend sur Render (Vercel abandonné — plan payant requis pour orgs privées)
+- [x] ✅ Configurer les variables d’environnement production (backend + frontend)
+- [x] ✅ Appliquer les migrations (`prisma migrate deploy` au démarrage)
+- [x] ✅ Tester le flux complet en prod (register → login → search → add book → logout)
+- [x] ✅ Créer `.github/workflows/deploy.yml` (deploy hooks Render backend + frontend)
+- [x] ✅ Ajouter les secrets GitHub (`RENDER_BACKEND_DEPLOY_HOOK`, `RENDER_FRONTEND_DEPLOY_HOOK`)
+- [x] ✅ Configurer Render Health Check path `/health`
+- [x] ✅ Configurer UptimeRobot — 2 monitors (keep-alive free tier)
 
 ### 🟢 Priorité 5 — Améliorations qualité (nice-to-have)
 
 - [ ] **Refresh token** : Ajouter `POST /auth/refresh` pour renouveler le token sans re-login
-- [ ] **Rate limiting** : Ajouter `express-rate-limit` sur `/auth/login` et `/auth/register`
-- [ ] **Toast notifications** : Remplacer les `alert()` par un composant toast (shadcn/ui Toaster)
+- [x] ✅ **Rate limiting** : `express-rate-limit` global + auth + search (Christopher, 27/03 — #140)
+- [ ] **Toast notifications** : Remplacer les alertes par composant toast (shadcn/ui Toaster)
 - [ ] **Logger** : Ajouter Winston ou Pino pour les logs structurés en prod
-- [ ] **Cache OpenLibrary** : Mettre en cache les réponses de l'API externe (node-cache ou Redis)
-- [ ] **Tests frontend** : Vitest + Testing Library sur les composants critiques (AuthContext, formulaires)
+- [ ] **Cache OpenLibrary** : Mettre en cache les réponses de l’API externe (node-cache ou Redis)
+- [x] ✅ **Tests frontend** : Vitest + jsdom, 38 tests (Christopher, 25/03 — #118)
+- [x] ✅ **Endpoint `/health`** : monitoring Render + UptimeRobot + test connexion Neon (Paul, 27-28/03)
 
 ---
 
