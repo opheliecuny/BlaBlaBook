@@ -30,6 +30,7 @@
 | 🔴 Haute   | **Notes (1–5 étoiles)** : champ `rating` présent en BDD mais non câblé | `PATCH /library/:id`, `library/page.tsx`       |
 | 🔴 Haute   | **Avis personnel** : champ `review` présent en BDD mais non câblé      | `PATCH /library/:id`, `library/page.tsx`       |
 | 🟠 Moyenne | **Internationalisation FR/EN** : app entièrement en français           | Toutes les pages + composants                  |
+| 🟠 Moyenne | **Redis** : cache OpenLibrary + rate limiting distribué                | `backend/src/utils/redis.ts`, middlewares      |
 | 🟡 Basse   | **Toast notifications** : Sonner déjà installé, non utilisé            | `sonner` v2.0.7 disponible dans `package.json` |
 | 🟡 Basse   | **Refresh token** : logique BDD présente, pas d'endpoint public        | `POST /auth/refresh`                           |
 
@@ -37,12 +38,12 @@
 
 ## 2. Planning 4 jours
 
-| Jour               | Priorité                                     | Objectif de fin de journée                        |
-| ------------------ | -------------------------------------------- | ------------------------------------------------- |
-| **Jour 1** - 30/03 | Notes + Avis (backend + frontend)            | PATCH `/library/:id` enrichi, UI étoiles intégrée |
-| **Jour 2** - 31/03 | i18n setup + traductions FR/EN               | `next-intl` installé, messages FR/EN complets     |
-| **Jour 3** - 01/04 | i18n intégration pages + sélecteur de langue | Toutes les pages traduites, switcher visible      |
-| **Jour 4** - 02/04 | Toasts, finitions, tests, corrections        | App stable, prête pour démonstration              |
+| Jour               | Priorité                                            | Objectif de fin de journée                          |
+| ------------------ | --------------------------------------------------- | --------------------------------------------------- |
+| **Jour 1** - 30/03 | Notes + Avis (backend + frontend)                   | PATCH `/library/:id` enrichi, UI étoiles intégrée   |
+| **Jour 2** - 31/03 | i18n setup + traductions FR/EN                      | `next-intl` installé, messages FR/EN complets       |
+| **Jour 3** - 01/04 | i18n intégration pages + Redis (cache + rate limit) | Toutes les pages traduites, cache OpenLibrary actif |
+| **Jour 4** - 02/04 | Toasts, finitions, tests, corrections               | App stable, prête pour démonstration                |
 
 ---
 
@@ -410,9 +411,97 @@ export function LanguageSwitcher() {
 
 ---
 
-## 5. Priorité 3 - Finitions rapides
+## 5. Priorité 2b - Redis (Cache + Rate Limiting distribué)
 
-### 5.1 Toast Notifications (Sonner déjà installé)
+> **Hébergement recommandé** : [Upstash](https://upstash.com/) — Redis serverless, free tier (10 000 req/jour), compatible Render et Neon. Pas de configuration de serveur requise.
+
+### 5.1 Installation
+
+```bash
+cd blablabook/backend
+npm install ioredis rate-limit-redis
+npm install --save-dev @types/ioredis
+```
+
+### 5.2 Client Redis (`src/utils/redisClient.ts`)
+
+```typescript
+import Redis from "ioredis";
+
+const redis = new Redis(process.env.REDIS_URL!, {
+  tls: process.env.NODE_ENV === "production" ? {} : undefined,
+  maxRetriesPerRequest: 3,
+  lazyConnect: true,
+});
+
+redis.on("error", (err) => console.error("[Redis] Connection error:", err));
+
+export { redis };
+```
+
+### 5.3 Cache OpenLibrary (`book.controller.ts`)
+
+> Évite les appels répétés à OpenLibrary (API publique non garantie). TTL recommandé : 1h pour les recherches, 24h pour les détails d'un livre.
+
+```typescript
+import { redis } from "../utils/redisClient";
+
+// Dans searchBooks()
+const cacheKey = `search:${query}:${page}`;
+const cached = await redis.get(cacheKey);
+if (cached) return res.json(JSON.parse(cached));
+
+// ... appel OpenLibrary ...
+await redis.setex(cacheKey, 3600, JSON.stringify(results)); // TTL 1h
+
+// Dans getBookById()
+const cacheKey = `book:${openLibraryId}`;
+const cached = await redis.get(cacheKey);
+if (cached) return res.json(JSON.parse(cached));
+
+// ... appel OpenLibrary ...
+await redis.setex(cacheKey, 86400, JSON.stringify(book)); // TTL 24h
+```
+
+### 5.4 Rate Limiting Redis (`rateLimit.middleware.ts`)
+
+> Remplace le store mémoire (qui se reset à chaque redémarrage Render) par un store Redis persistant et partagé entre instances.
+
+```typescript
+import { RedisStore } from "rate-limit-redis";
+import { redis } from "../utils/redisClient";
+
+export const globalRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  store: new RedisStore({ sendCommand: (...args) => redis.call(...args) }),
+});
+```
+
+### 5.5 Variables d'environnement
+
+| Variable    | Description                                           |
+| ----------- | ----------------------------------------------------- |
+| `REDIS_URL` | URL Upstash Redis (ex: `rediss://...upstash.io:6380`) |
+
+Ajouter dans `.env.example` :
+
+```env
+REDIS_URL=rediss://your-redis-url:6380
+```
+
+### 5.6 Déploiement (Upstash)
+
+1. Créer un compte sur [upstash.com](https://upstash.com/)
+2. Créer une base Redis (région la plus proche de Render)
+3. Copier l'URL `REDIS_URL` (format `rediss://...`)
+4. Ajouter la variable dans les **Environment Variables** de Render
+
+---
+
+## 6. Priorité 3 - Finitions rapides
+
+### 6.1 Toast Notifications (Sonner déjà installé)
 
 > `sonner` v2.0.7 est déjà dans `package.json`. Le composant `<Toaster />` est déjà présent dans le layout. Il suffit d'utiliser les toasts dans les pages.
 
@@ -437,7 +526,7 @@ toast.info("Statut mis à jour.");
 - `profile/page.tsx` : mise à jour profil, changement mot de passe, suppression compte
 - `search/page.tsx` : ajout livre depuis la recherche
 
-### 5.2 Optimisations mineures
+### 6.2 Optimisations mineures
 
 | Amélioration                                         | Fichier                       | Effort |
 | ---------------------------------------------------- | ----------------------------- | ------ |
@@ -445,7 +534,7 @@ toast.info("Statut mis à jour.");
 | Compteur de caractères sur la textarea review        | `components/StarRating.tsx`   | ~30min |
 | Mettre à jour `.env.example` et `.env.local.example` | `frontend/.env.local.example` | ~15min |
 
-### 5.3 Refresh Token (si le temps le permet)
+### 6.3 Refresh Token (si le temps le permet)
 
 **Backend** : Ajouter `POST /auth/refresh` dans `auth.router.ts` et `auth.controller.ts`
 
@@ -460,7 +549,7 @@ router.post("/auth/refresh", refreshTokenController);
 
 ---
 
-## 6. Backlog priorisé - Tâches Sprint 3
+## 7. Backlog priorisé - Tâches Sprint 3
 
 ### 🔴 Priorité 1 - Notes et Avis - (Jour 1)
 
@@ -481,6 +570,24 @@ router.post("/auth/refresh", refreshTokenController);
 **Tests :**
 
 - [ ] Ajouter cas de test `PATCH /library/:id` avec `rating` et `review`
+
+### 🟠 Priorité 2b - Redis (Cache + Rate Limiting) - (Jour 3)
+
+**Setup :**
+
+- [ ] Installer `ioredis` et `rate-limit-redis` dans le backend
+- [ ] Créer `src/utils/redisClient.ts` (singleton ioredis)
+- [ ] Ajouter `REDIS_URL` dans `.env`, `.env.example` et les variables Render
+- [ ] Créer un compte Upstash + base Redis (free tier)
+
+**Cache OpenLibrary :**
+
+- [ ] Mettre en cache les résultats de `GET /books/search` (TTL 1h)
+- [ ] Mettre en cache les résultats de `GET /books/:openLibraryId` (TTL 24h)
+
+**Rate Limiting Redis :**
+
+- [ ] Remplacer le store mémoire par `RedisStore` dans `rateLimit.middleware.ts`
 
 ### 🟠 Priorité 2 - Internationalisation FR/EN - (Jours 2-3)
 
@@ -526,15 +633,18 @@ router.post("/auth/refresh", refreshTokenController);
 
 ---
 
-## 7. Référence rapide - Commandes
+## 8. Référence rapide - Commandes
 
 ```bash
 # Installation next-intl
 cd blablabook/frontend
 npm install next-intl
 
-# Backend - Tests
+# Installation Redis (backend)
 cd blablabook/backend
+npm install ioredis rate-limit-redis
+
+# Backend - Tests
 npm test
 npm run test:unit
 npm run test:spec
@@ -544,17 +654,19 @@ cd blablabook/frontend
 npm run dev
 
 # Tester en local
-curl http://localhost:3001/library  # PATCH avec rating + review
+curl http://localhost:3001/health         # Vérifier status API + DB
+curl http://localhost:3001/books/search?q=tolkien  # Doit être mis en cache
 ```
 
 ---
 
-## 8. Personnes responsables (suggestion)
+## 9. Personnes responsables (suggestion)
 
 | Tâche                                       | Assigné(e)            |
 | ------------------------------------------- | --------------------- |
 | **Notes + Avis - Backend** (PATCH /library) | Rémi                  |
 | **Notes + Avis - Frontend** (UI étoiles)    | Ophélie               |
+| **Redis setup + cache OpenLibrary**         | Christopher           |
 | **i18n setup + traductions FR/EN**          | Paul                  |
 | **i18n intégration pages + sélecteur**      | Christopher + Ophélie |
 | **Toasts Sonner + finitions**               | Tous                  |
@@ -562,7 +674,7 @@ curl http://localhost:3001/library  # PATCH avec rating + review
 
 ---
 
-## 9. Critères de validation du Sprint 3
+## 10. Critères de validation du Sprint 3
 
 À la fin du sprint, l'application doit permettre :
 
@@ -574,6 +686,8 @@ curl http://localhost:3001/library  # PATCH avec rating + review
 - [ ] Naviguer en **français** (défaut) et en **anglais**
 - [ ] Changer de langue via un sélecteur dans la navigation
 - [ ] Recevoir des retours visuels (toasts) lors des actions importantes
+- [ ] Les réponses OpenLibrary sont mises en cache (Redis) — pas d'appel répété à l'API
+- [ ] Le rate limiting persiste entre les redémarrages Render (store Redis)
 
 ---
 
