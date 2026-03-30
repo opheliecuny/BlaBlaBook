@@ -57,7 +57,7 @@ export function setRefreshTokenCookie(res: Response, refreshToken: Token) {
     maxAge: refreshToken.expiresInMS, // 7j
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    path: "/api/auth/refresh" // Sécurité : le cookie s'enverra (front -> back) uniquement via cette route, pas les autres routes (limite les transferts de ce cookie)
+    path: "/auth/refresh" // Sécurité : le cookie s'enverra (front -> back) uniquement via cette route, pas les autres routes (limite les transferts de ce cookie)
   });
 }
 

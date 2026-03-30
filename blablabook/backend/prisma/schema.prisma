@@ -1,7 +1,7 @@
 generator client {
   provider      = "prisma-client"
   output        = "../generated/prisma"
-  binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
+  binaryTargets = ["native", "linux-arm64-openssl-3.0.x", "linux-musl-openssl-3.0.x"]
 }
 
 datasource db {
@@ -61,7 +61,7 @@ model refresh_token {
 
   userId String @db.Uuid
 
-  user    user @relation(fields: [userId], references: [id]) // Alias
+  user    user @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   issuedAt  DateTime @default(now())
   expiresAt DateTime

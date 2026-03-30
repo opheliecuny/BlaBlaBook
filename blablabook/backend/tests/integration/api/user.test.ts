@@ -348,6 +348,7 @@ describe("User API Integration Tests", () => {
 
       // Ajouter un livre à la bibliothèque
       await request(app).post("/library").set("Cookie", cookies).send({
+        openLibraryId: "OL123W",
         isbn: "9780123456789",
         title: "Test Book",
       });

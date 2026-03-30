@@ -32,15 +32,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     async function checkSession() {
       try {
         const res = await fetch(`${API_URL}/auth/me`, {
-          credentials: "include", // envoie les cookies httpOnly
+          credentials: "include",
         });
+
         if (res.ok) {
-          const userData = await res.json();
-          setUser(userData);
+          setUser(await res.json());
+          return;
         }
-        // res.status 401 = non authentifié → user reste null → isAuthenticated = false (comportement correct)
+
+        if (res.status === 401) {
+          // Access token expiré — on tente le refresh
+          const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+            method: "POST",
+            credentials: "include",
+          });
+
+          if (refreshRes.ok) {
+            // Nouveau access token reçu — on revalide la session
+            const retryRes = await fetch(`${API_URL}/auth/me`, {
+              credentials: "include",
+            });
+            if (retryRes.ok) {
+              setUser(await retryRes.json());
+            }
+          }
+          // Si le refresh échoue → session vraiment expirée, user reste null
+        }
       } catch (error) {
-        // Erreur réseau (backend inaccessible) — on ne sait pas si l'utilisateur est connecté
+        // Erreur réseau (backend inaccessible)
         console.error("Erreur lors de la vérification de session :", error);
         setAuthError(true);
       } finally {

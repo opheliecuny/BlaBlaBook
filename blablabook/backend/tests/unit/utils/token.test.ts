@@ -153,7 +153,7 @@ describe("Token Utils", () => {
           maxAge: mockRefreshToken.expiresInMS,
           secure: false,
           sameSite: "lax",
-          path: "/api/auth/refresh",
+          path: "/auth/refresh",
         },
       );
     });

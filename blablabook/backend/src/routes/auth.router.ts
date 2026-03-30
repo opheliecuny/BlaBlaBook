@@ -10,3 +10,4 @@ router.get("/auth/me", isAuthenticated, asyncWrapper(authController.getMe));
 router.post("/auth/register", authRateLimit, asyncWrapper(authController.registerUser));
 router.post("/auth/login", authRateLimit, asyncWrapper(authController.loginUser));
 router.post("/auth/logout", isAuthenticated, asyncWrapper(authController.logoutUser));
+router.post("/auth/refresh", asyncWrapper(authController.refreshUserToken));

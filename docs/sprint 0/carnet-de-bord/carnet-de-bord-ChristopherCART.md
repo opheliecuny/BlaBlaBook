@@ -861,3 +861,83 @@ Rémi a mis à jour le backend dans la journée. Adaptation des 3 pages en cons�
 - Backend `user.controller.ts` : ajout `currentPassword` au schema Zod (requis si `password` fourni), vérification `argon2.verify` avant hash — 401 si incorrect
 - Frontend : `currentPassword` transmis dans `updateProfile`, type `UpdateProfileRequest` mis à jour
 - 2 nouveaux tests : currentPassword absent → 400, currentPassword incorrect → 401
+
+---
+
+### Séance 33 — Fix homepage + PR hotfix book.test.ts (27/03/2026)
+
+**Travail réalisé :**
+
+**Fix homepage — sélection aléatoire de livres absente**
+- Symptôme : section "Livres du moment" affichait les 4 placeholders au lieu des vrais livres
+- Diagnostic : `process.env.API_URL` utilisé dans le Server Component `page.tsx` mais la variable était absente du container frontend
+- `docker compose config` confirmait que `API_URL: http://api:3001` était bien défini — le container était simplement stale (créé avant l'ajout de la variable)
+- Fix : `docker compose up -d --force-recreate frontend` → `API_URL=http://api:3001` présent, vrais livres affichés
+
+**PR #145 — Hotfix `book.test.ts`**
+- Assertion `response.body.error` → `response.body.message` (ligne 164) cassée depuis la refacto `AppError` — squash merge n'avait pas intégré ce correctif dans `main`
+- Bug affectant toute l'équipe (CI rouge sur les branches qui rebasaient depuis main)
+- Fix `varsIgnorePattern: '^_'` dans `eslint.config.mjs` également inclus (root cause des lint failures CI)
+- PR ouverte directement contre `main`, reviewers ajoutés
+
+---
+
+### Séance 34 — Fix lint CI + implémentation POST /auth/refresh (27/03/2026)
+
+**Travail réalisé :**
+
+**Fix lint CI — `varsIgnorePattern` ESLint**
+- `argsIgnorePattern: '^_'` ne couvre que les arguments de fonction, pas les variables de destructuring (`_`, `_currentPassword`)
+- Fix : ajout `varsIgnorePattern: '^_'` dans `eslint.config.mjs` → appliqué sur PR #145 et PR #140
+- PRs #145 et #140 CI vertes ✅
+
+**Implémentation `POST /auth/refresh`**
+- Fix path cookie : `"/api/auth/refresh"` → `"/auth/refresh"` dans `token.ts` et `auth.controller.ts` (préfixe `/api` inexistant → cookie jamais envoyé automatiquement)
+- `onDelete: Cascade` sur `refresh_token → user` dans `schema.prisma` + migration `20260327095753_add_refresh_token_cascade`
+- Controller `refreshUserToken` : lecture cookie → vérification BDD + expiry → rotation (suppression ancien, génération nouveau) → nouveaux cookies
+- Route `POST /auth/refresh` dans `auth.router.ts` (sans `isAuthenticated`)
+- 5 tests d'intégration : token valide (200), absent (401), invalide (401), expiré (401), rotation BDD vérifiée
+- **Résultat : 96/96 tests ✅**
+- Branche `feature/auth-refresh-token` prête en local — push différé après démo de l'après-midi
+
+---
+
+### Séance 35 — AuthContext + ApiClient refresh silencieux + fix upsert library (27/03/2026)
+
+**Travail réalisé :**
+
+**Branchement frontend sur POST /auth/refresh**
+- `AuthContext.tsx` : si `GET /auth/me` retourne 401 → appel `POST /auth/refresh` → si succès, retry `/auth/me` → session maintenue. Si refresh échoue → `user = null` (session expirée, comportement normal)
+- `api.ts` (`ApiClient`) : même logique sur tous les appels API — paramètre `isRetry` pour éviter la boucle infinie. Sur 401 : refresh → rejoue la requête originale. Si refresh échoue → redirect `/login`
+- Avant : tout 401 pendant la navigation → redirect login immédiat → perte de session sans possibilité de récupération
+
+**Fix `POST /library` — upsert sur `openLibraryId`**
+- Problème : upsert utilisait `isbn` comme clé unique, mais un même livre pouvait être inséré deux fois (isbn réel vs fallback `ol-xxx` généré par le frontend)
+- Fix : `openLibraryId` devient la clé d'upsert (toujours présent depuis Open Library), `isbn` devient optionnel dans le schema Zod avec fallback `ol-${openLibraryId}` si absent
+- Tests `library.test.ts` et `user.test.ts` mis à jour : ajout `openLibraryId` dans les payloads, test "isbn manquant" → "openLibraryId manquant", nouveau test fallback isbn
+- **Résultat : 97/97 tests ✅**
+
+### Séance 36 — Rebase + fix Prisma Docker (27/03/2026)
+
+**Travail réalisé :**
+
+**Rebase `feature/auth-refresh-token` sur `main`**
+- `main` local mis à jour après merge des PRs #145 (fix assertion book.test.ts) et #140 (rate limiting + cookies NODE_ENV)
+- Rebase effectué — 5 conflits résolus manuellement : `token.ts`, `auth.controller.ts`, `auth.router.ts`, `auth.test.ts`, `token.test.ts`
+- Stratégie : conserver les améliorations de #140 (cookies dynamiques `secure`/`sameSite` selon `NODE_ENV`) + notre fix (path `/auth/refresh` au lieu de `/api/auth/refresh`) + notre nouvelle route `POST /auth/refresh`
+- `npm install` requis pour `express-rate-limit` (nouveau package de #140)
+- **Résultat : 97/97 tests ✅**
+
+**Fix Prisma binaryTargets — API Docker Alpine**
+- Symptôme : sélection aléatoire de livres disparue, API ne répondait plus
+- Cause : la migration `onDelete: Cascade` a déclenché `prisma generate` localement pour debian, mais le container Docker utilise Alpine (musl) — binaire absent → crash au démarrage
+- Fix : ajout de `linux-musl-openssl-3.0.x` dans `binaryTargets` de `schema.prisma`, `prisma generate` relancé, `docker compose restart api`
+- Commit : `fix(prisma): add linux-musl-openssl-3.0.x to binaryTargets for Docker Alpine`
+- Documentation ajoutée dans `CLAUDE.md` pour éviter la récurrence
+
+### Séance 37 — Ouverture PR #149 (27/03/2026)
+
+**Travail réalisé :**
+- Push de la branche `feature/auth-refresh-token` sur le dépôt distant
+- PR #149 ouverte : `feat: implémenter POST /auth/refresh avec rotation de token`
+- Reviewers ajoutés : Rémi, Ophélie, Paul

@@ -18,49 +18,53 @@ class ApiClient {
   private async request<T>(
     endpoint: string,
     options: RequestInit = {},
+    isRetry = false,
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
 
-    // Configuration des headers par défaut
     const headers: HeadersInit = {
       "Content-Type": "application/json",
       ...options.headers,
     };
 
-    // Le token est maintenant dans un cookie httpOnly (accessToken)
-    // Il est automatiquement envoyé par le navigateur avec credentials: 'include'
-    // Pas besoin d'ajouter le header Authorization
     const config: RequestInit = {
       ...options,
       headers,
-      credentials: "include", // Envoie automatiquement les cookies httpOnly
+      credentials: "include",
     };
 
     try {
       const response = await fetch(url, config);
 
-      // Gestion des erreurs HTTP
       if (!response.ok) {
-        const error = await response.json().catch(() => ({
-          message: "Une erreur est survenue",
-        }));
+        // Access token expiré — on tente le refresh une seule fois
+        if (response.status === 401 && !isRetry) {
+          const refreshRes = await fetch(`${this.baseURL}/auth/refresh`, {
+            method: "POST",
+            credentials: "include",
+          });
 
-        // Si 401 (Unauthorized), rediriger vers login (le rechargement réinitialise l'AuthContext)
-        if (response.status === 401) {
+          if (refreshRes.ok) {
+            // Nouveau token reçu — on rejoue la requête originale
+            return this.request<T>(endpoint, options, true);
+          }
+
+          // Refresh échoué → session vraiment expirée
           if (typeof window !== "undefined") {
             window.location.href = "/login";
           }
         }
 
+        const error = await response.json().catch(() => ({
+          message: "Une erreur est survenue",
+        }));
         throw new Error(error.message || `Erreur ${response.status}`);
       }
 
-      // Si 204 No Content, retourner null
       if (response.status === 204) {
         return null as T;
       }
 
-      // Parser la réponse JSON
       return await response.json();
     } catch (error) {
       if (error instanceof Error) {

@@ -15,7 +15,6 @@ describe("Library API Integration Tests", () => {
 
   describe("GET /library", () => {
     it("devrait retourner une liste vide pour un nouvel utilisateur", async () => {
-      // Créer un utilisateur et se connecter
       await createTestUser({
         email: "user@example.com",
         password: "Password123",
@@ -30,7 +29,6 @@ describe("Library API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Récupérer la bibliothèque
       const response = await request(app)
         .get("/library")
         .set("Cookie", cookies)
@@ -40,7 +38,6 @@ describe("Library API Integration Tests", () => {
     });
 
     it("devrait retourner les livres de l'utilisateur", async () => {
-      // Créer un utilisateur et se connecter
       await createTestUser({
         email: "user@example.com",
         password: "Password123",
@@ -55,15 +52,14 @@ describe("Library API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Ajouter un livre
       await request(app).post("/library").set("Cookie", cookies).send({
+        openLibraryId: "OL123W",
         isbn: "9780123456789",
         title: "Test Book",
         author: "Test Author",
         status: "TO_READ",
       });
 
-      // Récupérer la bibliothèque
       const response = await request(app)
         .get("/library")
         .set("Cookie", cookies)
@@ -85,7 +81,6 @@ describe("Library API Integration Tests", () => {
 
   describe("POST /library", () => {
     it("devrait ajouter un livre avec succès", async () => {
-      // Créer un utilisateur et se connecter
       const user = await createTestUser({
         email: "user@example.com",
         password: "Password123",
@@ -100,11 +95,11 @@ describe("Library API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Ajouter un livre
       const response = await request(app)
         .post("/library")
         .set("Cookie", cookies)
         .send({
+          openLibraryId: "OL123W",
           isbn: "9780123456789",
           title: "Test Book",
           author: "Test Author",
@@ -120,7 +115,6 @@ describe("Library API Integration Tests", () => {
         status: "READING",
       });
 
-      // Vérifier que le livre est bien en BDD
       const libraryItem = await prisma.library_item.findFirst({
         where: { userId: user.id },
         include: { book: true },
@@ -132,7 +126,6 @@ describe("Library API Integration Tests", () => {
     });
 
     it("devrait ajouter un livre avec statut par défaut TO_READ", async () => {
-      // Créer un utilisateur et se connecter
       await createTestUser({
         email: "user@example.com",
         password: "Password123",
@@ -147,12 +140,11 @@ describe("Library API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Ajouter un livre sans statut
       const response = await request(app)
         .post("/library")
         .set("Cookie", cookies)
         .send({
-          isbn: "9780123456789",
+          openLibraryId: "OL123W",
           title: "Test Book",
         })
         .expect(200);
@@ -160,8 +152,7 @@ describe("Library API Integration Tests", () => {
       expect(response.body.status).toBe("TO_READ");
     });
 
-    it("devrait retourner 400 si le titre est manquant", async () => {
-      // Créer un utilisateur et se connecter
+    it("devrait utiliser openLibraryId comme fallback isbn si isbn absent", async () => {
       await createTestUser({
         email: "user@example.com",
         password: "Password123",
@@ -176,20 +167,50 @@ describe("Library API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Ajouter un livre sans titre
+      await request(app)
+        .post("/library")
+        .set("Cookie", cookies)
+        .send({
+          openLibraryId: "OL999W",
+          title: "Book Without ISBN",
+        })
+        .expect(200);
+
+      const book = await prisma.book.findUnique({
+        where: { openLibraryId: "OL999W" },
+      });
+
+      expect(book).toBeDefined();
+      expect(book?.isbn).toBe("ol-OL999W");
+    });
+
+    it("devrait retourner 400 si le titre est manquant", async () => {
+      await createTestUser({
+        email: "user@example.com",
+        password: "Password123",
+        username: "testuser",
+      });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "user@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers[
+        "set-cookie"
+      ] as unknown as string[];
+
       const response = await request(app)
         .post("/library")
         .set("Cookie", cookies)
         .send({
-          isbn: "9780123456789",
+          openLibraryId: "OL123W",
         })
         .expect(400);
 
       expect(response.body.code).toBe("VALIDATION_ERROR");
     });
 
-    it("devrait retourner 400 si l'isbn est manquant", async () => {
-      // Créer un utilisateur et se connecter
+    it("devrait retourner 400 si openLibraryId est manquant", async () => {
       await createTestUser({
         email: "user@example.com",
         password: "Password123",
@@ -204,7 +225,6 @@ describe("Library API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Ajouter un livre sans isbn
       const response = await request(app)
         .post("/library")
         .set("Cookie", cookies)
@@ -217,7 +237,6 @@ describe("Library API Integration Tests", () => {
     });
 
     it("devrait retourner 409 si le livre est déjà dans la bibliothèque", async () => {
-      // Créer un utilisateur et se connecter
       await createTestUser({
         email: "user@example.com",
         password: "Password123",
@@ -232,22 +251,20 @@ describe("Library API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Ajouter un livre
       await request(app)
         .post("/library")
         .set("Cookie", cookies)
         .send({
-          isbn: "9780123456789",
+          openLibraryId: "OL123W",
           title: "Test Book",
         })
         .expect(200);
 
-      // Essayer d'ajouter le même livre
       const response = await request(app)
         .post("/library")
         .set("Cookie", cookies)
         .send({
-          isbn: "9780123456789",
+          openLibraryId: "OL123W",
           title: "Test Book",
         })
         .expect(409);
@@ -259,7 +276,7 @@ describe("Library API Integration Tests", () => {
       await request(app)
         .post("/library")
         .send({
-          isbn: "9780123456789",
+          openLibraryId: "OL123W",
           title: "Test Book",
         })
         .expect(401);
@@ -268,7 +285,6 @@ describe("Library API Integration Tests", () => {
 
   describe("PATCH /library/:id", () => {
     it("devrait mettre à jour le statut de lecture", async () => {
-      // Créer un utilisateur et se connecter
       const user = await createTestUser({
         email: "user@example.com",
         password: "Password123",
@@ -283,11 +299,11 @@ describe("Library API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Ajouter un livre
       const addResponse = await request(app)
         .post("/library")
         .set("Cookie", cookies)
         .send({
+          openLibraryId: "OL123W",
           isbn: "9780123456789",
           title: "Test Book",
           status: "TO_READ",
@@ -295,7 +311,6 @@ describe("Library API Integration Tests", () => {
 
       const bookId = addResponse.body.bookId;
 
-      // Mettre à jour le statut
       const response = await request(app)
         .patch(`/library/${bookId}`)
         .set("Cookie", cookies)
@@ -304,7 +319,6 @@ describe("Library API Integration Tests", () => {
 
       expect(response.body.status).toBe("READING");
 
-      // Vérifier en BDD
       const libraryItem = await prisma.library_item.findFirst({
         where: { userId: user.id, bookId },
       });
@@ -313,7 +327,6 @@ describe("Library API Integration Tests", () => {
     });
 
     it("devrait retourner 400 si le statut est invalide", async () => {
-      // Créer un utilisateur et se connecter
       await createTestUser({
         email: "user@example.com",
         password: "Password123",
@@ -328,18 +341,16 @@ describe("Library API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Ajouter un livre
       const addResponse = await request(app)
         .post("/library")
         .set("Cookie", cookies)
         .send({
-          isbn: "9780123456789",
+          openLibraryId: "OL123W",
           title: "Test Book",
         });
 
       const bookId = addResponse.body.bookId;
 
-      // Mettre à jour avec un statut invalide
       const response = await request(app)
         .patch(`/library/${bookId}`)
         .set("Cookie", cookies)
@@ -350,7 +361,6 @@ describe("Library API Integration Tests", () => {
     });
 
     it("devrait retourner 404 si le livre n'est pas dans la bibliothèque de l'utilisateur", async () => {
-      // Créer un utilisateur et se connecter
       await createTestUser({
         email: "user@example.com",
         password: "Password123",
@@ -365,7 +375,6 @@ describe("Library API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Essayer de mettre à jour un livre qui n'existe pas
       const response = await request(app)
         .patch("/library/550e8400-e29b-41d4-a716-446655440000")
         .set("Cookie", cookies)
@@ -385,7 +394,6 @@ describe("Library API Integration Tests", () => {
 
   describe("DELETE /library/:id", () => {
     it("devrait supprimer un livre de la bibliothèque", async () => {
-      // Créer un utilisateur et se connecter
       const user = await createTestUser({
         email: "user@example.com",
         password: "Password123",
@@ -400,24 +408,22 @@ describe("Library API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Ajouter un livre
       const addResponse = await request(app)
         .post("/library")
         .set("Cookie", cookies)
         .send({
+          openLibraryId: "OL123W",
           isbn: "9780123456789",
           title: "Test Book",
         });
 
       const bookId = addResponse.body.bookId;
 
-      // Supprimer le livre
       await request(app)
         .delete(`/library/${bookId}`)
         .set("Cookie", cookies)
         .expect(204);
 
-      // Vérifier que le livre n'est plus en BDD
       const libraryItem = await prisma.library_item.findFirst({
         where: { userId: user.id, bookId },
       });
@@ -426,7 +432,6 @@ describe("Library API Integration Tests", () => {
     });
 
     it("devrait retourner 404 si le livre n'existe pas dans la bibliothèque", async () => {
-      // Créer un utilisateur et se connecter
       await createTestUser({
         email: "user@example.com",
         password: "Password123",
@@ -441,7 +446,6 @@ describe("Library API Integration Tests", () => {
         "set-cookie"
       ] as unknown as string[];
 
-      // Essayer de supprimer un livre qui n'existe pas
       const response = await request(app)
         .delete("/library/550e8400-e29b-41d4-a716-446655440000")
         .set("Cookie", cookies)

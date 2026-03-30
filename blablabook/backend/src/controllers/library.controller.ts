@@ -22,8 +22,8 @@ export async function getLibrary(req: Request, res: Response) {
 export async function addBookToLibrary(req: Request, res: Response) {
   const userId = req.user.id;
   const postBookBodySchema = z.object({
-    isbn: z.string(),
-    openLibraryId: z.string().optional(),
+    openLibraryId: z.string(),
+    isbn: z.string().optional(),
     title: z.string(),
     author: z.string().optional(),
     genre: z.string().optional(),
@@ -39,11 +39,11 @@ export async function addBookToLibrary(req: Request, res: Response) {
   const bookData = postBookBodySchema.parse(req.body);
   const book = await prisma.book.upsert({
     where: {
-      isbn: bookData.isbn
+      openLibraryId: bookData.openLibraryId
     },
     update: {},
     create: {
-      isbn: bookData.isbn,
+      isbn: bookData.isbn ?? `ol-${bookData.openLibraryId}`,
       openLibraryId: bookData.openLibraryId,
       title: bookData.title,
       author: bookData.author,

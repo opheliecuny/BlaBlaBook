@@ -280,13 +280,95 @@ describe("Auth API Integration Tests", () => {
       expect(refreshTokenCookie).toBeDefined();
       expect(refreshTokenCookie).toMatch(/Max-Age=0/i);
       expect(refreshTokenCookie).toMatch(/SameSite=Lax/i);
-      expect(refreshTokenCookie).toMatch(/Path=\/api\/auth\/refresh/i);
+      expect(refreshTokenCookie).toMatch(/Path=\/auth\/refresh/i);
     });
 
     it("devrait retourner 401 si l'utilisateur n'est pas authentifié", async () => {
       const response = await request(app).post("/auth/logout").expect(401);
 
       expect(response.body.message).toBe("No token provided");
+    });
+  });
+
+  describe("POST /auth/refresh", () => {
+    it("devrait émettre de nouveaux tokens à partir d'un refresh token valide", async () => {
+      await createTestUser({ email: "refresh@example.com", password: "Password123" });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "refresh@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
+      const refreshCookie = cookies.find((c: string) => c.startsWith("refreshToken="));
+      expect(refreshCookie).toBeDefined();
+
+      const response = await request(app)
+        .post("/auth/refresh")
+        .set("Cookie", cookies)
+        .expect(200);
+
+      expect(response.body).toMatchObject({ email: "refresh@example.com" });
+      expect(response.body).toHaveProperty("id");
+
+      const newCookies = response.headers["set-cookie"] as unknown as string[];
+      expect(newCookies.some((c: string) => c.startsWith("accessToken="))).toBe(true);
+      expect(newCookies.some((c: string) => c.startsWith("refreshToken="))).toBe(true);
+    });
+
+    it("devrait retourner 401 si aucun refresh token n'est fourni", async () => {
+      const response = await request(app).post("/auth/refresh").expect(401);
+      expect(response.body.message).toBe("No refresh token provided");
+    });
+
+    it("devrait retourner 401 si le refresh token est invalide", async () => {
+      const response = await request(app)
+        .post("/auth/refresh")
+        .set("Cookie", "refreshToken=tokeninvalide")
+        .expect(401);
+
+      expect(response.body.message).toBe("Invalid refresh token");
+    });
+
+    it("devrait retourner 401 si le refresh token est expiré", async () => {
+      const user = await createTestUser({ email: "expired@example.com", password: "Password123" });
+
+      await prisma.refresh_token.create({
+        data: {
+          token: "expired-token",
+          userId: user.id,
+          issuedAt: new Date("2020-01-01"),
+          expiresAt: new Date("2020-01-08"),
+        },
+      });
+
+      const response = await request(app)
+        .post("/auth/refresh")
+        .set("Cookie", "refreshToken=expired-token")
+        .expect(401);
+
+      expect(response.body.message).toBe("Refresh token expired");
+    });
+
+    it("devrait remplacer l'ancien refresh token en BDD (rotation)", async () => {
+      const user = await createTestUser({ email: "rotation@example.com", password: "Password123" });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "rotation@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
+      const oldTokenStr = (cookies.find((c: string) => c.startsWith("refreshToken=")) ?? "")
+        .split(";")[0]
+        .replace("refreshToken=", "");
+
+      await request(app).post("/auth/refresh").set("Cookie", cookies).expect(200);
+
+      const oldToken = await prisma.refresh_token.findUnique({ where: { token: oldTokenStr } });
+      expect(oldToken).toBeNull();
+
+      const tokens = await prisma.refresh_token.findMany({ where: { userId: user.id } });
+      expect(tokens).toHaveLength(1);
+      expect(tokens[0].token).not.toBe(oldTokenStr);
     });
   });
 

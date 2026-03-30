@@ -95,9 +95,45 @@ export async function logoutUser(req: Request, res: Response) {
 
   const isProduction = process.env.NODE_ENV === "production";
   res.cookie("accessToken", "", { httpOnly: true, maxAge: 0, secure: isProduction, sameSite: isProduction ? "none" : "lax" });
-  res.cookie("refreshToken", "", { httpOnly: true, maxAge: 0, secure: isProduction, sameSite: isProduction ? "none" : "lax", path: "/api/auth/refresh" });
+  res.cookie("refreshToken", "", { httpOnly: true, maxAge: 0, secure: isProduction, sameSite: isProduction ? "none" : "lax", path: "/auth/refresh" });
 
   res.status(204).send({ message: "Successfully logged out" });
+}
+
+export async function refreshUserToken(req: Request, res: Response) {
+  const token = req.cookies?.refreshToken;
+
+  if (!token) {
+    throw new UnauthorizedError("No refresh token provided");
+  }
+
+  const storedToken = await prisma.refresh_token.findUnique({
+    where: { token },
+    include: { user: true },
+  });
+
+  if (!storedToken) {
+    throw new UnauthorizedError("Invalid refresh token");
+  }
+
+  if (storedToken.expiresAt < new Date()) {
+    await prisma.refresh_token.delete({ where: { id: storedToken.id } });
+    throw new UnauthorizedError("Refresh token expired");
+  }
+
+  const { user } = storedToken;
+  const { accessToken, refreshToken } = generateAuthenticationTokens(user);
+
+  await replaceRefreshTokenInDatabase(refreshToken, user);
+
+  setAccessTokenCookie(res, accessToken);
+  setRefreshTokenCookie(res, refreshToken);
+
+  return res.status(200).json({
+    id: user.id,
+    email: user.email,
+    username: user.username,
+  });
 }
 
 export async function getMe(req: Request, res: Response) {
