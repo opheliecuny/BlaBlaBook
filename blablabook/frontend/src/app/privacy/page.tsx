@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12">
+      <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12 dark:bg-gray-800">
         {/* Header */}
         <header className="mb-8 border-b border-border pb-8">
           <h1 className="mb-4 text-2xl sm:text-3xl font-bold tracking-tight text-foreground uppercase">
@@ -18,7 +18,7 @@ export default function PrivacyPage() {
           <time dateTime="2026-03-24" className="text-sm text-gray-500 italic">
             Dernière mise à jour : 24 mars 2026
           </time>
-          <p className="mt-4 text-sm leading-relaxed text-gray-700">
+          <p className="mt-4 text-sm leading-relaxed text-gray-700 dark:text-gray-300">
             La présente politique de confidentialité décrit comment l{"'"}application
             <strong> BlaBlaBook</strong> collecte, utilise et protège les données personnelles de ses utilisateurs.
           </p>
@@ -103,7 +103,7 @@ export default function PrivacyPage() {
                 contact@blablabook.fr
               </a>
             </address>
-            <p className="mt-2 text-sm text-gray-500">
+            <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
               Vous pouvez également contacter la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">CNIL</a> pour toute réclamation concernant vos données personnelles.
             </p>
           </section>

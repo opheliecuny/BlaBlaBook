@@ -251,7 +251,7 @@ export default function LibraryPage() {
                 </Select>
 
                 <Link href={`/book/${book.openLibraryId}`}>
-                  <Button className="w-full active:scale-95 active:bg-gray-100 transition-all hover:bg-[#D1D5DB]" variant="secondary" aria-label={`Voir le détail de ${book.title}`}>
+                  <Button className="w-full active:scale-95 active:bg-gray-100 transition-all hover:bg-[#D1D5DB] dark:bg-gray-800 dark:hover:bg-gray-700" variant="secondary" aria-label={`Voir le détail de ${book.title}`}>
                     Voir le détail
                   </Button>
                 </Link>
@@ -271,7 +271,7 @@ function StatCard({ icon, label, count }: {
   count: number;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-3 flex flex-col">
+    <div className="bg-white rounded-xl border border-gray-200 p-3 flex flex-col dark:bg-gray-900 dark:border-gray-700">
       <div className="self-start" aria-hidden="true">
         {icon}
       </div>

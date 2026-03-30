@@ -5,7 +5,11 @@ import { User, Shield, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { deleteProfile, getProfile, updateProfile } from "@/services/userService";
+import {
+  deleteProfile,
+  getProfile,
+  updateProfile,
+} from "@/services/userService";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -15,7 +19,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogDescription,
-  AlertDialogTrigger
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useRouter } from "next/navigation";
 
@@ -33,10 +37,13 @@ export default function ProfilePage() {
   useEffect(() => {
     async function fetchProfile() {
       const data = await getProfile();
-      const formattedDate = new Date(data.createdAt).toLocaleDateString("fr-FR", {
-        year: "numeric",
-        month: "long"
-      });
+      const formattedDate = new Date(data.createdAt).toLocaleDateString(
+        "fr-FR",
+        {
+          year: "numeric",
+          month: "long",
+        },
+      );
       setUsername(data.username);
       setEmail(data.email);
       setDateJoined(formattedDate);
@@ -48,16 +55,18 @@ export default function ProfilePage() {
   async function handleProfileUpdate(e: React.SubmitEvent<HTMLFormElement>) {
     try {
       e.preventDefault();
-      // TODO : vérifier court-circuitage
       await updateProfile({ username, email });
 
       toast.success("Informations personnelles mises à jour avec succès !", {
-        position: "top-center"
+        position: "top-center",
       });
     } catch (error) {
       toast.error("Une erreur est survenue lors de la mise à jour du profil.", {
         position: "top-center",
-        description: error instanceof Error ? error.message : "Une erreur réseau est survenue"
+        description:
+          error instanceof Error
+            ? error.message
+            : "Une erreur réseau est survenue",
       });
     }
   }
@@ -67,19 +76,29 @@ export default function ProfilePage() {
       e.preventDefault();
 
       if (newPassword !== confirmPassword) {
-        toast.error("Le nouveau mot de passe et sa confirmation ne correspondent pas.", {
-          position: "top-center"
-        });
+        toast.error(
+          "Le nouveau mot de passe et sa confirmation ne correspondent pas.",
+          {
+            position: "top-center",
+          },
+        );
         return;
       }
       await updateProfile({ password: newPassword, currentPassword });
       toast.success("Mot de passe mis à jour avec succès !", {
-        position: "top-center"
+        position: "top-center",
       });
     } catch (error) {
-      toast.error("Une erreur est survenue lors de la mise à jour du mot de passe.", {
-        position: "top-center"
-      });
+      toast.error(
+        "Une erreur est survenue lors de la mise à jour du mot de passe.",
+        {
+          position: "top-center",
+          description:
+            error instanceof Error
+              ? error.message
+              : "Une erreur réseau est survenue",
+        },
+      );
     }
   }
 
@@ -87,12 +106,16 @@ export default function ProfilePage() {
     try {
       await deleteProfile();
       toast.success("Votre compte a été supprimé avec succès.", {
-        position: "top-center"
+        position: "top-center",
       });
       router.replace("/");
     } catch (error) {
       toast.error("Une erreur est survenue lors de la suppression du compte.", {
-        position: "top-center"
+        position: "top-center",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Une erreur réseau est survenue",
       });
     }
   }
@@ -105,7 +128,10 @@ export default function ProfilePage() {
           <div className="flex flex-col items-center text-center">
             {/* Avatar */}
             <div className="bg-primary mb-4 flex h-24 w-24 items-center justify-center rounded-full">
-              <User className="text-primary-foreground h-12 w-12" aria-hidden="true" />
+              <User
+                className="text-primary-foreground h-12 w-12"
+                aria-hidden="true"
+              />
             </div>
 
             {/* Nom et email */}
@@ -113,7 +139,7 @@ export default function ProfilePage() {
             <p className="text-muted-foreground mt-1">{email}</p>
 
             {/* Badge membre */}
-            <div className="bg-secondary mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium">
+            <div className="bg-secondary mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium dark:bg-gray-700">
               <User className="h-4 w-4" aria-hidden="true" />
               <p className="text-xs uppercase">Membre depuis {dateJoined}</p>
             </div>
@@ -121,10 +147,15 @@ export default function ProfilePage() {
         </section>
 
         {/* Section Informations personnelles */}
-        <section aria-labelledby="profile-info" className="bg-card rounded-2xl border p-8 shadow-sm">
+        <section
+          aria-labelledby="profile-info"
+          className="bg-card rounded-2xl border p-8 shadow-sm"
+        >
           <div className="mb-6 flex items-center gap-3">
             <User className="h-5 w-5" aria-hidden="true" />
-            <h2 id="profile-info" className="text-xl font-semibold">Informations personnelles</h2>
+            <h2 id="profile-info" className="text-xl font-semibold">
+              Informations personnelles
+            </h2>
           </div>
 
           <form onSubmit={handleProfileUpdate} className="space-y-6">
@@ -162,10 +193,15 @@ export default function ProfilePage() {
         </section>
 
         {/* Section Sécurité */}
-        <section aria-labelledby="security-title" className="bg-card rounded-2xl border p-8 shadow-sm">
+        <section
+          aria-labelledby="security-title"
+          className="bg-card rounded-2xl border p-8 shadow-sm"
+        >
           <div className="mb-6 flex items-center gap-3">
             <Shield className="h-5 w-5" aria-hidden="true" />
-            <h2 id="security-title" className="text-xl font-semibold">Sécurité</h2>
+            <h2 id="security-title" className="text-xl font-semibold">
+              Sécurité
+            </h2>
           </div>
 
           <form onSubmit={handlePasswordUpdate} className="space-y-6">
@@ -220,38 +256,46 @@ export default function ProfilePage() {
         </section>
 
         {/* Zone de danger */}
-        <section aria-labelledby="danger-zone" className="flex flex-col gap-6 sm:flex-row items-center justify-between rounded-2xl border-2 border-[var(--accent-alt)] bg-[var(--accent-alt)]/10 p-8">
+        <section
+          aria-labelledby="danger-zone"
+          className="flex flex-col items-center justify-between gap-6 rounded-2xl border-2 border-[var(--accent-alt)] bg-[var(--accent-alt)]/10 p-8 sm:flex-row"
+        >
           {/* Partie gauche - Icône et texte */}
           <div className="flex items-start space-x-4">
             {/* Icône d'alerte */}
-            <div className="bg-[var(--accent-alt)] text-white mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full">
+            <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--accent-alt)] text-white">
               <AlertTriangle className="h-6 w-6" aria-hidden="true" />
             </div>
 
             <div>
-              <h2 id="danger-zone" className="text-xl font-bold text-[#A12C14]">Zone de danger</h2>
+              <h2 id="danger-zone" className="text-xl font-bold text-[#A12C14]">
+                Zone de danger
+              </h2>
               <p className="mt-1 text-lg font-medium text-[#A12C14]">
                 Supprimer mon compte
               </p>
-              <p className="mt-1 text-sm text-destructive/70 font-medium">
-                Cette action est irréversible. Toutes vos données seront effacées.
+              <p className="text-destructive/70 mt-1 text-sm font-medium">
+                Cette action est irréversible. Toutes vos données seront
+                effacées.
               </p>
             </div>
           </div>
 
           {/* Partie droite : Bouton de suppression */}
           <AlertDialog>
-            <AlertDialogTrigger className="ml-4 shrink-0 border-[var(--accent-alt)] bg-[var(--accent-alt)] text-white p-2 rounded-md" aria-label="Supprimer le compte">
+            <AlertDialogTrigger
+              className="ml-4 shrink-0 rounded-md border-[var(--accent-alt)] bg-[var(--accent-alt)] p-2 text-white"
+              aria-label="Supprimer le compte"
+            >
               Supprimer définitivement
             </AlertDialogTrigger>
 
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>
-                  Supprimer votre compte ?
-                </AlertDialogTitle>
+                <AlertDialogTitle>Supprimer votre compte ?</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Cette action est irréversible. Toutes vos données seront définitivement supprimées.
+                  Cette action est irréversible. Toutes vos données seront
+                  définitivement supprimées.
                 </AlertDialogDescription>
               </AlertDialogHeader>
 

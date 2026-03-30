@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 export default function CGUPage() {
   return (
     <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm sm:p-10 md:p-12">
+      <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm sm:p-10 md:p-12 dark:bg-gray-800">
         {/* Header */}
         <header className="mb-8 border-b border-border pb-8">
           <h1 className="mb-4 text-3xl font-bold tracking-tight text-foreground uppercase">

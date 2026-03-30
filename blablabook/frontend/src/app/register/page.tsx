@@ -78,7 +78,7 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center px-4 py-10">
-      <div className="border-border w-full max-w-md rounded-xl border bg-white p-10 shadow-xl">
+      <div className="border-border w-full max-w-md rounded-xl border bg-white p-10 shadow-xl dark:bg-gray-900">
         <h1 className="mb-1 text-center text-2xl font-bold uppercase">
           Créer un compte
         </h1>
@@ -152,7 +152,7 @@ export default function RegisterPage() {
             </div>
 
             {/* Indicateur de force */}
-            <div className="h-1 w-full bg-gray-200 rounded mt-2">
+            <div className="h-1 w-full bg-gray-200 rounded mt-2 dark:bg-gray-700" aria-hidden="true">
               <div
                 className={`h-full transition-all rounded ${score <= 1
                   ? "w-1/4 bg-red-500"

@@ -31,7 +31,7 @@ export default async function HomePage() {
       <section className="relative mx-auto flex flex-col items-center gap-12 overflow-hidden px-6 py-10 sm:max-w-7xl sm:flex-row sm:px-12">
         <div className="bg-card/60 relative z-10 mt-6 max-w-[83%] flex-1 rounded-xl p-6 backdrop-blur-sm sm:mt-0 sm:bg-transparent sm:px-0">
           <span
-            className="tag-terracotta-filled mb-4 hidden items-center gap-1.5 rounded px-2 py-1 text-xs font-semibold sm:inline-flex"
+            className="tag-terracotta-filled mb-4 hidden items-center gap-1.5 rounded px-2 py-1 text-xs font-semibold sm:inline-flex dark:bg-gray-800"
             style={{ color: "#E8927A" }}
           >
             <Bookmark size={11} aria-hidden="true" />
@@ -51,7 +51,7 @@ export default async function HomePage() {
           <div className="flex justify-around gap-2 sm:justify-start sm:gap-3">
             <Link
               href="/login"
-              className="sm:border-input sm:text-foreground inline-flex h-auto items-center justify-center rounded-md border border-[var(--accent-alt)] bg-[var(--color-btn-subtle)] p-2 text-center text-sm font-semibold text-[var(--accent-alt)] hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)]"
+              className="sm:border-input sm:text-foreground inline-flex h-auto items-center justify-center rounded-md border border-[var(--accent-alt)] bg-[var(--color-btn-subtle)] p-2 text-center text-sm font-semibold text-[var(--accent-alt)] hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] dark:bg-gray-800"
             >
               Se connecter
             </Link>
@@ -115,7 +115,7 @@ export default async function HomePage() {
                               ? `/book/${bookId}`
                               : `/search?q=${encodeURIComponent(book.title)}`
                           }
-                          className="inline-flex w-full items-center justify-center rounded-md bg-[var(--color-btn-subtle)] px-3 py-1.5 text-xs font-medium hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)]"
+                          className="inline-flex w-full items-center justify-center rounded-md bg-[var(--color-btn-subtle)] px-3 py-1.5 text-xs font-medium hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] dark:bg-gray-800"
                           aria-label={`Voir le détail du livre ${book.title}`}
                         >
                           Voir le détail

@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Menu } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Sheet,
-  SheetClose,
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet";
@@ -14,6 +14,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { logout as logoutService } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+const ThemeToggle = dynamic(() => import("./ThemeToggle"), { ssr: false });
 
 export default function Navbar() {
   const { isAuthenticated, logout } = useAuth();
@@ -67,9 +69,13 @@ export default function Navbar() {
             </>
           )}
         </nav>
+        <div className="hidden sm:block">
+          <ThemeToggle />
+        </div>
 
         {/* Mobile menu */}
-        <div className="ml-auto sm:hidden">
+        <div className="ml-auto flex items-center gap-3 sm:hidden">
+          <ThemeToggle />
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger aria-label="Ouvrir le menu">
                 <Menu className="h-6 w-6" />
