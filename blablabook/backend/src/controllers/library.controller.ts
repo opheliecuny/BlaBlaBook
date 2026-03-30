@@ -55,7 +55,7 @@ export async function addBookToLibrary(req: Request, res: Response) {
     title: z.string(),
     author: z.string().optional(),
     genre: z.string().optional(),
-    description: z.string().optional(),
+    description: z.string().max(2000).optional(),
     thumbnail: z.string().optional(),
     publisher: z.string().optional(),
     pageCount: z.number().optional(),

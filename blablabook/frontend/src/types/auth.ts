@@ -21,9 +21,8 @@ export interface RegisterRequest {
 export interface AuthResponse {
   id: string;
   email: string;
-  username?: string;
-  accessToken: string;
-  refreshToken: string;
+  username: string;
+  message?: string; // présent uniquement sur POST /auth/login
 }
 
 export interface UpdateProfileRequest {
