@@ -792,17 +792,17 @@ Rémi a mis à jour le backend dans la journée. Adaptation des 3 pages en cons�
 
 ## Bilan Sprint 0
 
-| Livrable | Emplacement | Statut |
-|---|---|---|
-| Wireframes desktop (7 PNG) | `docs/sprint 0/wireframes/desktop/` | ✅ |
-| Wireframes mobile (7 PNG) | `docs/sprint 0/wireframes/mobile/` | ✅ |
-| Diagramme de séquence login (PNG) | `docs/sprint 0/10.APIProcessus-de-connexion.png` | ✅ |
-| Diagramme architecture détaillée (PNG) | `docs/sprint 0/4.architecture-technique.png` | ✅ |
-| Diagramme d'activité US-05 (PlantUML) | `docs/sprint 0/diagrammes/activite-ajout-bibliotheque.puml` | ✅ |
-| Sources PlantUML (4 `.puml`) | `docs/sprint 0/diagrammes/` | ✅ |
-| Schéma BDD (MCD/MLD/MPD + SQL) | `docs/sprint 0/database/` | ✅ |
-| Carnet de bord | `docs/sprint 0/carnet-de-bord/` | ✅ |
-| Config VS Code équipe | `.vscode/settings.json` | ✅ |
+| Livrable                               | Emplacement                                                 | Statut |
+| -------------------------------------- | ----------------------------------------------------------- | ------ |
+| Wireframes desktop (7 PNG)             | `docs/sprint 0/wireframes/desktop/`                         | ✅      |
+| Wireframes mobile (7 PNG)              | `docs/sprint 0/wireframes/mobile/`                          | ✅      |
+| Diagramme de séquence login (PNG)      | `docs/sprint 0/10.APIProcessus-de-connexion.png`            | ✅      |
+| Diagramme architecture détaillée (PNG) | `docs/sprint 0/4.architecture-technique.png`                | ✅      |
+| Diagramme d'activité US-05 (PlantUML)  | `docs/sprint 0/diagrammes/activite-ajout-bibliotheque.puml` | ✅      |
+| Sources PlantUML (4 `.puml`)           | `docs/sprint 0/diagrammes/`                                 | ✅      |
+| Schéma BDD (MCD/MLD/MPD + SQL)         | `docs/sprint 0/database/`                                   | ✅      |
+| Carnet de bord                         | `docs/sprint 0/carnet-de-bord/`                             | ✅      |
+| Config VS Code équipe                  | `.vscode/settings.json`                                     | ✅      |
 
 ---
 
@@ -941,3 +941,50 @@ Rémi a mis à jour le backend dans la journée. Adaptation des 3 pages en cons�
 - Push de la branche `feature/auth-refresh-token` sur le dépôt distant
 - PR #149 ouverte : `feat: implémenter POST /auth/refresh avec rotation de token`
 - Reviewers ajoutés : Rémi, Ophélie, Paul
+
+### Séance 30 — Nouvelles fonctionnalités backend + corrections qualité (27/03/2026)
+
+**Travail réalisé :**
+
+**PR #149 — `POST /auth/refresh` (rotation de token)**
+- Nouveau endpoint avec rotation complète : ancien token supprimé, nouveau généré + stocké
+- `onDelete: Cascade` ajouté sur `refresh_token → user` (migration Prisma)
+- Fix path cookie : `/api/auth/refresh` → `/auth/refresh`
+- Branchement `AuthContext.tsx` : 401 sur `/auth/me` → refresh silencieux → retry
+- Branchement `ApiClient` (`api.ts`) : paramètre `isRetry` pour éviter boucle infinie, retry auto sur 401
+- Fix upsert `POST /library` : `openLibraryId` comme clé stable au lieu d'`isbn`
+- Fix `binaryTargets` Prisma : ajout `linux-musl-openssl-3.0.x` pour Docker Alpine
+- 5 tests d'intégration `POST /auth/refresh` ✅
+
+**PR #150 — Rating & review sur `GET /library` et `PATCH /library/:id`**
+- `GET /library` : expose `rating`, `review`, `bookId`
+- `PATCH /library/:id` : renommé `updateLibraryItem`, accepte `status?`, `rating?` (1-5), `review?` (max 2000)
+- +5 tests (rating, review, combiné, hors limites, GET avec null)
+
+**PR #151 — Fixes qualité backend multiples**
+- Purge des refresh tokens expirés de tous les utilisateurs au login (fire & forget) + 2 tests
+- `getRandomBooks` : genre aléatoire parmi 10 genres au lieu de toujours "novel"
+- `searchBooks` : page cappée à 100 max
+- `getBookById` : `return;` silencieux → `throw new BadRequestError()`
+- User-Agent unifié sur toutes les requêtes Open Library : `BlaBlaBook/1.0 (contact@blablabook.fr)`
+- Pagination + tri sur `GET /library` : `?page`, `?limit` (max 100), `?sort` (createdAt/updatedAt/title), `?order`
+- Réponse `GET /library` : `{ data, total, page, limit, totalPages }` au lieu d'un tableau brut
+- **95/95 tests ✅**
+
+---
+
+### Séance 31 — Sprint 3 Jour 1 : rebase + PR #151 en review (30/03/2026)
+
+**Travail réalisé :**
+
+**Intégration des nouveaux commits de l'équipe**
+- `git fetch` → 4 nouveaux commits sur `main` depuis vendredi : sprint3.md (planning 4 jours), fix `/health` exempté du rate limiting (PR #154), endpoint `/health` Render + UptimeRobot (PR #153), UX improvements (PR #147 : mdp register amélioré, noms de catégories tronqués, messages d'erreur homepage)
+- Lecture du planning sprint 3 : Jour 1 = notes/avis, Jour 2 = i18n, Jour 3 = i18n + Redis, Jour 4 = toasts + finitions
+
+**Rebase et mise à jour PR #151**
+- Rebase de `fix/cleanup-expired-refresh-tokens` sur `origin/main` — 5 commits réappliqués sans conflit
+- Force push sécurisé (`--force-with-lease`) vers la remote
+- Mise à jour de la description PR #151 avec détail de chaque changement + instructions de test
+- Ajout des 3 reviewers (Rémi, Ophélie, Paul)
+- PR #151 en attente de review
+- **95/95 tests ✅**

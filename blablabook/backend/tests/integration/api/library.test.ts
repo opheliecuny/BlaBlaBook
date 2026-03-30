@@ -34,7 +34,12 @@ describe("Library API Integration Tests", () => {
         .set("Cookie", cookies)
         .expect(200);
 
-      expect(response.body).toEqual([]);
+      expect(response.body).toMatchObject({
+        data: [],
+        total: 0,
+        page: 1,
+        totalPages: 0,
+      });
     });
 
     it("devrait retourner les livres de l'utilisateur", async () => {
@@ -65,8 +70,8 @@ describe("Library API Integration Tests", () => {
         .set("Cookie", cookies)
         .expect(200);
 
-      expect(response.body).toHaveLength(1);
-      expect(response.body[0]).toMatchObject({
+      expect(response.body.total).toBe(1);
+      expect(response.body.data[0]).toMatchObject({
         title: "Test Book",
         author: "Test Author",
         isbn: "9780123456789",
@@ -74,7 +79,77 @@ describe("Library API Integration Tests", () => {
         rating: null,
         review: null,
       });
-      expect(response.body[0].bookId).toBeDefined();
+      expect(response.body.data[0].bookId).toBeDefined();
+    });
+
+    it("devrait respecter la pagination", async () => {
+      await createTestUser({
+        email: "user@example.com",
+        password: "Password123",
+        username: "testuser",
+      });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "user@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers[
+        "set-cookie"
+      ] as unknown as string[];
+
+      // Ajouter 3 livres
+      for (let i = 1; i <= 3; i++) {
+        await request(app)
+          .post("/library")
+          .set("Cookie", cookies)
+          .send({
+            isbn: `978000000000${i}`,
+            title: `Book ${i}`,
+          });
+      }
+
+      const response = await request(app)
+        .get("/library?page=1&limit=2")
+        .set("Cookie", cookies)
+        .expect(200);
+
+      expect(response.body.total).toBe(3);
+      expect(response.body.data).toHaveLength(2);
+      expect(response.body.totalPages).toBe(2);
+      expect(response.body.page).toBe(1);
+    });
+
+    it("devrait trier par titre", async () => {
+      await createTestUser({
+        email: "user@example.com",
+        password: "Password123",
+        username: "testuser",
+      });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "user@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers[
+        "set-cookie"
+      ] as unknown as string[];
+
+      await request(app)
+        .post("/library")
+        .set("Cookie", cookies)
+        .send({ isbn: "9780000000001", title: "Zorro" });
+      await request(app)
+        .post("/library")
+        .set("Cookie", cookies)
+        .send({ isbn: "9780000000002", title: "Alice" });
+
+      const response = await request(app)
+        .get("/library?sort=title&order=asc")
+        .set("Cookie", cookies)
+        .expect(200);
+
+      expect(response.body.data[0].title).toBe("Alice");
+      expect(response.body.data[1].title).toBe("Zorro");
     });
 
     it("devrait retourner 401 si l'utilisateur n'est pas authentifié", async () => {
@@ -398,7 +473,9 @@ describe("Library API Integration Tests", () => {
         .post("/auth/login")
         .send({ email: "user@example.com", password: "Password123" });
 
-      const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
+      const cookies = loginResponse.headers[
+        "set-cookie"
+      ] as unknown as string[];
 
       const addResponse = await request(app)
         .post("/library")
@@ -432,7 +509,9 @@ describe("Library API Integration Tests", () => {
         .post("/auth/login")
         .send({ email: "user@example.com", password: "Password123" });
 
-      const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
+      const cookies = loginResponse.headers[
+        "set-cookie"
+      ] as unknown as string[];
 
       const addResponse = await request(app)
         .post("/library")
@@ -466,7 +545,9 @@ describe("Library API Integration Tests", () => {
         .post("/auth/login")
         .send({ email: "user@example.com", password: "Password123" });
 
-      const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
+      const cookies = loginResponse.headers[
+        "set-cookie"
+      ] as unknown as string[];
 
       const addResponse = await request(app)
         .post("/library")
@@ -497,7 +578,9 @@ describe("Library API Integration Tests", () => {
         .post("/auth/login")
         .send({ email: "user@example.com", password: "Password123" });
 
-      const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
+      const cookies = loginResponse.headers[
+        "set-cookie"
+      ] as unknown as string[];
 
       const addResponse = await request(app)
         .post("/library")

@@ -167,14 +167,14 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 ### 30/03/2026
 
-*Résumé*
+*Sprint 3 — Jour 1 : finalisation des PRs en attente, démarrage notes & avis*
 
 #### Infos individuelles
 
 - **Ophélie :**
 - **Rémi :**
 - **Paul :**
-- **Christopher :**
+- **Christopher :** Rebase de la branche `fix/cleanup-expired-refresh-tokens` sur `main` (intégration des commits du weekend), force push sécurisé, mise à jour description PR #151 + ajout reviewers. PR #151 en review : purge tokens expirés au login, genre aléatoire homepage, cap page 100 `/books/search`, 400 sur `id` manquant, User-Agent unifié Open Library, pagination + tri `GET /library`.
 
 ---
 
@@ -201,6 +201,19 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 - **Rémi :**
 - **Paul :**
 - **Christopher :**
+
+---
+
+### 27/03/2026
+
+*Journée de travail backend intensive — audit, fixes sécurité/qualité, nouvelles fonctionnalités.*
+
+#### Infos individuelles
+
+- **Ophélie :**
+- **Rémi :**
+- **Paul :**
+- **Christopher :** Audit complet du codebase — backlog de 30+ corrections identifiées. Corrections PRs : #138 (feedback erreur "+ Biblio"), #139 (currentPassword vérifié argon2), #140 (rate limiting + cookies NODE_ENV), #145 (assertion book.test.ts). Fix ESLint `varsIgnorePattern: '^_'`. Fix homepage Docker (`--force-recreate`). Implémentation `POST /auth/refresh` (rotation token, `onDelete: Cascade`, fix path cookie) — PR #149. Branchement AuthContext + ApiClient sur refresh silencieux. Fix upsert library sur `openLibraryId`. Rebase PR #149 sur main (conflits résolus). Fix Prisma `binaryTargets` musl pour Docker Alpine. Exposition `rating`/`review` sur `GET /library` et `PATCH /library/:id` — PR #150. Purge refresh tokens expirés au login (fire & forget) + randomisation genre homepage + cap page 100 + User-Agent unifié + 400 sur id manquant — PR #151. Pagination et tri sur `GET /library` (`?page`, `?limit`, `?sort`, `?order`). **95/95 tests ✅**
 
 ---
 

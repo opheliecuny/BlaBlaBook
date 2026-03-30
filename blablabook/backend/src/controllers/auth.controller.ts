@@ -75,6 +75,11 @@ export async function loginUser(req: Request, res: Response) {
 
   await replaceRefreshTokenInDatabase(refreshToken, user);
 
+  // Nettoyage global des tokens expirés (fire & forget — n'impacte pas la réponse)
+  prisma.refresh_token.deleteMany({
+    where: { expiresAt: { lt: new Date() } }
+  }).catch(() => {}); // silencieux : non bloquant
+
   setAccessTokenCookie(res, accessToken);
   setRefreshTokenCookie(res, refreshToken);
 

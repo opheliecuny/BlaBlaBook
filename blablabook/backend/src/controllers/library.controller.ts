@@ -2,14 +2,38 @@ import { Request, Response } from "express";
 import { prisma } from "../utils/prismaClient";
 import z from "zod";
 
-// GET /library ; bibliohtèque de l'utilisateur connecté
+// GET /library ; bibliothèque de l'utilisateur connecté
+
+const SORT_FIELDS = ["createdAt", "updatedAt", "title"] as const;
 
 export async function getLibrary(req: Request, res: Response) {
   const userId = req.user.id;
-  const library = await prisma.library_item.findMany({
-    where: { userId },
-    include: { book: true }
+
+  const querySchema = z.object({
+    page:  z.coerce.number().int().min(1).default(1),
+    limit: z.coerce.number().int().min(1).max(100).default(20),
+    sort:  z.enum(SORT_FIELDS).default("createdAt"),
+    order: z.enum(["asc", "desc"]).default("desc"),
   });
+
+  const { page, limit, sort, order } = querySchema.parse(req.query);
+  const skip = (page - 1) * limit;
+
+  const orderBy = sort === "title"
+    ? { book: { title: order } }
+    : { [sort]: order };
+
+  const [library, total] = await Promise.all([
+    prisma.library_item.findMany({
+      where: { userId },
+      include: { book: true },
+      orderBy,
+      skip,
+      take: limit,
+    }),
+    prisma.library_item.count({ where: { userId } }),
+  ]);
+
   const books = library.map(item => ({
     ...item.book,
     bookId: item.bookId,
@@ -17,7 +41,8 @@ export async function getLibrary(req: Request, res: Response) {
     rating: item.rating,
     review: item.review,
   }));
-  res.json(books);
+
+  res.json({ data: books, total, page, limit, totalPages: Math.ceil(total / limit) });
 }
 
 // POST /library ; ajouter un livre à la bibliothèque de l'utilisateur connecté

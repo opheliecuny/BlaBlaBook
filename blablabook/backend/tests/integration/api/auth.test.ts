@@ -403,4 +403,79 @@ describe("Auth API Integration Tests", () => {
       await request(app).get("/auth/me").expect(401);
     });
   });
+
+  describe("POST /auth/login — nettoyage des tokens expirés", () => {
+    it("devrait purger les refresh tokens expirés des autres utilisateurs au login", async () => {
+      // Créer un autre utilisateur avec un token expiré en BDD
+      const otherUser = await createTestUser({
+        email: "other@example.com",
+        password: "Password123",
+        username: "otheruser",
+      });
+
+      await prisma.refresh_token.create({
+        data: {
+          token: "expired-token-other-user",
+          userId: otherUser.id,
+          issuedAt: new Date(),
+          expiresAt: new Date(Date.now() - 1000), // déjà expiré
+        },
+      });
+
+      // Créer l'utilisateur qui va se connecter
+      await createTestUser({
+        email: "user@example.com",
+        password: "Password123",
+        username: "testuser",
+      });
+
+      // Login → déclenche le cleanup global
+      await request(app)
+        .post("/auth/login")
+        .send({ email: "user@example.com", password: "Password123" })
+        .expect(200);
+
+      // Vérifier que le token expiré de l'autre utilisateur a été supprimé
+      await new Promise((resolve) => setTimeout(resolve, 50)); // laisse le fire&forget s'exécuter
+      const expiredToken = await prisma.refresh_token.findUnique({
+        where: { token: "expired-token-other-user" },
+      });
+      expect(expiredToken).toBeNull();
+    });
+
+    it("ne devrait pas supprimer les tokens valides des autres utilisateurs", async () => {
+      // Créer un autre utilisateur avec un token valide
+      const otherUser = await createTestUser({
+        email: "other@example.com",
+        password: "Password123",
+        username: "otheruser",
+      });
+
+      await prisma.refresh_token.create({
+        data: {
+          token: "valid-token-other-user",
+          userId: otherUser.id,
+          issuedAt: new Date(),
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // valide 7j
+        },
+      });
+
+      await createTestUser({
+        email: "user@example.com",
+        password: "Password123",
+        username: "testuser",
+      });
+
+      await request(app)
+        .post("/auth/login")
+        .send({ email: "user@example.com", password: "Password123" })
+        .expect(200);
+
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      const validToken = await prisma.refresh_token.findUnique({
+        where: { token: "valid-token-other-user" },
+      });
+      expect(validToken).not.toBeNull();
+    });
+  });
 });

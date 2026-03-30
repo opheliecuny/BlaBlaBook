@@ -1,15 +1,18 @@
 import type { Request, Response } from "express";
 import type { OpenLibraryResponse } from "../@types/index";
-import { NotFoundError } from "@/errors";
+import { BadRequestError, NotFoundError } from "@/errors";
+
+const RANDOM_GENRES = ["novel", "fantasy", "science fiction", "mystery", "romance", "thriller", "historical fiction", "adventure", "biography", "poetry"];
 
 export async function getRandomBooks(req: Request, res: Response) {
 
+  const genre = RANDOM_GENRES[Math.floor(Math.random() * RANDOM_GENRES.length)];
   const page = Math.floor(Math.random() * 50);
   const limit = 4;
 
   const result = await fetch(
-    `https://openlibrary.org/search.json?q=novel&page=${page}&limit=${limit}&fields=key,title,author_name,author_key,cover_i,first_publish_year,isbn`,
-    { headers: { "User-Agent": "MyAppName/1.0 (myemail@example.com)" } }
+    `https://openlibrary.org/search.json?q=${encodeURIComponent(genre)}&page=${page}&limit=${limit}&fields=key,title,author_name,author_key,cover_i,first_publish_year,isbn`,
+    { headers: { "User-Agent": "BlaBlaBook/1.0 (contact@blablabook.fr)" } }
   );
 
   const data: OpenLibraryResponse = await result.json();
@@ -31,12 +34,12 @@ export async function getRandomBooks(req: Request, res: Response) {
 
 export async function searchBooks(req: Request, res: Response) {
   const query = req.query.q as string;
-  const page = Math.max(1, parseInt(req.query.page as string, 10) || 1);
+  const page = Math.min(Math.max(1, parseInt(req.query.page as string, 10) || 1), 100);
   const limit = 16;
 
   const result = await fetch(
     `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}&fields=key,title,author_name,author_key,cover_i,first_publish_year,subject,isbn`,
-    { headers: { "User-Agent": "MyAppName/1.0 (myemail@example.com)" } }
+    { headers: { "User-Agent": "BlaBlaBook/1.0 (contact@blablabook.fr)" } }
   );
 
   const data: OpenLibraryResponse = await result.json();
@@ -59,11 +62,11 @@ export async function searchBooks(req: Request, res: Response) {
 }
 export async function getBookById(req: Request, res: Response) {
   const id = req.params.openLibraryId;
-  if (!id) return;
+  if (!id) throw new BadRequestError("Book ID is required");
 
   const result = await fetch(
     `https://openlibrary.org/search.json?q=key:/works/${id}&fields=key,title,first_publish_year,subject,isbn,author_key,author_name,description,cover_i`,
-    { headers: { "User-Agent": "MyAppName/1.0 (contact@example.com)" } }
+    { headers: { "User-Agent": "BlaBlaBook/1.0 (contact@blablabook.fr)" } }
   );
 
   const data = await result.json();
