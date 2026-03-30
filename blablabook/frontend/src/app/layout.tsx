@@ -1,21 +1,9 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "@/components/ui/sonner";
 
-export const metadata: Metadata = {
-  title: "BlaBlaBook",
-  description: "La plateforme qui facilite votre gestion de lecture.",
-};
-
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+// Ce layout racine contient html/body pour satisfaire l'App Router de Next.js.
+// ThemeProvider est ici pour appliquer la classe "dark" sur <html>.
+// Navbar, Footer, AuthProvider et Toaster sont dans [locale]/layout.tsx.
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" suppressHydrationWarning>
       <head>
@@ -25,15 +13,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body className="antialiased min-h-screen flex flex-col">
+      <body>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <AuthProvider>
-            <Navbar />
-            <main className="flex-1">{children}</main>
-            <Footer />
-          </AuthProvider>
+          {children}
         </ThemeProvider>
-        <Toaster />
       </body>
     </html>
   );

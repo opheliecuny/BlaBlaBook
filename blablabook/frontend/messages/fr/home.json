@@ -1,0 +1,31 @@
+{
+  "hero": {
+    "taglineShort": "Votre bibliothèque personnelle",
+    "title": "BlaBlaBook",
+    "description": "Une façon simple et agréable de ne plus jamais perdre le fil de vos lectures. Notre application vous permet d'organiser facilement votre bibliothèque personnelle : ajoutez vos ouvrages, suivez vos lectures et retrouvez en un instant les livres que vous aimez.",
+    "loginCta": "Se connecter",
+    "registerCta": "Créer un compte"
+  },
+  "section": {
+    "moment": {
+      "title": "LIVRES DU MOMENT",
+      "subtitle": "SÉLECTION ALÉATOIRE"
+    }
+  },
+  "error": {
+    "loadingBooks": "Une erreur est survenue lors du chargement des livres.",
+    "tryAgain": "Veuillez réessayer plus tard."
+  },
+  "cta": {
+    "search": {
+      "title": "Vous cherchez un livre en particulier ?",
+      "placeholder": "Rechercher un livre, un auteur,...",
+      "button": "Rechercher"
+    }
+  },
+  "book": {
+    "unknownAuthor": "Auteur inconnu",
+    "viewDetail": "Voir le détail",
+    "viewDetailAriaLabel": "Voir le détail du livre {title}"
+  }
+}

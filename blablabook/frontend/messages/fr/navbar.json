@@ -1,0 +1,10 @@
+{
+  "home": "Accueil",
+  "search": "Rechercher",
+  "library": "Ma bibliothèque",
+  "profile": "Compte",
+  "login": "Connexion",
+  "register": "Inscription",
+  "logout": "Déconnexion",
+  "openMenu": "Ouvrir le menu"
+}

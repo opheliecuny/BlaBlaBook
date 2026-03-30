@@ -14,10 +14,12 @@ import { useAuth } from "@/contexts/AuthContext";
 import { logout as logoutService } from "@/services/authService";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const ThemeToggle = dynamic(() => import("./ThemeToggle"), { ssr: false });
 
 export default function Navbar() {
+  const t = useTranslations("navbar");
   const { isAuthenticated, logout } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -31,7 +33,7 @@ export default function Navbar() {
   return (
     <header className="border-b border-border bg-background sticky top-0 z-50 pt-[env(safe-area-inset-top)]">
       <div className="max-w-7xl mx-auto px-4 h-14 flex items-center gap-6 min-w-0">
-        
+
         {/* Logo */}
         <Link href="/" className="text-xl font-playfair shrink-0">
           BlaBlaBook
@@ -40,31 +42,31 @@ export default function Navbar() {
         {/* Desktop nav */}
         <nav className="hidden sm:flex items-center gap-3 ml-auto">
           <Link href="/" className="text-sm hover:text-primary">
-            Accueil
+            {t("home")}
           </Link>
           <Link href="/search" className="text-sm hover:text-primary">
-            Rechercher
+            {t("search")}
           </Link>
 
           {isAuthenticated ? (
             <>
               <Link href="/library" className="text-sm hover:text-primary">
-                Ma bibliothèque
+                {t("library")}
               </Link>
               <Link href="/profile" className="text-sm hover:text-primary">
-                Compte
+                {t("profile")}
               </Link>
               <Button size="sm" onClick={handleLogout}>
-                Déconnexion
+                {t("logout")}
               </Button>
             </>
           ) : (
             <>
               <Link href="/login" className={cn(buttonVariants({ variant: "outline", size: "sm" }))}>
-                Connexion
+                {t("login")}
               </Link>
               <Link href="/register" className={cn(buttonVariants({ size: "sm" }))}>
-                Inscription
+                {t("register")}
               </Link>
             </>
           )}
@@ -78,29 +80,29 @@ export default function Navbar() {
           <ThemeToggle />
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger aria-label="Ouvrir le menu">
-                <Menu className="h-6 w-6" />
+              <Menu className="h-6 w-6" />
             </SheetTrigger>
 
             <SheetContent side="right" className="w-64 p-6">
               <nav className="flex flex-col gap-4 mt-6">
-                <Link className="text-center" href="/"  onClick={() => setOpen(false)}>Accueil</Link>               
-                <Link className="text-center" href="/search"  onClick={() => setOpen(false)}>Rechercher</Link>
+                <Link className="text-center" href="/" onClick={() => setOpen(false)}>Accueil</Link>
+                <Link className="text-center" href="/search" onClick={() => setOpen(false)}>Rechercher</Link>
 
                 {isAuthenticated ? (
                   <>
-                    <Link className="text-center" href="/library" onClick={() => setOpen(false)}>Ma bibliothèque</Link>
-                    <Link className="text-center" href="/profile" onClick={() => setOpen(false)}>Compte</Link>
+                    <Link className="text-center" href="/library" onClick={() => setOpen(false)}>{t("library")}</Link>
+                    <Link className="text-center" href="/profile" onClick={() => setOpen(false)}>{t("profile")}</Link>
                     <Button className="text-center" onClick={() => { handleLogout(); setOpen(false); }}>
-                      Déconnexion
+                      {t("logout")}
                     </Button>
                   </>
                 ) : (
                   <>
                     <Link className="text-center" href="/login" onClick={() => setOpen(false)}>
-                      Connexion
+                      {t("login")}
                     </Link>
                     <Link className="text-center" href="/register" onClick={() => setOpen(false)}>
-                      Inscription
+                      {t("logout")}
                     </Link>
                   </>
                 )}

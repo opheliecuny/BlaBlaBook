@@ -1,0 +1,14 @@
+{
+  "notFound": {
+    "title": "Livre introuvable",
+    "backSearch": "Retour à la recherche"
+  },
+  "labels": {
+    "author": "Par",
+    "published": "Publié en",
+    "genre": "Genre"
+  },
+  "buttons": {
+    "addToLibrary": "Ajouter à ma bibliothèque"
+  }
+}

@@ -8,6 +8,7 @@ import { globalRateLimit } from "./middlewares/rateLimit.middleware";
 import { errorHandler } from "./middlewares/errorHandler";
 import cookieParser from "cookie-parser";
 import { prisma } from "./utils/prismaClient";
+import { localeMiddleware } from "./middlewares/locale.middleware";
 
 export const app = express();
 
@@ -18,6 +19,7 @@ app.use(cookieParser());
 
 app.use(xssSanitizer);
 app.use(helmetMiddleware);
+app.use(localeMiddleware); 
 
 // Endpoint de santé pour Render Health Check + UptimeRobot
 // Placé avant le rate limiting pour éviter les faux 429

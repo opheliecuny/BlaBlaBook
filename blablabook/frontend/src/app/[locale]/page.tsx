@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Bookmark } from "lucide-react";
 import BookCover from "@/components/BookCover";
+import { getTranslations } from "next-intl/server";
 
 interface RandomBook {
   id: string;
@@ -24,6 +25,7 @@ async function fetchRandomBooks(): Promise<RandomBook[]> {
 
 export default async function HomePage() {
   const randomBooks = await fetchRandomBooks();
+  const t = await getTranslations("home");
 
   return (
     <div>
@@ -35,31 +37,26 @@ export default async function HomePage() {
             style={{ color: "#E8927A" }}
           >
             <Bookmark size={11} aria-hidden="true" />
-            Votre bibliothèque personnelle
+            {t("hero.taglineShort")}
           </span>
           <h1 className="mt-3 mb-4 text-center text-4xl font-normal text-shadow-xs sm:text-left sm:text-5xl">
-            BlaBlaBook
+            {t("hero.title")}
           </h1>
           <p className="font-inter mt-8 mb-8 max-w-md text-center text-[0.9375rem] leading-tight normal-case drop-shadow-[0_1px_2px_rgba(30,64,175,0.25)] sm:text-justify sm:drop-shadow-none">
-            Une façon simple et agréable de ne plus jamais perdre le fil de vos
-            lectures.
-            <br />
-            Notre application vous permet d&apos;organiser facilement votre
-            bibliothèque personnelle : ajoutez vos ouvrages, suivez vos lectures
-            et retrouvez en un instant les livres que vous aimez.
+            {t("hero.description")}
           </p>
           <div className="flex justify-around gap-2 sm:justify-start sm:gap-3">
             <Link
               href="/login"
               className="sm:border-input sm:text-foreground inline-flex h-auto items-center justify-center rounded-md border border-[var(--accent-alt)] bg-[var(--color-btn-subtle)] p-2 text-center text-sm font-semibold text-[var(--accent-alt)] hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] dark:bg-gray-800"
             >
-              Se connecter
+              {t("hero.loginCta")}
             </Link>
             <Link
               href="/register"
               className="inline-flex h-auto items-center justify-center rounded-md bg-[var(--accent-alt)] p-2 text-center text-sm font-semibold text-white hover:bg-[var(--accent-alt-hover)]"
             >
-              Créer un compte
+              {t("hero.registerCta")}
             </Link>
           </div>
         </div>
@@ -83,10 +80,10 @@ export default async function HomePage() {
             id="livres-du-moment"
             className="mb-1 text-center text-2xl font-bold sm:text-left"
           >
-            LIVRES DU MOMENT
+            {t("section.moment.title")}
           </h2>
           <p className="text-muted-foreground text-center text-xs tracking-widest sm:text-left">
-            SÉLECTION ALÉATOIRE
+            {t("section.moment.subtitle")}
           </p>
         </div>
         <div className="mx-auto">
@@ -116,9 +113,9 @@ export default async function HomePage() {
                               : `/search?q=${encodeURIComponent(book.title)}`
                           }
                           className="inline-flex w-full items-center justify-center rounded-md bg-[var(--color-btn-subtle)] px-3 py-1.5 text-xs font-medium hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] dark:bg-gray-800"
-                          aria-label={`Voir le détail du livre ${book.title}`}
+                          aria-label={t("book.viewDetailAriaLabel", { title: book.title })}
                         >
-                          Voir le détail
+                          {t("book.viewDetail")}
                         </Link>
                       </div>
                     </div>
@@ -131,10 +128,10 @@ export default async function HomePage() {
                 role="status"
               >
                 <p className="text-muted-foreground col-span-full text-center">
-                  Une erreur est survenue lors du chargement des livres.
+                  {t("error.loadingBooks")}
                 </p>
                 <p className="text-muted-foreground col-span-full text-center">
-                  Veuillez réessayer plus tard.
+                  {t("error.tryAgain")}
                 </p>
               </div>
             )}
@@ -146,7 +143,7 @@ export default async function HomePage() {
       <section className="mx-auto px-6 py-8 sm:max-w-7xl sm:px-12">
         <div className="bg-primary/5 border-primary/20 flex w-full flex-col items-center gap-6 rounded-xl border p-12">
           <h2 className="text-center text-2xl font-bold">
-            Vous cherchez un livre en particulier ?
+            {t("cta.search.title")}
           </h2>
           <form
             role="search"
@@ -154,13 +151,13 @@ export default async function HomePage() {
             className="flex w-full max-w-md flex-col gap-2 sm:flex-row"
           >
             <label htmlFor="search" className="sr-only">
-              Rechercher un livre ou un auteur
+              {t("cta.search.placeholder")}
             </label>
             <input
               id="search"
               name="q"
               type="text"
-              placeholder="Rechercher un livre, un auteur,..."
+              placeholder={t("cta.search.placeholder")}
               className="border-border focus:border-primary bg-card h-10 w-full rounded-full border px-4 text-sm outline-none sm:flex-1"
               autoComplete="off"
             />
@@ -168,7 +165,7 @@ export default async function HomePage() {
               type="submit"
               className="h-10 w-full rounded-full bg-[var(--accent-alt)] px-8 text-sm font-semibold text-white hover:bg-[var(--accent-alt-hover)] sm:w-auto"
             >
-              Rechercher
+              {t("cta.search.button")}
             </button>
           </form>
         </div>

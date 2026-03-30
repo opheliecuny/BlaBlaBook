@@ -1,0 +1,31 @@
+{
+  "hero": {
+    "taglineShort": "Your personal library",
+    "title": "BlaBlaBook",
+    "description": "A simple and pleasant way to never lose track of your reading. Our app lets you organize your personal library easily: add your books, track your reading and find in an instant the books you love.",
+    "loginCta": "Log in",
+    "registerCta": "Create an account"
+  },
+  "section": {
+    "moment": {
+      "title": "BOOKS OF THE MOMENT",
+      "subtitle": "RANDOM SELECTION"
+    }
+  },
+  "error": {
+    "loadingBooks": "An error occurred while loading books.",
+    "tryAgain": "Please try again later."
+  },
+  "cta": {
+    "search": {
+      "title": "Looking for a specific book?",
+      "placeholder": "Search for a book, an author,...",
+      "button": "Search"
+    }
+  },
+  "book": {
+    "unknownAuthor": "Unknown author",
+    "viewDetail": "View details",
+    "viewDetailAriaLabel": "View details of {title}"
+  }
+}

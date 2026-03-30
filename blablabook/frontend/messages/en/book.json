@@ -1,0 +1,14 @@
+{
+  "notFound": {
+    "title": "Book not found",
+    "backSearch": "Back to search"
+  },
+  "labels": {
+    "author": "By",
+    "published": "Published in",
+    "genre": "Genre"
+  },
+  "buttons": {
+    "addToLibrary": "Add to my library"
+  }
+}

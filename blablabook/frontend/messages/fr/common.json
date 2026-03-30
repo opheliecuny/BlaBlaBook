@@ -1,0 +1,10 @@
+{
+  "loading": {
+    "status": "Chargement en cours…"
+  },
+  "notFound": {
+    "title": "404",
+    "description": "La page que vous cherchez n'existe pas.",
+    "backHome": "Retour à l'accueil"
+  }
+}
