@@ -172,7 +172,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 #### Infos individuelles
 
 - **Ophélie :**
-- **Rémi :**
+- **Rémi :**Fais quelques recherches sur les bonnes pratiques de l'internationalisation (i18n), la localisation et configuré l'architecture nécessaire à notre projet avec next-intl. Début de contenu pour les pages home, nav, footer et book:detail ok.  
 - **Paul :**
 - **Christopher :** Rebase `fix/cleanup-expired-refresh-tokens` sur `main` + mise à jour PR #151. Cache Redis implémenté (PR #155) : `redisClient.ts` dégradation gracieuse, cache `search` TTL 1h / `getBookById` TTL 24h / `getRandomBooks` TTL 10min, `RedisStore` pour rate limiting persistant. Compte Upstash créé, `REDIS_URL` ajoutée sur Render par Paul — cache validé en prod : 2.4s → 1.08s (2x). Tests unitaires Redis 8/8 ✅ (41/41 total). PR #156 : `onDelete: Cascade` sur `refresh_token`, `.max(2000)` description, `AuthResponse` aligné sur la vraie réponse backend. 3 PRs en review : #151 #155 #156.
 
