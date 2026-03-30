@@ -94,6 +94,9 @@ describe("ApiClient", () => {
     it("redirige vers /login sur 401", async () => {
       vi.stubGlobal("location", { href: "" });
 
+      // Premier appel : /library → 401
+      mockFetch.mockReturnValueOnce(mockResponse({ message: "Non autorisé" }, 401));
+      // Deuxième appel : /auth/refresh → échec (401 aussi), déclenchant la redirection
       mockFetch.mockReturnValueOnce(mockResponse({ message: "Non autorisé" }, 401));
 
       await expect(apiClient.get("/library")).rejects.toThrow("Non autorisé");

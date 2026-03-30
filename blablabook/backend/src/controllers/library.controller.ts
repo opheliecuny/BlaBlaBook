@@ -50,7 +50,7 @@ export async function getLibrary(req: Request, res: Response) {
 export async function addBookToLibrary(req: Request, res: Response) {
   const userId = req.user.id;
   const postBookBodySchema = z.object({
-    openLibraryId: z.string(),
+    openLibraryId: z.string().optional(),
     isbn: z.string().optional(),
     title: z.string(),
     author: z.string().optional(),
@@ -62,28 +62,38 @@ export async function addBookToLibrary(req: Request, res: Response) {
     language: z.string().optional(),
     publishedYear: z.number().optional(),
     status: z.enum(["TO_READ", "READING", "READ"]).optional()
+  }).refine(data => data.openLibraryId || data.isbn, {
+    message: "openLibraryId or isbn is required"
   });
 
   const bookData = postBookBodySchema.parse(req.body);
-  const book = await prisma.book.upsert({
-    where: {
-      openLibraryId: bookData.openLibraryId
-    },
-    update: {},
-    create: {
-      isbn: bookData.isbn ?? `ol-${bookData.openLibraryId}`,
-      openLibraryId: bookData.openLibraryId,
-      title: bookData.title,
-      author: bookData.author,
-      genre: bookData.genre,
-      description: bookData.description,
-      thumbnail: bookData.thumbnail,
-      publisher: bookData.publisher,
-      pageCount: bookData.pageCount,
-      language: bookData.language,
-      publishedYear: bookData.publishedYear
-    }
-  });
+  const resolvedIsbn = bookData.isbn ?? `ol-${bookData.openLibraryId}`;
+
+  const bookCreateData = {
+    isbn: resolvedIsbn,
+    openLibraryId: bookData.openLibraryId,
+    title: bookData.title,
+    author: bookData.author,
+    genre: bookData.genre,
+    description: bookData.description,
+    thumbnail: bookData.thumbnail,
+    publisher: bookData.publisher,
+    pageCount: bookData.pageCount,
+    language: bookData.language,
+    publishedYear: bookData.publishedYear,
+  };
+
+  const book = bookData.openLibraryId
+    ? await prisma.book.upsert({
+      where: { openLibraryId: bookData.openLibraryId },
+      update: {},
+      create: bookCreateData,
+    })
+    : await prisma.book.upsert({
+      where: { isbn: bookData.isbn! },
+      update: {},
+      create: bookCreateData,
+    });
 
   const libraryItem = await prisma.library_item.create({
     data: {
