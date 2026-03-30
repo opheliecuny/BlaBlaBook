@@ -988,3 +988,48 @@ Rémi a mis à jour le backend dans la journée. Adaptation des 3 pages en cons�
 - Ajout des 3 reviewers (Rémi, Ophélie, Paul)
 - PR #151 en attente de review
 - **95/95 tests ✅**
+
+---
+
+### Séance 31 — Sprint 3 Jour 1 : rebase PR #151 + cache Redis (30/03/2026)
+
+**Travail réalisé :**
+
+**Intégration sprint 3 + rebase PR #151**
+- `git fetch` → 4 nouveaux commits sur `main` depuis vendredi : planning sprint 3 (4 jours), fix `/health` exempté du rate limiting (PR #154), endpoint `/health` Render + UptimeRobot (PR #153), UX improvements (PR #147)
+- Lecture du planning sprint 3 : Jour 1 = notes/avis (Rémi + Ophélie), Jour 2 = i18n (Paul + Rémi), Jour 3 = i18n + Redis, Jour 4 = mode nuit + toasts + finitions
+- Rebase de `fix/cleanup-expired-refresh-tokens` sur `origin/main` — 5 commits réappliqués sans conflit, force push `--force-with-lease`
+- Mise à jour description PR #151 + ajout reviewers (Rémi, Ophélie, Paul)
+
+**PR #155 — Cache Redis (Open Library + rate limiting persistant)**
+- Création de la branche `feature/redis-cache` depuis `main`
+- Installation `ioredis` + `rate-limit-redis`
+- `src/utils/redisClient.ts` : client ioredis avec dégradation gracieuse — si `REDIS_URL` absent ou Redis down, l'app continue sans cache ni erreur. Helpers `cacheGet` / `cacheSet` silencieux.
+- `book.controller.ts` : cache sur les 3 endpoints Open Library :
+  - `searchBooks` → clé `search:{query}:{page}`, TTL 1h
+  - `getBookById` → clé `book:{id}`, TTL 24h (données stables)
+  - `getRandomBooks` → clé `random:novel:{page}`, TTL 10min
+- `rateLimit.middleware.ts` : migration vers `RedisStore` avec préfixes distincts (`rl:global:`, `rl:auth:`, `rl:search:`), fallback automatique sur store mémoire si Redis absent
+- `.env.example` : ajout `REDIS_URL` commenté
+- Création compte Upstash (free tier, région EU-West-1), base Redis `blablabook`, connexion testée ✅
+- `REDIS_URL` ajoutée dans `.env` local
+- 33/33 tests unitaires ✅, zéro erreur TypeScript
+- PR #155 créée, reviewers ajoutés
+
+**Découverte en cours de séance**
+- `AlertDialog` et toasts Sonner déjà implémentés dans `library/page.tsx` par l'équipe — ces items du backlog peuvent être cochés
+
+**Tests unitaires Redis + validation production**
+- 8 tests unitaires pour `redisClient.ts` : 2 scénarios (sans/avec `REDIS_URL`), couverture complète de `cacheGet` et `cacheSet` — cache hit/miss, dégradation gracieuse sur erreur Redis, TTL correct
+- Problème de mock résolu : `vi.fn().mockImplementation()` ne supporte pas `new` → remplacé par une classe mock + `vi.doMock` + `vi.resetModules`
+- 41/41 tests unitaires ✅
+
+**Validation cache en production**
+- Paul a ajouté `REDIS_URL` dans les variables d'environnement Render, rebuild déclenché
+- Test sur `GET /books/search?q=tolkien` : 1er appel 2.4s (Open Library), 2ème appel 1.08s (cache Redis) — **2x plus rapide**
+
+**PR #156 — Corrections backend/frontend**
+- `onDelete: Cascade` sur `refresh_token → user` + migration SQL (`20260330093000_refresh_token_cascade_delete`)
+- `.max(2000)` sur le champ `description` dans `addBookToLibrary` (Zod)
+- `AuthResponse` frontend aligné : suppression des faux champs `accessToken`/`refreshToken` (tokens dans cookies httpOnly, pas dans le body)
+- Audit backlog : 4 items supplémentaires identifiés comme déjà corrigés (`req.user` typé, import Prisma intentionnel, `getProfile()` correct, cookies `secure` conditionnels)

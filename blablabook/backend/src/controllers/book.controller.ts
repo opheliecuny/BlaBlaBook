@@ -1,18 +1,39 @@
 import type { Request, Response } from "express";
 import type { OpenLibraryResponse } from "../@types/index";
 import { BadRequestError, NotFoundError } from "@/errors";
+import { cacheGet, cacheSet } from "../utils/redisClient";
 
-const RANDOM_GENRES = ["novel", "fantasy", "science fiction", "mystery", "romance", "thriller", "historical fiction", "adventure", "biography", "poetry"];
+const RANDOM_GENRES = [
+  "novel",
+  "fantasy",
+  "science fiction",
+  "mystery",
+  "romance",
+  "thriller",
+  "historical fiction",
+  "adventure",
+  "biography",
+  "poetry",
+];
+const USER_AGENT = "BlaBlaBook/1.0 (contact@blablabook.fr)";
 
-export async function getRandomBooks(req: Request, res: Response) {
+// Constantes de temps pour le cache (TTL = Time To Live en secondes)
+const TTL_SEARCH = 60 * 60; // 1h — résultats de recherche
+const TTL_BOOK = 60 * 60 * 24; // 24h — détail d'un livre (données stables)
+const TTL_RANDOM = 60 * 10; // 10min — sélection homepage
 
+export async function getRandomBooks(_req: Request, res: Response) {
   const genre = RANDOM_GENRES[Math.floor(Math.random() * RANDOM_GENRES.length)];
   const page = Math.floor(Math.random() * 50);
   const limit = 4;
 
+  const cacheKey = `random:${genre}:${page}`;
+  const cached = await cacheGet(cacheKey);
+  if (cached) return res.send(JSON.parse(cached));
+
   const result = await fetch(
     `https://openlibrary.org/search.json?q=${encodeURIComponent(genre)}&page=${page}&limit=${limit}&fields=key,title,author_name,author_key,cover_i,first_publish_year,isbn`,
-    { headers: { "User-Agent": "BlaBlaBook/1.0 (contact@blablabook.fr)" } }
+    { headers: { "User-Agent": USER_AGENT } },
   );
 
   const data: OpenLibraryResponse = await result.json();
@@ -29,44 +50,66 @@ export async function getRandomBooks(req: Request, res: Response) {
       : null,
   }));
 
+  await cacheSet(cacheKey, JSON.stringify(selectedDatas), TTL_RANDOM);
   return res.send(selectedDatas);
 }
 
 export async function searchBooks(req: Request, res: Response) {
   const query = req.query.q as string;
-  const page = Math.min(Math.max(1, parseInt(req.query.page as string, 10) || 1), 100);
+
+  if (!query) throw new BadRequestError("Search query is required");
+
+  const page = Math.min(
+    Math.max(1, parseInt(req.query.page as string, 10) || 1),
+    100,
+  );
   const limit = 16;
+
+  const cacheKey = `search:${query}:${page}`;
+  const cached = await cacheGet(cacheKey);
+  if (cached) return res.send(JSON.parse(cached));
 
   const result = await fetch(
     `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}&fields=key,title,author_name,author_key,cover_i,first_publish_year,subject,isbn`,
-    { headers: { "User-Agent": "BlaBlaBook/1.0 (contact@blablabook.fr)" } }
+    { headers: { "User-Agent": USER_AGENT } },
   );
 
   const data: OpenLibraryResponse = await result.json();
   const { docs, numFound } = data;
 
-  const results = docs.map((doc) => ({
-    id: doc.key,
-    title: doc.title,
-    author: doc.author_name?.[0] ?? null,
-    authorId: doc.author_key?.[0] ?? null,
-    publishedYear: doc.first_publish_year ?? null,
-    coverThumbnail: doc.cover_i
-      ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
-      : null,
-    category: doc.subject?.[0] ?? null,
-    isbn: doc.isbn?.[0] ?? null,
-  }));
+  const response = {
+    results: docs.map((doc) => ({
+      id: doc.key,
+      title: doc.title,
+      author: doc.author_name?.[0] ?? null,
+      authorId: doc.author_key?.[0] ?? null,
+      publishedYear: doc.first_publish_year ?? null,
+      coverThumbnail: doc.cover_i
+        ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
+        : null,
+      category: doc.subject?.[0] ?? null,
+      isbn: doc.isbn?.[0] ?? null,
+    })),
+    total: numFound,
+    page,
+  };
 
-  return res.send({ results, total: numFound, page });
+  await cacheSet(cacheKey, JSON.stringify(response), TTL_SEARCH);
+  return res.send(response);
 }
+
 export async function getBookById(req: Request, res: Response) {
   const id = req.params.openLibraryId;
-  if (!id) throw new BadRequestError("Book ID is required");
+
+  if (!id) return;
+
+  const cacheKey = `book:${id}`;
+  const cached = await cacheGet(cacheKey);
+  if (cached) return res.send(JSON.parse(cached));
 
   const result = await fetch(
     `https://openlibrary.org/search.json?q=key:/works/${id}&fields=key,title,first_publish_year,subject,isbn,author_key,author_name,description,cover_i`,
-    { headers: { "User-Agent": "BlaBlaBook/1.0 (contact@blablabook.fr)" } }
+    { headers: { "User-Agent": USER_AGENT } },
   );
 
   const data = await result.json();
@@ -76,7 +119,7 @@ export async function getBookById(req: Request, res: Response) {
     throw new NotFoundError("Book not found");
   }
 
-  const selectedDatas = {
+  const book = {
     title: doc.title,
     publishedYear: doc.first_publish_year ?? null,
     category: doc.subject?.[0] ?? null,
@@ -86,8 +129,9 @@ export async function getBookById(req: Request, res: Response) {
     isbn: doc.isbn?.[0] ?? null,
     coverThumbnail: doc.cover_i
       ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
-      : null
+      : null,
   };
 
-  return res.send(selectedDatas);
+  await cacheSet(cacheKey, JSON.stringify(book), TTL_BOOK);
+  return res.send(book);
 }

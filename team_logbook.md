@@ -167,14 +167,14 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 ### 30/03/2026
 
-*Sprint 3 — Jour 1 : finalisation des PRs en attente, démarrage notes & avis*
+*Sprint 3 — Jour 1 : rebase PR #151, cache Redis Open Library (PR #155)*
 
 #### Infos individuelles
 
 - **Ophélie :**
 - **Rémi :**
 - **Paul :**
-- **Christopher :** Rebase de la branche `fix/cleanup-expired-refresh-tokens` sur `main` (intégration des commits du weekend), force push sécurisé, mise à jour description PR #151 + ajout reviewers. PR #151 en review : purge tokens expirés au login, genre aléatoire homepage, cap page 100 `/books/search`, 400 sur `id` manquant, User-Agent unifié Open Library, pagination + tri `GET /library`.
+- **Christopher :** Rebase `fix/cleanup-expired-refresh-tokens` sur `main` + mise à jour PR #151. Cache Redis implémenté (PR #155) : `redisClient.ts` dégradation gracieuse, cache `search` TTL 1h / `getBookById` TTL 24h / `getRandomBooks` TTL 10min, `RedisStore` pour rate limiting persistant. Compte Upstash créé, `REDIS_URL` ajoutée sur Render par Paul — cache validé en prod : 2.4s → 1.08s (2x). Tests unitaires Redis 8/8 ✅ (41/41 total). PR #156 : `onDelete: Cascade` sur `refresh_token`, `.max(2000)` description, `AuthResponse` aligné sur la vraie réponse backend. 3 PRs en review : #151 #155 #156.
 
 ---
 

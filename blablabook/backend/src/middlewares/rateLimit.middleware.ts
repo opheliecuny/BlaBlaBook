@@ -1,6 +1,18 @@
 import rateLimit from "express-rate-limit";
+import { RedisStore } from "rate-limit-redis";
+import { redis } from "../utils/redisClient";
 
 const isTest = process.env.NODE_ENV === "test";
+
+// Si Redis est disponible, on utilise un store persistant (survit aux redémarrages Render)
+// Sinon, fallback sur le store mémoire par défaut (comportement actuel)
+function makeStore(prefix: string) {
+  if (!redis) return undefined;
+  return new RedisStore({
+    prefix,
+    sendCommand: (...args: string[]) => (redis as any).call(...args),
+  });
+}
 
 // Limite globale : 100 requêtes par 15 minutes par IP
 export const globalRateLimit = rateLimit({
@@ -9,6 +21,7 @@ export const globalRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: () => isTest,
+  store: makeStore("rl:global:"),
   message: { message: "Too many requests, please try again later." },
 });
 
@@ -19,6 +32,7 @@ export const authRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: () => isTest,
+  store: makeStore("rl:auth:"),
   message: { message: "Too many authentication attempts, please try again later." },
 });
 
@@ -29,5 +43,6 @@ export const searchRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skip: () => isTest,
+  store: makeStore("rl:search:"),
   message: { message: "Too many search requests, please try again later." },
 });
