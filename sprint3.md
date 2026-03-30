@@ -25,14 +25,15 @@
 
 ### 1.2 Ce qui reste à faire pour 100% du MVP
 
-| Priorité  | Fonctionnalité                                                         | Où ?                                           |
-| --------- | ---------------------------------------------------------------------- | ---------------------------------------------- |
-| 🔴 Haute   | **Notes (1–5 étoiles)** : champ `rating` présent en BDD mais non câblé | `PATCH /library/:id`, `library/page.tsx`       |
-| 🔴 Haute   | **Avis personnel** : champ `review` présent en BDD mais non câblé      | `PATCH /library/:id`, `library/page.tsx`       |
-| 🟠 Moyenne | **Internationalisation FR/EN** : app entièrement en français           | Toutes les pages + composants                  |
-| 🟠 Moyenne | **Redis** : cache OpenLibrary + rate limiting distribué                | `backend/src/utils/redis.ts`, middlewares      |
-| 🟡 Basse   | **Toast notifications** : Sonner déjà installé, non utilisé            | `sonner` v2.0.7 disponible dans `package.json` |
-| 🟡 Basse   | **Refresh token** : logique BDD présente, pas d'endpoint public        | `POST /auth/refresh`                           |
+| Priorité  | Fonctionnalité                                                                                              | Où ?                                           |
+| --------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 🔴 Haute   | **Notes (1–5 étoiles)** : champ `rating` présent en BDD mais non câblé                                      | `PATCH /library/:id`, `library/page.tsx`       |
+| 🔴 Haute   | **Avis personnel** : champ `review` présent en BDD mais non câblé **(optionnel car trop de modifications)** | `PATCH /library/:id`, `library/page.tsx`       |
+| 🟠 Moyenne | **Internationalisation FR/EN** : app entièrement en français                                                | Toutes les pages + composants                  |
+| 🟠 Moyenne | **Redis** : cache OpenLibrary + rate limiting distribué                                                     | `backend/src/utils/redis.ts`, middlewares      |
+| 🟡 Basse   | **Mode nuit (Dark Mode)** : Tailwind v4 + shadcn/ui prêts, `next-themes` à installer                        | `app/layout.tsx`, `components/ThemeToggle.tsx` |
+| 🟡 Basse   | **Toast notifications** : Sonner déjà installé, non utilisé                                                 | `sonner` v2.0.7 disponible dans `package.json` |
+| 🟡 Basse   | **Refresh token** : logique BDD présente, pas d'endpoint public                                             | `POST /auth/refresh`                           |
 
 ---
 
@@ -43,7 +44,7 @@
 | **Jour 1** - 30/03 | Notes + Avis (backend + frontend)                   | PATCH `/library/:id` enrichi, UI étoiles intégrée   |
 | **Jour 2** - 31/03 | i18n setup + traductions FR/EN                      | `next-intl` installé, messages FR/EN complets       |
 | **Jour 3** - 01/04 | i18n intégration pages + Redis (cache + rate limit) | Toutes les pages traduites, cache OpenLibrary actif |
-| **Jour 4** - 02/04 | Toasts, finitions, tests, corrections               | App stable, prête pour démonstration                |
+| **Jour 4** - 02/04 | Mode nuit + Toasts Sonner + finitions, tests        | Dark mode fonctionnel, toasts actifs, app stable    |
 
 ---
 
@@ -499,9 +500,92 @@ REDIS_URL=rediss://your-redis-url:6380
 
 ---
 
-## 6. Priorité 3 - Finitions rapides
+## 6. Priorité 3 - Mode Nuit (Dark Mode)
 
-### 6.1 Toast Notifications (Sonner déjà installé)
+> Tailwind CSS v4 et shadcn/ui supportent nativement le dark mode via la stratégie `class`. L'ajout de `next-themes` suffit — les composants shadcn/ui s'adaptent automatiquement grâce aux variables CSS `--color-*`.
+
+### 6.1 Installation
+
+```bash
+cd blablabook/frontend
+npm install next-themes
+```
+
+### 6.2 ThemeProvider (`app/layout.tsx`)
+
+Envelopper le `<body>` avec le provider :
+
+```tsx
+import { ThemeProvider } from "next-themes";
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="fr" suppressHydrationWarning>
+      <body>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+        </ThemeProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+> `suppressHydrationWarning` est nécessaire sur `<html>` pour éviter les erreurs d'hydratation Next.js liées au changement de classe `dark`.
+
+### 6.3 Composant `ThemeToggle.tsx`
+
+Créer `components/ThemeToggle.tsx` :
+
+```tsx
+"use client";
+import { useTheme } from "next-themes";
+import { Moon, Sun } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+export function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      aria-label="Basculer le mode nuit"
+    >
+      <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+    </Button>
+  );
+}
+```
+
+> `lucide-react` est déjà installé dans le projet — les icônes `Sun` et `Moon` sont disponibles.
+
+### 6.4 Intégration dans la Navbar
+
+Ajouter `<ThemeToggle />` dans [components/Navbar.tsx](blablabook/frontend/components/Navbar.tsx), aux côtés du futur `LanguageSwitcher` (section 4.4) :
+
+```tsx
+import { ThemeToggle } from "@/components/ThemeToggle";
+
+// Dans la barre de navigation :
+<nav>
+  {/* ... autres liens ... */}
+  <ThemeToggle />
+  <LanguageSwitcher />
+</nav>
+```
+
+### 6.5 Vérification des couleurs personnalisées
+
+Vérifier que les overrides CSS dans [app/globals.css](blablabook/frontend/app/globals.css) définissent bien les variantes dark des couleurs de la charte graphique (fond, texte, card, border). shadcn/ui génère les tokens CSS automatiquement, mais les couleurs personnalisées ajoutées manuellement doivent avoir leur équivalent dark.
+
+---
+
+## 7. Priorité 4 - Finitions rapides
+
+### 7.1 Toast Notifications (Sonner déjà installé)
 
 > `sonner` v2.0.7 est déjà dans `package.json`. Le composant `<Toaster />` est déjà présent dans le layout. Il suffit d'utiliser les toasts dans les pages.
 
@@ -526,7 +610,7 @@ toast.info("Statut mis à jour.");
 - `profile/page.tsx` : mise à jour profil, changement mot de passe, suppression compte
 - `search/page.tsx` : ajout livre depuis la recherche
 
-### 6.2 Optimisations mineures
+### 7.2 Optimisations mineures
 
 | Amélioration                                         | Fichier                       | Effort |
 | ---------------------------------------------------- | ----------------------------- | ------ |
@@ -534,7 +618,7 @@ toast.info("Statut mis à jour.");
 | Compteur de caractères sur la textarea review        | `components/StarRating.tsx`   | ~30min |
 | Mettre à jour `.env.example` et `.env.local.example` | `frontend/.env.local.example` | ~15min |
 
-### 6.3 Refresh Token (si le temps le permet)
+### 7.3 Refresh Token (si le temps le permet)
 
 **Backend** : Ajouter `POST /auth/refresh` dans `auth.router.ts` et `auth.controller.ts`
 
@@ -549,7 +633,7 @@ router.post("/auth/refresh", refreshTokenController);
 
 ---
 
-## 7. Backlog priorisé - Tâches Sprint 3
+## 8. Backlog priorisé - Tâches Sprint 3
 
 ### 🔴 Priorité 1 - Notes et Avis - (Jour 1)
 
@@ -616,7 +700,15 @@ router.post("/auth/refresh", refreshTokenController);
 - [ ] Mettre à jour `app/not-found.tsx`
 - [ ] Mettre à jour `Footer.tsx`
 
-### 🟡 Priorité 3 - Finitions - (Jour 4)
+### 🟡 Priorité 3 - Mode Nuit - (Jour 4)
+
+- [ ] Installer `next-themes`
+- [ ] Envelopper le layout avec `ThemeProvider` (`attribute="class"`, `enableSystem`)
+- [ ] Créer le composant `ThemeToggle.tsx` (icônes `Sun`/`Moon` lucide-react)
+- [ ] Intégrer `<ThemeToggle />` dans `Navbar.tsx`
+- [ ] Vérifier les couleurs personnalisées dans `globals.css` (tokens dark)
+
+### 🟡 Priorité 4 - Finitions - (Jour 4)
 
 - [ ] Intégrer les toasts Sonner dans `library/page.tsx` (ajout, suppression, statut, note)
 - [ ] Intégrer les toasts Sonner dans `profile/page.tsx` (mise à jour profil, erreurs)
@@ -633,7 +725,7 @@ router.post("/auth/refresh", refreshTokenController);
 
 ---
 
-## 8. Référence rapide - Commandes
+## 9. Référence rapide - Commandes
 
 ```bash
 # Installation next-intl
@@ -662,15 +754,16 @@ curl http://localhost:3001/books/search?q=tolkien  # Doit être mis en cache
 
 ## 9. Personnes responsables (suggestion)
 
-| Tâche                                       | Assigné(e)            |
-| ------------------------------------------- | --------------------- |
-| **Notes + Avis - Backend** (PATCH /library) | Rémi                  |
-| **Notes + Avis - Frontend** (UI étoiles)    | Ophélie               |
-| **Redis setup + cache OpenLibrary**         | Christopher           |
-| **i18n setup + traductions FR/EN**          | Paul                  |
-| **i18n intégration pages + sélecteur**      | Christopher + Ophélie |
-| **Toasts Sonner + finitions**               | Tous                  |
-| **Tests + corrections + déploiement**       | Paul + Christopher    |
+| Tâche                                       | Assigné(e)                   |
+| ------------------------------------------- | ---------------------------- |
+| **Notes + Avis - Backend** (PATCH /library) | Rémi                         |
+| **Notes + Avis - Frontend** (UI étoiles)    | Ophélie                      |
+| **Mode nuit**                               | Ophélie                      |
+| **Redis setup + cache OpenLibrary**         | Christopher + Rémi           |
+| **i18n setup + traductions FR/EN**          | Paul + Remi                  |
+| **i18n intégration pages + sélecteur**      | Christopher + Ophélie + Rémi |
+| **Toasts Sonner + finitions**               | Tous                         |
+| **Tests + corrections + déploiement**       | Paul + Christopher           |
 
 ---
 
@@ -688,6 +781,8 @@ curl http://localhost:3001/books/search?q=tolkien  # Doit être mis en cache
 - [ ] Recevoir des retours visuels (toasts) lors des actions importantes
 - [ ] Les réponses OpenLibrary sont mises en cache (Redis) — pas d'appel répété à l'API
 - [ ] Le rate limiting persiste entre les redémarrages Render (store Redis)
+- [ ] Basculer entre le mode clair et le mode nuit via un bouton dans la navigation
+- [ ] Le thème choisi est persisté (respect de la préférence système par défaut)
 
 ---
 
