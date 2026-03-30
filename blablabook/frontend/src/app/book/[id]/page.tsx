@@ -78,7 +78,7 @@ return (
         {genre && (
           <div className="self-start md:hidden">
             <p aria-label={`Genre : ${genre}`}>
-              <span className="text-xs font-medium rounded-md px-3 py-1 bg-[#E2725B] text-white uppercase tracking-wide">
+              <span className="text-xs font-medium rounded-md px-3 py-1 bg-[var(--accent-alt)] text-white uppercase tracking-wide">
                 {genre}
               </span>
             </p>

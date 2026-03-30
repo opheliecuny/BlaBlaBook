@@ -8,10 +8,10 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
       <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12">
         {/* Header */}
-        <header className="mb-8 border-b border-gray-100 pb-8">
+        <header className="mb-8 border-b border-border pb-8">
           <h1 className="mb-4 text-2xl sm:text-3xl font-bold tracking-tight text-foreground uppercase">
             Politique de Confidentialité
           </h1>
@@ -25,9 +25,9 @@ export default function PrivacyPage() {
         </header>
 
         {/* Content */}
-        <div className="space-y-8 text-gray-600">
+        <div className="space-y-8 text-muted-foreground">
           <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">
+            <h2 className="mb-3 text-xl font-medium text-foreground">
               1. Données collectées
             </h2>
             <p>Nous collectons les informations suivantes :</p>
@@ -43,7 +43,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">
+            <h2 className="mb-3 text-xl font-medium text-foreground">
               2. Finalité du traitement
             </h2>
             <p>
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">
+            <h2 className="mb-3 text-xl font-medium text-foreground">
               3. Services tiers
             </h2>
             <p>
@@ -65,8 +65,8 @@ export default function PrivacyPage() {
             </p>
           </section>
 
-          <section aria-labelledby="security-title" role="region" className="rounded-lg border-l-4 border-indigo-500 bg-indigo-50 p-6">
-            <h2 id="security-title" className="mb-3 text-xl font-medium text-indigo-800">
+          <section>
+            <h2 className="mb-3 text-xl font-medium text-foreground">
               4. Sécurité
             </h2>
             <p>
@@ -75,7 +75,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">
+            <h2 className="mb-3 text-xl font-medium text-foreground">
               5. Durée de conservation
             </h2>
             <p>
@@ -84,7 +84,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">
+            <h2 className="mb-3 text-xl font-medium text-foreground">
               6. Vos droits (RGPD)
             </h2>
             <p>
@@ -93,24 +93,24 @@ export default function PrivacyPage() {
             <p className="mt-2">
               Pour exercer vos droits, contactez-nous à :
             </p>
-            <address className="mt-4 inline-block rounded-md border border-gray-200 bg-gray-50 p-4">
+            <address className="mt-4 inline-block rounded-md border border-gray-200 bg-background p-4">
               Email :{" "}
               <a
                 href="mailto:contact@blablabook.fr"
-                className="font-bold text-indigo-600 hover:underline"
+                className="font-bold text-primary hover:underline"
                 aria-label="Envoyer un email à contact@blablabook.fr"
               >
                 contact@blablabook.fr
               </a>
             </address>
             <p className="mt-2 text-sm text-gray-500">
-              Vous pouvez également contacter la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-indigo-600 hover:underline">CNIL</a> pour toute réclamation concernant vos données personnelles.
+              Vous pouvez également contacter la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">CNIL</a> pour toute réclamation concernant vos données personnelles.
             </p>
           </section>
         </div>
 
         {/* Footer Links */}
-        <footer className="mt-12 flex items-center justify-between border-t border-gray-100 pt-8">
+        <footer className="mt-12 flex items-center justify-between border-t border-border pt-8">
           <Link
             href="/"
             className="text-sm font-medium text-primary hover:underline"
@@ -120,17 +120,17 @@ export default function PrivacyPage() {
           <div className="flex items-center space-x-4">
             <Link
               href="/cgu"
-              className="text-xs text-gray-600 hover:text-gray-700"
+              className="text-xs text-muted-foreground hover:text-gray-700"
               aria-label="Voir les Conditions Générales d'Utilisation"
             >
               CGU
             </Link>
-            <div className="text-xs text-gray-600" aria-hidden="true">
+            <div className="text-xs text-muted-foreground" aria-hidden="true">
               |
             </div>
             <Link
               href="/legal"
-              className="text-xs text-gray-600 hover:text-gray-700"
+              className="text-xs text-muted-foreground hover:text-gray-700"
               aria-label="Voir les Mentions Légales"
             >
               Mentions Légales

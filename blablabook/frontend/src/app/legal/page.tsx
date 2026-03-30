@@ -8,10 +8,10 @@ export const metadata: Metadata = {
 
 export default function LegalPage() {
   return (
-    <div className="min-h-screen bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
       <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12">
         {/* Header */}
-        <header className="mb-8 border-b border-gray-100 pb-8">
+        <header className="mb-8 border-b border-border pb-8">
           <h1 className="mb-4 text-3xl font-bold tracking-tight text-foreground uppercase">
             Mentions Légales
           </h1>
@@ -21,9 +21,9 @@ export default function LegalPage() {
         </header>
 
         {/* Content */}
-        <div className="space-y-8 text-gray-600">
+        <div className="space-y-8 text-muted-foreground">
           <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">
+            <h2 className="mb-3 text-xl font-medium text-foreground">
               1. Éditeur du site
             </h2>
             <p>
@@ -40,7 +40,7 @@ export default function LegalPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">
+            <h2 className="mb-3 text-xl font-medium text-foreground">
               2. Hébergement
             </h2>
             <p>
@@ -56,7 +56,7 @@ export default function LegalPage() {
 
 
           <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">
+            <h2 className="mb-3 text-xl font-medium text-foreground">
               3. Liens externes
             </h2>
             <p>
@@ -67,14 +67,14 @@ export default function LegalPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-xl font-medium text-gray-800">
+            <h2 className="mb-3 text-xl font-medium text-foreground">
               4. Contact
             </h2>
             <p>
               Pour toute question, vous pouvez nous contacter à l’adresse
               suivante :
             </p>
-            <address className="mt-4 inline-block rounded-md border border-gray-200 bg-gray-50 p-4">
+            <address className="mt-4 inline-block rounded-md border border-gray-200 bg-background p-4">
               Email :{" "}
               <a
                 href="mailto:contact@blablabook.fr"
@@ -87,10 +87,10 @@ export default function LegalPage() {
         </div>
 
         {/* Footer Links */}
-        <footer aria-label="Liens légaux" className="mt-12 flex items-center justify-between border-t border-gray-100 pt-8">
+        <footer aria-label="Liens légaux" className="mt-12 flex items-center justify-between border-t border-border pt-8">
           <Link
             href="/"
-            className="text-sm font-medium text-indigo-600 hover:underline"
+            className="text-sm font-medium text-primary hover:underline"
             aria-label="Retour à la page d'accueil"
           >
             ← Retour à l&apos;accueil
@@ -98,17 +98,17 @@ export default function LegalPage() {
           <div className="flex items-center space-x-4">
             <Link
               href="/privacy"
-              className="text-xs text-gray-600 hover:text-gray-700"
+              className="text-xs text-muted-foreground hover:text-gray-700"
               aria-label="Voir la politique de confidentialité"
             >
               Politique de confidentialité
             </Link>
-            <div className="text-xs text-gray-600" aria-hidden="true">
+            <div className="text-xs text-muted-foreground" aria-hidden="true">
               |
             </div>
             <Link
               href="/cgu"
-              className="text-xs text-gray-600 hover:text-gray-700"
+              className="text-xs text-muted-foreground hover:text-gray-700"
               aria-label="Voir les conditions générales d'utilisation"
             >
               CGU

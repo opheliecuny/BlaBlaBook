@@ -68,7 +68,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           />
           <button
             type="submit"
-            className="h-10 rounded-full bg-[#E2725B] hover:bg-[#c85e48] text-white text-xs font-medium px-8 shrink-0 w-full sm:w-auto"
+            className="h-10 rounded-full bg-[var(--accent-alt)] hover:bg-[var(--accent-alt-hover)] text-white text-xs font-medium px-8 shrink-0 w-full sm:w-auto"
             aria-label="Lancer la recherche"
           >
             Rechercher
@@ -123,7 +123,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                         <div className="flex flex-col lg:flex-row gap-2 w-full">
                           <Link
                             href={`/book/${bookId}`}
-                            className="flex items-center justify-center rounded-md bg-[#E5E7EB] py-1.5 text-xs font-medium hover:bg-[#D1D5DB] active:bg-[#C4C9D0] w-full sm:grow"
+                            className="flex items-center justify-center rounded-md bg-[var(--color-btn-subtle)] hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] py-1.5 text-xs font-medium w-full sm:grow"
                             aria-label={`Voir le détail du livre ${book.title}`}
                           >
                             Voir le détail

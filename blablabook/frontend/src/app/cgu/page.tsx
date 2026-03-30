@@ -11,7 +11,7 @@ export default function CGUPage() {
     <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
       <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm sm:p-10 md:p-12">
         {/* Header */}
-        <header className="mb-8 border-b border-gray-100 pb-8">
+        <header className="mb-8 border-b border-border pb-8">
           <h1 className="mb-4 text-3xl font-bold tracking-tight text-foreground uppercase">
             Conditions Générales d{"'"}Utilisation
           </h1>
@@ -21,9 +21,9 @@ export default function CGUPage() {
         </header>
 
         {/* Content */}
-        <div className="space-y-8 text-gray-600">
+        <div className="space-y-8 text-muted-foreground">
           <section aria-labelledby="section-objet">
-            <h2 id="section-objet" className="mb-3 text-xl font-medium text-gray-800">1. Objet</h2>
+            <h2 id="section-objet" className="mb-3 text-xl font-medium text-foreground">1. Objet</h2>
             <p>
               Les présentes Conditions Générales d{"'"}Utilisation ont pour
               objet l{"'"}encadrement juridique des modalités de mise à
@@ -34,7 +34,7 @@ export default function CGUPage() {
           </section>
 
           <section aria-labelledby="section-acces">
-            <h2 id="section-acces" className="mb-3 text-xl font-medium text-gray-800">
+            <h2 id="section-acces" className="mb-3 text-xl font-medium text-foreground">
               2. Accès au site
             </h2>
             <p>
@@ -46,8 +46,8 @@ export default function CGUPage() {
             </p>
           </section>
 
-          <section aria-labelledby="section-propriete" className="rounded-lg border-l-4 border-blue-500 bg-blue-50 p-6">
-            <h2 id="section-propriete" className="mb-3 text-xl font-medium text-blue-800">
+          <section aria-labelledby="section-propriete">
+            <h2 id="section-propriete" className="mb-3 text-xl font-medium text-foreground">
               3. Propriété Intellectuelle
             </h2>
             <p>
@@ -59,7 +59,7 @@ export default function CGUPage() {
           </section>
 
           <section aria-labelledby="section-responsabilite">
-            <h2 id="section-responsabilite" className="mb-3 text-xl font-medium text-gray-800">
+            <h2 id="section-responsabilite" className="mb-3 text-xl font-medium text-foreground">
               4. Responsabilité
             </h2>
             <p>
@@ -72,7 +72,7 @@ export default function CGUPage() {
           </section>
 
           <section aria-labelledby="section-droit">
-            <h2 id="section-droit" className="mb-3 text-xl font-medium text-gray-800">
+            <h2 id="section-droit" className="mb-3 text-xl font-medium text-foreground">
               5. Droit applicable
             </h2>
             <p>
@@ -85,10 +85,10 @@ export default function CGUPage() {
         </div>
 
         {/* Footer links */}
-        <footer aria-label="Liens légaux" className="mt-12 flex flex-col items-center gap-3 border-t border-gray-100 pt-8 sm:flex-row sm:items-center sm:justify-between">
+        <footer aria-label="Liens légaux" className="mt-12 flex flex-col items-center gap-3 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/"
-            className="text-sm font-medium text-indigo-600 hover:underline"
+            className="text-sm font-medium text-primary hover:underline"
             aria-label="Retour à la page d'accueil"
           >
             ← Retour à l{"'"}accueil
@@ -96,14 +96,14 @@ export default function CGUPage() {
           <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:divide-x sm:divide-gray-200">
             <Link
               href="/privacy"
-              className="text-sm text-gray-600 hover:text-gray-700 sm:pr-4"
+              className="text-sm text-muted-foreground hover:text-gray-700 sm:pr-4"
               aria-label="Voir la politique de confidentialité"
             >
               Politique de confidentialité
             </Link>
             <Link
               href="/legal"
-              className="text-sm text-gray-600 hover:text-gray-700 sm:pl-4"
+              className="text-sm text-muted-foreground hover:text-gray-700 sm:pl-4"
               aria-label="Voir les mentions légales"
             >
               Mentions légales
