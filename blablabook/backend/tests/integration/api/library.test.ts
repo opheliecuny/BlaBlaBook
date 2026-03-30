@@ -71,7 +71,10 @@ describe("Library API Integration Tests", () => {
         author: "Test Author",
         isbn: "9780123456789",
         status: "TO_READ",
+        rating: null,
+        review: null,
       });
+      expect(response.body[0].bookId).toBeDefined();
     });
 
     it("devrait retourner 401 si l'utilisateur n'est pas authentifié", async () => {
@@ -382,6 +385,134 @@ describe("Library API Integration Tests", () => {
         .expect(404);
 
       expect(response.body.code).toBe("NOT_FOUND");
+    });
+
+    it("devrait mettre à jour le rating", async () => {
+      const user = await createTestUser({
+        email: "user@example.com",
+        password: "Password123",
+        username: "testuser",
+      });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "user@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
+
+      const addResponse = await request(app)
+        .post("/library")
+        .set("Cookie", cookies)
+        .send({ isbn: "9780123456789", title: "Test Book" });
+
+      const bookId = addResponse.body.bookId;
+
+      const response = await request(app)
+        .patch(`/library/${bookId}`)
+        .set("Cookie", cookies)
+        .send({ rating: 4 })
+        .expect(200);
+
+      expect(response.body.rating).toBe(4);
+
+      const libraryItem = await prisma.library_item.findFirst({
+        where: { userId: user.id, bookId },
+      });
+      expect(libraryItem?.rating).toBe(4);
+    });
+
+    it("devrait mettre à jour la review", async () => {
+      const user = await createTestUser({
+        email: "user@example.com",
+        password: "Password123",
+        username: "testuser",
+      });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "user@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
+
+      const addResponse = await request(app)
+        .post("/library")
+        .set("Cookie", cookies)
+        .send({ isbn: "9780123456789", title: "Test Book" });
+
+      const bookId = addResponse.body.bookId;
+
+      const response = await request(app)
+        .patch(`/library/${bookId}`)
+        .set("Cookie", cookies)
+        .send({ review: "Excellent livre !" })
+        .expect(200);
+
+      expect(response.body.review).toBe("Excellent livre !");
+
+      const libraryItem = await prisma.library_item.findFirst({
+        where: { userId: user.id, bookId },
+      });
+      expect(libraryItem?.review).toBe("Excellent livre !");
+    });
+
+    it("devrait mettre à jour status, rating et review simultanément", async () => {
+      await createTestUser({
+        email: "user@example.com",
+        password: "Password123",
+        username: "testuser",
+      });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "user@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
+
+      const addResponse = await request(app)
+        .post("/library")
+        .set("Cookie", cookies)
+        .send({ isbn: "9780123456789", title: "Test Book" });
+
+      const bookId = addResponse.body.bookId;
+
+      const response = await request(app)
+        .patch(`/library/${bookId}`)
+        .set("Cookie", cookies)
+        .send({ status: "READ", rating: 5, review: "Chef-d'œuvre absolu." })
+        .expect(200);
+
+      expect(response.body.status).toBe("READ");
+      expect(response.body.rating).toBe(5);
+      expect(response.body.review).toBe("Chef-d'œuvre absolu.");
+    });
+
+    it("devrait retourner 400 si le rating est hors limites", async () => {
+      await createTestUser({
+        email: "user@example.com",
+        password: "Password123",
+        username: "testuser",
+      });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "user@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
+
+      const addResponse = await request(app)
+        .post("/library")
+        .set("Cookie", cookies)
+        .send({ isbn: "9780123456789", title: "Test Book" });
+
+      const bookId = addResponse.body.bookId;
+
+      const response = await request(app)
+        .patch(`/library/${bookId}`)
+        .set("Cookie", cookies)
+        .send({ rating: 6 })
+        .expect(400);
+
+      expect(response.body.code).toBe("VALIDATION_ERROR");
     });
 
     it("devrait retourner 401 si l'utilisateur n'est pas authentifié", async () => {
