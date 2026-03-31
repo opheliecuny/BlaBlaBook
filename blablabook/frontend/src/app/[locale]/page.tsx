@@ -48,7 +48,7 @@ export default async function HomePage() {
           <div className="flex justify-around gap-2 sm:justify-start sm:gap-3">
             <Link
               href="/login"
-              className="sm:border-input sm:text-foreground inline-flex h-auto items-center justify-center rounded-md border border-[var(--accent-alt)] bg-[var(--color-btn-subtle)] p-2 text-center text-sm font-semibold text-[var(--accent-alt)] hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] dark:bg-gray-800"
+              className="sm:border-input sm:text-foreground inline-flex h-auto items-center justify-center rounded-md border border-[var(--accent-alt)] bg-[var(--color-btn-subtle)] p-2 text-center text-sm font-semibold text-[var(--accent-alt)] hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] dark:bg-white sm:dark:bg-gray-800"
             >
               {t("hero.loginCta")}
             </Link>
@@ -65,6 +65,8 @@ export default async function HomePage() {
             src="/book-pile.jpg"
             alt="Pile de livres"
             fill
+            sizes="(max-width: 640px) 100 vw, 50vw"
+            priority
             className="object-cover sm:opacity-100"
           />
         </div>
