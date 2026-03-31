@@ -10,7 +10,17 @@ function makeStore(prefix: string) {
   if (!redis) return undefined;
   return new RedisStore({
     prefix,
-    sendCommand: (...args: string[]) => (redis as any).call(...args),
+    sendCommand: async (...args: string[]) => {
+      try {
+        return await (redis as any).call(...args);
+      } catch (err) {
+        console.error(
+          `[RateLimit] Redis command failed for prefix ${prefix}:`,
+          err,
+        );
+        return null;
+      }
+    },
   });
 }
 
@@ -33,7 +43,9 @@ export const authRateLimit = rateLimit({
   legacyHeaders: false,
   skip: () => isTest,
   store: makeStore("rl:auth:"),
-  message: { message: "Too many authentication attempts, please try again later." },
+  message: {
+    message: "Too many authentication attempts, please try again later.",
+  },
 });
 
 // Limite pour la recherche : 30 requêtes par minute par IP (protège l'API Open Library)
