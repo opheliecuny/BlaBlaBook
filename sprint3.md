@@ -1,10 +1,10 @@
 # Sprint 3 - Finalisation BlaBlaBook
 
 > **Date de rédaction** : 2026-03-29
-> **Dernière mise à jour** : 2026-03-29
+> **Dernière mise à jour** : 2026-03-31
 > **Phase** : Sprint 3 - Finalisation MVP + Internationalisation + Finitions
 > **Durée** : 4 jours - du 30/03/2026 au 02/04/2026
-> **Statut global** : MVP à ~95% - application déployée en production
+> **Statut global** : Jour 1 terminé 🚀 — i18n ✅ · dark mode ✅ · Redis ✅ · auth/refresh ✅ · Safari fix ✅
 
 ---
 
@@ -25,26 +25,26 @@
 
 ### 1.2 Ce qui reste à faire pour 100% du MVP
 
-| Priorité  | Fonctionnalité                                                                                              | Où ?                                           |
-| --------- | ----------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
-| 🔴 Haute   | **Notes (1–5 étoiles)** : champ `rating` présent en BDD mais non câblé                                      | `PATCH /library/:id`, `library/page.tsx`       |
-| 🔴 Haute   | **Avis personnel** : champ `review` présent en BDD mais non câblé **(optionnel car trop de modifications)** | `PATCH /library/:id`, `library/page.tsx`       |
-| 🟠 Moyenne | **Internationalisation FR/EN** : app entièrement en français                                                | Toutes les pages + composants                  |
-| 🟠 Moyenne | **Redis** : cache OpenLibrary + rate limiting distribué                                                     | `backend/src/utils/redis.ts`, middlewares      |
-| 🟡 Basse   | **Mode nuit (Dark Mode)** : Tailwind v4 + shadcn/ui prêts, `next-themes` à installer                        | `app/layout.tsx`, `components/ThemeToggle.tsx` |
-| 🟡 Basse   | **Toast notifications** : Sonner déjà installé, non utilisé                                                 | `sonner` v2.0.7 disponible dans `package.json` |
-| 🟡 Basse   | **Refresh token** : logique BDD présente, pas d'endpoint public                                             | `POST /auth/refresh`                           |
+| Priorité  | Fonctionnalité                                                                         | Statut                  | Où ?                               |
+| --------- | -------------------------------------------------------------------------------------- | ----------------------- | ---------------------------------- |
+| 🔴 Haute   | **Notes (1–5 étoiles)** : backend câblé (PR #150), frontend StarRating à faire         | 🔄 Partiel               | `library/page.tsx`                 |
+| 🔴 Haute   | **Avis personnel** : backend câblé (PR #150), frontend textarea à faire                | 🔄 Partiel               | `library/page.tsx`                 |
+| 🟠 Moyenne | **Internationalisation FR/EN** : `next-intl`, routing `[locale]`, messages FR/EN       | ✅ Done (PR #159)        | Toutes les pages                   |
+| 🟠 Moyenne | **Redis** : cache OpenLibrary + rate limiting `RedisStore` (Upstash)                   | ✅ Done (PR #155)        | `backend/src/utils/redisClient.ts` |
+| 🟡 Basse   | **Mode nuit (Dark Mode)** : `next-themes`, `ThemeToggle`, toutes les pages             | ✅ Done (PR #160)        | `components/ThemeToggle.tsx`       |
+| 🟡 Basse   | **Toast notifications** : Sonner déjà installé, non utilisé                            | ⏳ À faire               | `sonner` v2.0.7                    |
+| 🟡 Basse   | **Refresh token** : `POST /auth/refresh` avec rotation + correction Safari cookie path | ✅ Done (PR #149 + #161) | `auth.controller.ts`               |
 
 ---
 
 ## 2. Planning 4 jours
 
-| Jour               | Priorité                                            | Objectif de fin de journée                          |
-| ------------------ | --------------------------------------------------- | --------------------------------------------------- |
-| **Jour 1** - 30/03 | Notes + Avis (backend + frontend)                   | PATCH `/library/:id` enrichi, UI étoiles intégrée   |
-| **Jour 2** - 31/03 | i18n setup + traductions FR/EN                      | `next-intl` installé, messages FR/EN complets       |
-| **Jour 3** - 01/04 | i18n intégration pages + Redis (cache + rate limit) | Toutes les pages traduites, cache OpenLibrary actif |
-| **Jour 4** - 02/04 | Mode nuit + Toasts Sonner + finitions, tests        | Dark mode fonctionnel, toasts actifs, app stable    |
+| Jour               | Priorité                                               | Résultat                                                                     |
+| ------------------ | ------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| **Jour 1** - 30/03 | ~~Notes + Avis~~ → Redis + Dark mode + i18n + fix auth | ✅ Redis (PR #155), Dark mode (PR #160), i18n (PR #159), Safari fix (PR #161) |
+| **Jour 2** - 31/03 | Notes/Avis frontend (StarRating) + Toasts Sonner       | ⏳ En cours                                                                   |
+| **Jour 3** - 01/04 | Corrections, tests, finitions                          | ⏳ À venir                                                                    |
+| **Jour 4** - 02/04 | Stabilisation, review finale, démo                     | ⏳ À venir                                                                    |
 
 ---
 
@@ -655,58 +655,61 @@ router.post("/auth/refresh", refreshTokenController);
 
 - [ ] Ajouter cas de test `PATCH /library/:id` avec `rating` et `review`
 
-### 🟠 Priorité 2b - Redis (Cache + Rate Limiting) - (Jour 3)
+### 🟠 Priorité 2b - Redis (Cache + Rate Limiting) - ✅ Done (PR #155)
 
 **Setup :**
 
-- [ ] Installer `ioredis` et `rate-limit-redis` dans le backend
-- [ ] Créer `src/utils/redisClient.ts` (singleton ioredis)
-- [ ] Ajouter `REDIS_URL` dans `.env`, `.env.example` et les variables Render
-- [ ] Créer un compte Upstash + base Redis (free tier)
+- [x] Installer `ioredis` et `rate-limit-redis` dans le backend
+- [x] Créer `src/utils/redisClient.ts` (dégradation gracieuse si `REDIS_URL` absent)
+- [x] Ajouter `REDIS_URL` dans `.env.example` et les variables Render
+- [x] Créer un compte Upstash + base Redis (free tier)
 
 **Cache OpenLibrary :**
 
-- [ ] Mettre en cache les résultats de `GET /books/search` (TTL 1h)
-- [ ] Mettre en cache les résultats de `GET /books/:openLibraryId` (TTL 24h)
+- [x] Mettre en cache les résultats de `GET /books/search` (TTL 1h)
+- [x] Mettre en cache les résultats de `GET /books/:openLibraryId` (TTL 24h)
+- [x] Mettre en cache les résultats de `GET /books` (TTL 10min)
 
 **Rate Limiting Redis :**
 
-- [ ] Remplacer le store mémoire par `RedisStore` dans `rateLimit.middleware.ts`
+- [x] Remplacer le store mémoire par `RedisStore` dans `rateLimit.middleware.ts`
+- [x] Tests unitaires Redis 8/8 ✅ (`tests/unit/utils/redisClient.test.ts`)
 
-### 🟠 Priorité 2 - Internationalisation FR/EN - (Jours 2-3)
+### 🟠 Priorité 2 - Internationalisation FR/EN - ✅ Done (PR #159)
 
 **Setup :**
 
-- [ ] Installer `next-intl` (`npm install next-intl`)
-- [ ] Créer `src/i18n/routing.ts` et `src/i18n/request.ts`
-- [ ] Configurer `src/middleware.ts`
-- [ ] Mettre à jour `next.config.ts` avec `withNextIntl`
+- [x] Installer `next-intl` (^4.8.3)
+- [x] Créer `i18n/request.ts` (chargement messages SSR)
+- [x] Configurer `src/middleware.ts` (routing locale)
+- [x] Mettre à jour `next.config.ts` avec `withNextIntl`
 
 **Traductions :**
 
-- [ ] Créer `messages/fr.json` (textes complets)
-- [ ] Créer `messages/en.json` (textes complets)
+- [x] Créer `messages/fr/` (home, navbar, footer, book, common, loading)
+- [x] Créer `messages/en/` (home, navbar, footer, book, common, loading)
 
 **Intégration pages :**
 
-- [ ] Mettre à jour `Navbar.tsx` (textes + sélecteur langue)
-- [ ] Mettre à jour `app/(home)/page.tsx`
-- [ ] Mettre à jour `app/login/page.tsx`
-- [ ] Mettre à jour `app/register/page.tsx`
-- [ ] Mettre à jour `app/library/page.tsx`
-- [ ] Mettre à jour `app/search/page.tsx`
-- [ ] Mettre à jour `app/book/[id]/page.tsx`
-- [ ] Mettre à jour `app/profile/page.tsx`
-- [ ] Mettre à jour `app/not-found.tsx`
-- [ ] Mettre à jour `Footer.tsx`
+- [x] Restructurer `app/` → `app/[locale]/` (routing localisé)
+- [x] `Navbar.tsx` avec sélecteur de langue
+- [x] `app/[locale]/page.tsx` (accueil)
+- [x] `app/[locale]/login/page.tsx`
+- [x] `app/[locale]/register/page.tsx`
+- [x] `app/[locale]/library/page.tsx`
+- [x] `app/[locale]/search/page.tsx`
+- [x] `app/[locale]/book/[id]/page.tsx`
+- [x] `app/[locale]/profile/page.tsx`
+- [x] `app/[locale]/not-found.tsx`
+- [x] `Footer.tsx`
 
-### 🟡 Priorité 3 - Mode Nuit - (Jour 4)
+### 🟡 Priorité 3 - Mode Nuit - ✅ Done (PR #160)
 
-- [ ] Installer `next-themes`
-- [ ] Envelopper le layout avec `ThemeProvider` (`attribute="class"`, `enableSystem`)
-- [ ] Créer le composant `ThemeToggle.tsx` (icônes `Sun`/`Moon` lucide-react)
-- [ ] Intégrer `<ThemeToggle />` dans `Navbar.tsx`
-- [ ] Vérifier les couleurs personnalisées dans `globals.css` (tokens dark)
+- [x] Installer `next-themes` (^0.4.6)
+- [x] Envelopper le layout avec `ThemeProvider` (`attribute="class"`, `enableSystem`)
+- [x] Créer le composant `ThemeToggle.tsx` (Switch + icônes SunIcon/MoonIcon)
+- [x] Intégrer `<ThemeToggle />` dans `Navbar.tsx`
+- [x] Adapter toutes les pages et composants aux classes dark mode Tailwind
 
 ### 🟡 Priorité 4 - Finitions - (Jour 4)
 
@@ -719,7 +722,8 @@ router.post("/auth/refresh", refreshTokenController);
 
 ### 🟢 Optionnel - Si le temps le permet
 
-- [ ] **Refresh token** : `POST /auth/refresh` + intercepteur frontend
+- [x] **Refresh token** : `POST /auth/refresh` avec rotation en BDD (PR #149) ✅
+- [x] **Fix Safari** : proxy Next.js + `sameSite: "lax"` + `path` dynamique + `trust proxy` (PR #161) ✅
 - [ ] **Loading skeletons** sur library et search
 - [ ] **SEO** : métadonnées dynamiques sur `/book/[id]`
 
