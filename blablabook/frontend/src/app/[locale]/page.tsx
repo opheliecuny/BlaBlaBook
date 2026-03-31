@@ -65,6 +65,8 @@ export default async function HomePage() {
             src="/book-pile.jpg"
             alt="Pile de livres"
             fill
+            sizes="(max-width: 640px) 100 vw, 50vw"
+            priority
             className="object-cover sm:opacity-100"
           />
         </div>
