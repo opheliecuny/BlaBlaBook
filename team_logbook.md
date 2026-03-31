@@ -185,7 +185,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 #### Infos individuelles
 
 - **Ophélie :** Correction de contraste du mode sombre (variable --primary de la classe dark) qui se fondait trop par rapport au fond de l'application. Correction du fond du bouton "se connecter" sur la page d'accueil en mode dark responsive pour harmoniser le visuel. optimisation du chargement de l'image du hero sur la page d'accueil (propiété sizes était manquante, impérative selon la doc render) et ajout d'une peropriété priority sur celle-ci.
-- **Rémi :**
+- **Rémi :**Terminé le contenu en/fr de toutes les pages et implémenté les composants également (du effectuer une petite modification du fichier de configuration pour cela). Ajout d'une fonctionnalité de toggle pour gérer le choix de la langue d'affichage. 
 - **Paul :**
 - **Christopher :**
 
