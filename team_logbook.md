@@ -171,7 +171,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 #### Infos individuelles
 
-- **Ophélie :**
+- **Ophélie :** Utilisation des variables globals.css pour mettre en place un mode sombre sur l'application avec utilisation de la librairie next-themes permettant de gérer les utilisations de thème clair/sombre de manière simplifiée. Ajout d'un switch (shadcn) pour permettre à l'utilisateur de passer d'un thème à l'autre facilement depuis le header.
 - **Rémi :** Recherches sur les bonnes pratiques de l'internationalisation (i18n) et la localisation. Configuration de l'architecture `next-intl` pour le projet. Début du contenu traduit pour les pages home, nav, footer et book/:id (PR #159).
 - **Paul :** Fix authentification Safari (PR `fix/auth-cookie-safari`) : proxy Next.js via `rewrites()` dans `next.config.ts` (`/api/:path*` → backend, même domaine → cookies acceptés par Safari), passage de `sameSite: "none"` à `"lax"` sur tous les cookies (`token.ts` + `auth.controller.ts`), ajout `app.set("trust proxy", 1)` derrière le proxy Render. Correction 5 tests `library.test.ts` (schéma Zod POST `/library` : `openLibraryId` optionnel + `refine` isbn‖openLibraryId). Correction 1 test `api.test.ts` (mock double fetch `/auth/refresh` sur 401). Mise à jour guide de déploiement : section troubleshooting Safari, bloc `next.config.ts` avec proxy, sécurité cookies `lax`. Mise à jour `sprint3.md` : Redis (Upstash, cache, rate limiting) et dark mode (`next-themes`). Ajout `REDIS_URL` Upstash dans Render - cache Redis validé en prod.
 - **Christopher :** Rebase `fix/cleanup-expired-refresh-tokens` sur `main` + mise à jour PR #151. Cache Redis implémenté (PR #155) : `redisClient.ts` dégradation gracieuse, cache `search` TTL 1h / `getBookById` TTL 24h / `getRandomBooks` TTL 10min, `RedisStore` pour rate limiting persistant. Compte Upstash créé — cache validé en prod : 2.4s → 1.08s (×2). Tests unitaires Redis 8/8 ✅ (41/41 total). PR #156 : `onDelete: Cascade` sur `refresh_token`, `.max(2000)` description, `AuthResponse` aligné sur la vraie réponse backend. Dark mode implémenté (PR #160) : `next-themes`, `ThemeProvider` dans `layout.tsx`, composant `ThemeToggle`, intégration Navbar. 3 PRs mergées : #151 #155 #156.
@@ -184,7 +184,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 #### Infos individuelles
 
-- **Ophélie :**
+- **Ophélie :** Correction de contraste du mode sombre (variable --primary de la classe dark) qui se fondait trop par rapport au fond de l'application. Correction du fond du bouton "se connecter" sur la page d'accueil en mode dark responsive pour harmoniser le visuel. optimisation du chargement de l'image du hero sur la page d'accueil (propiété sizes était manquante, impérative selon la doc render) et ajout d'une peropriété priority sur celle-ci.
 - **Rémi :**
 - **Paul :**
 - **Christopher :**
