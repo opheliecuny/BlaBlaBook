@@ -12,6 +12,10 @@ import { localeMiddleware } from "./middlewares/locale.middleware";
 
 export const app = express();
 
+// Requis derrière Render (proxy inverse) pour que les IPs, protocoles et
+// headers (X-Forwarded-For, X-Forwarded-Proto) soient correctement lus
+app.set("trust proxy", 1);
+
 app.use(cors({ origin: config.allowedOrigins, credentials: true }));
 
 app.use(express.json());
@@ -24,7 +28,7 @@ app.use(localeMiddleware);
 // Endpoint de santé pour Render Health Check + UptimeRobot
 // Placé avant le rate limiting pour éviter les faux 429
 // Teste la connexion à la base de données Neon
-app.get("/health", async (req, res) => {
+app.get("/health", async (_req, res) => {
   try {
     // Test de connexion à la base de données avec une requête simple
     await prisma.$queryRaw`SELECT 1`;

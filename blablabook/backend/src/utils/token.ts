@@ -46,7 +46,7 @@ export function setAccessTokenCookie(res: Response, accessToken: Token) {
 
     // Pour des cookies sécurisés cross-origin il faut :
     secure: process.env.NODE_ENV === "production", // HTTPS uniquement en prod, HTTP autorisé en dev
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax" // cross-origin en prod, lax en dev
+    sameSite: "lax" // same-site via le proxy Next.js → lax suffisant (plus compatible Safari que "none")
     // Et ne pas oublier de faire en sorte que les CORS autorise l'envoie de "credentials"
   });
 }
@@ -56,8 +56,10 @@ export function setRefreshTokenCookie(res: Response, refreshToken: Token) {
     httpOnly: true,
     maxAge: refreshToken.expiresInMS, // 7j
     secure: process.env.NODE_ENV === "production",
-    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-    path: "/auth/refresh" // Sécurité : le cookie s'enverra (front -> back) uniquement via cette route, pas les autres routes (limite les transferts de ce cookie)
+    sameSite: "lax",
+    // En production, les appels passent par le proxy Next.js (/api/auth/refresh)
+    // → le path doit correspondre au chemin vu par le navigateur, pas celui du backend
+    path: process.env.NODE_ENV === "production" ? "/api/auth/refresh" : "/auth/refresh"
   });
 }
 

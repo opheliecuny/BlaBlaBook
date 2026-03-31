@@ -99,8 +99,8 @@ export async function logoutUser(req: Request, res: Response) {
   }
 
   const isProduction = process.env.NODE_ENV === "production";
-  res.cookie("accessToken", "", { httpOnly: true, maxAge: 0, secure: isProduction, sameSite: isProduction ? "none" : "lax" });
-  res.cookie("refreshToken", "", { httpOnly: true, maxAge: 0, secure: isProduction, sameSite: isProduction ? "none" : "lax", path: "/auth/refresh" });
+  res.cookie("accessToken", "", { httpOnly: true, maxAge: 0, secure: isProduction, sameSite: "lax" });
+  res.cookie("refreshToken", "", { httpOnly: true, maxAge: 0, secure: isProduction, sameSite: "lax", path: isProduction ? "/api/auth/refresh" : "/auth/refresh" });
 
   res.status(204).send({ message: "Successfully logged out" });
 }

@@ -1,6 +1,9 @@
 // Configuration de l'API client pour les appels au backend
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+// En production (et dev), les appels passent par le proxy Next.js /api/*
+// → même domaine → cookies acceptés par Safari
+// Le proxy est configuré dans next.config.ts (rewrites)
+const API_URL = "/api";
 
 /**
  * Classe pour gérer les appels API avec gestion d'erreurs et authentification
