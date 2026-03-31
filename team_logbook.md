@@ -159,7 +159,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 #### Infos individuelles
 
 - **Ophélie :** Amélioration générale de l'UX avec notamment un message d'erreur plutôt que des placeholders sur la page d'accueil lorsque le fetch vers l'API ne fonctionne pas. Sur la page de recherche les genres sont coupés si trop longs avec possibilité de l'afficher en entier au survol. Indications précises avec un indicateur de force sur l'entrée du mot de passe lors de l'inscription et possibilité de cacher ou afficher le contenu des input de type password.
-- **Rémi :** Refactorisation de l'ensemble du code pour utiliser le moins possible de valeurs hardcodées et pouvoir synchroniser autant que possible notre site. Préparé l'exposé de la semaine en me basant sur le carnet de bord de l'équipe. 
+- **Rémi :** Refactorisation de l'ensemble du code pour utiliser le moins possible de valeurs hardcodées et pouvoir synchroniser autant que possible notre site. Préparé l'exposé de la semaine en me basant sur le carnet de bord de l'équipe.
 - **Paul :** Refonte complète du guide de déploiement (12 sections mises à jour) : migration architecture Vercel → Render, documentation des deux variables d'environnement frontend (`NEXT_PUBLIC_API_URL` + `API_URL`), CI/CD simplifié avec deux deploy hooks Render, troubleshooting enrichi. Ajout endpoint `GET /health` dans le backend (test connexion Neon via `prisma.$queryRaw`, réponse `status/db/timestamp/uptime`) pour Render Health Check. Configuration du Health Check Path `/health` sur Render et création des 2 monitors UptimeRobot (backend + frontend) pour éviter le cold start du free tier.
 - **Christopher :** Implémentation du rate limiting global (`express-rate-limit`) et corrections sécurité cookies (PR #140). Fix : effacement cookies au logout (#136), username manquant au register (#137), feedback visuel ajout bibliothèque (#138), vérification `currentPassword` avant mise à jour profil (#139), distinction erreur réseau vs 401 dans `AuthContext` (#141). Correction assertion 404 dans `book.test.ts` (#145).
 
@@ -167,14 +167,14 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 ### 30/03/2026
 
-*Sprint 3 — Jour 1 : rebase PR #151, cache Redis Open Library (PR #155)*
+*Sprint 3 — Jour 1 : i18n setup, dark mode, fix auth Safari, cache Redis*
 
 #### Infos individuelles
 
 - **Ophélie :**
-- **Rémi :**Fais quelques recherches sur les bonnes pratiques de l'internationalisation (i18n), la localisation et configuré l'architecture nécessaire à notre projet avec next-intl. Début de contenu pour les pages home, nav, footer et book:detail ok.  
-- **Paul :**
-- **Christopher :** Rebase `fix/cleanup-expired-refresh-tokens` sur `main` + mise à jour PR #151. Cache Redis implémenté (PR #155) : `redisClient.ts` dégradation gracieuse, cache `search` TTL 1h / `getBookById` TTL 24h / `getRandomBooks` TTL 10min, `RedisStore` pour rate limiting persistant. Compte Upstash créé, `REDIS_URL` ajoutée sur Render par Paul — cache validé en prod : 2.4s → 1.08s (2x). Tests unitaires Redis 8/8 ✅ (41/41 total). PR #156 : `onDelete: Cascade` sur `refresh_token`, `.max(2000)` description, `AuthResponse` aligné sur la vraie réponse backend. 3 PRs en review : #151 #155 #156.
+- **Rémi :** Recherches sur les bonnes pratiques de l'internationalisation (i18n) et la localisation. Configuration de l'architecture `next-intl` pour le projet. Début du contenu traduit pour les pages home, nav, footer et book/:id (PR #159).
+- **Paul :** Fix authentification Safari (PR `fix/auth-cookie-safari`) : proxy Next.js via `rewrites()` dans `next.config.ts` (`/api/:path*` → backend, même domaine → cookies acceptés par Safari), passage de `sameSite: "none"` à `"lax"` sur tous les cookies (`token.ts` + `auth.controller.ts`), ajout `app.set("trust proxy", 1)` derrière le proxy Render. Correction 5 tests `library.test.ts` (schéma Zod POST `/library` : `openLibraryId` optionnel + `refine` isbn‖openLibraryId). Correction 1 test `api.test.ts` (mock double fetch `/auth/refresh` sur 401). Mise à jour guide de déploiement : section troubleshooting Safari, bloc `next.config.ts` avec proxy, sécurité cookies `lax`. Mise à jour `sprint3.md` : Redis (Upstash, cache, rate limiting) et dark mode (`next-themes`). Ajout `REDIS_URL` Upstash dans Render - cache Redis validé en prod.
+- **Christopher :** Rebase `fix/cleanup-expired-refresh-tokens` sur `main` + mise à jour PR #151. Cache Redis implémenté (PR #155) : `redisClient.ts` dégradation gracieuse, cache `search` TTL 1h / `getBookById` TTL 24h / `getRandomBooks` TTL 10min, `RedisStore` pour rate limiting persistant. Compte Upstash créé — cache validé en prod : 2.4s → 1.08s (×2). Tests unitaires Redis 8/8 ✅ (41/41 total). PR #156 : `onDelete: Cascade` sur `refresh_token`, `.max(2000)` description, `AuthResponse` aligné sur la vraie réponse backend. Dark mode implémenté (PR #160) : `next-themes`, `ThemeProvider` dans `layout.tsx`, composant `ThemeToggle`, intégration Navbar. 3 PRs mergées : #151 #155 #156.
 
 ---
 
