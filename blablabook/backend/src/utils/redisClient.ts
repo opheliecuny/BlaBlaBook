@@ -8,9 +8,11 @@ let redis: Redis | null = null;
 
 if (REDIS_URL) {
   redis = new Redis(REDIS_URL, {
-    maxRetriesPerRequest: 1,
-    lazyConnect: true,
-    enableOfflineQueue: false,
+    maxRetriesPerRequest: 3, // Limite les tentatives de reconnexion pour éviter les délais d'attente prolongés
+    tls: {}, // Active TLS si REDIS_URL commence par rediss://
+    connectTimeout: 10_000, // Timeout de connexion de 10 secondes
+    // lazyConnect: true,
+    enableOfflineQueue: true, // IMPORTANT : permet au middleware d'attendre la connexion avant de faire des requêtes
   });
 
   redis.on("error", (err) => {
@@ -38,7 +40,11 @@ export async function cacheGet(key: string): Promise<string | null> {
  * Stocke une valeur dans le cache avec un TTL en secondes.
  * Échoue silencieusement si Redis est indisponible.
  */
-export async function cacheSet(key: string, value: string, ttlSeconds: number): Promise<void> {
+export async function cacheSet(
+  key: string,
+  value: string,
+  ttlSeconds: number,
+): Promise<void> {
   if (!redis) return;
   try {
     await redis.setex(key, ttlSeconds, value);
