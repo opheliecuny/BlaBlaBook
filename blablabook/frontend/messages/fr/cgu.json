@@ -1,0 +1,44 @@
+{
+  "title": "CGU - BlaBlaBook",
+  "description": "Conditions Générales d'Utilisation (CGU) de BlaBlaBook",
+
+  "header": {
+    "title": "Conditions Générales d'Utilisation",
+    "lastUpdate": "Dernière mise à jour : 16 mars 2026"
+  },
+
+  "sections": {
+    "objet": {
+      "title": "1. Objet",
+      "content": "Les présentes Conditions Générales d'Utilisation ont pour objet l'encadrement juridique des modalités de mise à disposition du site et des services par BlaBlaBook et de définir les conditions d'accès et d'utilisation des services par l'Utilisateur."
+    },
+    "acces": {
+      "title": "2. Accès au site",
+      "content": "Le site est accessible gratuitement en tout lieu à tout Utilisateur ayant un accès à Internet. Tous les frais supportés par l'Utilisateur pour accéder au service (matériel informatique, logiciels, connexion Internet, etc.) sont à sa charge."
+    },
+    "propriete": {
+      "title": "3. Propriété Intellectuelle",
+      "content": "Les marques, logos, signes ainsi que tous les contenus du site (textes, images, son...) font l'objet d'une protection par le Code de la propriété intellectuelle et plus particulièrement par le droit d'auteur."
+    },
+    "responsabilite": {
+      "title": "4. Responsabilité",
+      "content": "Les sources des informations diffusées sur le site sont réputées fiables mais le site ne garantit pas qu'il soit exempt de défauts, d'erreurs ou d'omissions. L'éditeur ne pourra être tenu responsable de l'usage et de l'interprétation de l'information contenue dans ce site."
+    },
+    "droit": {
+      "title": "5. Droit applicable",
+      "content": "La législation française s'applique au présent contrat. En cas d'absence de résolution amiable d'un litige né entre les parties, les tribunaux français seront seuls compétents pour en connaître."
+    }
+  },
+
+  "footer": {
+    "backHome": "Retour à l'accueil",
+    "privacy": "Politique de confidentialité",
+    "legal": "Mentions légales",
+    "aria": {
+      "home": "Retour à la page d'accueil",
+      "privacy": "Voir la politique de confidentialité",
+      "legal": "Voir les mentions légales",
+      "label": "Liens légaux"
+    }
+  }
+}

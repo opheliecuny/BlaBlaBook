@@ -1,22 +1,30 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "Mentions Légales - BlaBlaBook",
-  description: "Mentions légales de BlaBlaBook",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("legal");
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default function LegalPage() {
+  const t = useTranslations("legal");
+
   return (
     <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
       <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12 dark:bg-gray-800">
         {/* Header */}
         <header className="mb-8 border-b border-border pb-8">
           <h1 className="mb-4 text-3xl font-bold tracking-tight text-foreground uppercase">
-            Mentions Légales
+            {t("header.title")}
           </h1>
           <time dateTime="2026-03-24" className="text-sm text-gray-500 italic">
-            Dernière mise à jour : 24 mars 2026
+            {t("header.lastUpdate")}
           </time>
         </header>
 
@@ -24,58 +32,46 @@ export default function LegalPage() {
         <div className="space-y-8 text-muted-foreground">
           <section>
             <h2 className="mb-3 text-xl font-medium text-foreground">
-              1. Éditeur du site
+              {t("sections.editor.title")}
             </h2>
             <p>
-              Le site <strong>BlaBlaBook</strong> est un projet réalisé dans le cadre
-              de fin de formation à l’école O’clock.
+              <strong>BlaBlaBook</strong> {t("sections.editor.content1")}
             </p>
             <p className="mt-2">
-              Équipe projet : Christopher CART, Rémi CLOUET, Ophélie CUNY, Paul SEBAS
+              {t("sections.editor.content2")}
               <br />
-              Résidence : France
+              {t("sections.editor.residence")}
               <br />
-              Responsable de publication : l’équipe projet
+              {t("sections.editor.publisher")}
             </p>
           </section>
 
           <section>
             <h2 className="mb-3 text-xl font-medium text-foreground">
-              2. Hébergement
+              {t("sections.hosting.title")}
             </h2>
-            <p>
-              Le site est hébergé par :
-            </p>
+            <p>{t("sections.hosting.content1")}</p>
             <p className="mt-2">
-              Render (ou autre hébergeur à préciser)
+              {t("sections.hosting.content2")}
               <br />
-              Les informations complètes de l’hébergeur seront renseignées dès
-              leur validation.
-            </p>
-          </section>
-
-
-          <section>
-            <h2 className="mb-3 text-xl font-medium text-foreground">
-              3. Liens externes
-            </h2>
-            <p>
-              Le site peut contenir des liens vers des sites externes. Les
-              éditeurs ne peuvent être tenus responsables du contenu de ces sites
-              tiers.
+              {t("sections.hosting.content3")}
             </p>
           </section>
 
           <section>
             <h2 className="mb-3 text-xl font-medium text-foreground">
-              4. Contact
+              {t("sections.external.title")}
             </h2>
-            <p>
-              Pour toute question, vous pouvez nous contacter à l’adresse
-              suivante :
-            </p>
+            <p>{t("sections.external.content")}</p>
+          </section>
+
+          <section>
+            <h2 className="mb-3 text-xl font-medium text-foreground">
+              {t("sections.contact.title")}
+            </h2>
+            <p>{t("sections.contact.content")}</p>
             <address className="mt-4 inline-block rounded-md border border-gray-200 bg-background p-4">
-              Email :{" "}
+              {t("sections.contact.email")} :{" "}
               <a
                 href="mailto:contact@blablabook.fr"
                 className="font-bold text-primary hover:underline"
@@ -87,21 +83,24 @@ export default function LegalPage() {
         </div>
 
         {/* Footer Links */}
-        <footer aria-label="Liens légaux" className="mt-12 flex items-center justify-between border-t border-border pt-8">
+        <footer
+          aria-label={t("footer.aria.label")}
+          className="mt-12 flex items-center justify-between border-t border-border pt-8"
+        >
           <Link
             href="/"
             className="text-sm font-medium text-primary hover:underline"
-            aria-label="Retour à la page d'accueil"
+            aria-label={t("footer.aria.home")}
           >
-            ← Retour à l&apos;accueil
+            ← {t("footer.backHome")}
           </Link>
           <div className="flex items-center space-x-4">
             <Link
               href="/privacy"
               className="text-xs text-muted-foreground hover:text-gray-700"
-              aria-label="Voir la politique de confidentialité"
+              aria-label={t("footer.aria.privacy")}
             >
-              Politique de confidentialité
+              {t("footer.privacy")}
             </Link>
             <div className="text-xs text-muted-foreground" aria-hidden="true">
               |
@@ -109,9 +108,9 @@ export default function LegalPage() {
             <Link
               href="/cgu"
               className="text-xs text-muted-foreground hover:text-gray-700"
-              aria-label="Voir les conditions générales d'utilisation"
+              aria-label={t("footer.aria.cgu")}
             >
-              CGU
+              {t("footer.cgu")}
             </Link>
           </div>
         </footer>

@@ -1,0 +1,46 @@
+{
+  "title": "Legal Notice - BlaBlaBook",
+  "description": "Legal notice of BlaBlaBook",
+
+  "header": {
+    "title": "Legal Notice",
+    "lastUpdate": "Last updated: March 24, 2026"
+  },
+
+  "sections": {
+    "editor": {
+      "title": "1. Website publisher",
+      "content1": "The BlaBlaBook website is a project created as part of a final training program at O’clock school.",
+      "content2": "Project team: Christopher CART, Rémi CLOUET, Ophélie CUNY, Paul SEBAS",
+      "residence": "Residence: France",
+      "publisher": "Publication manager: the project team"
+    },
+    "hosting": {
+      "title": "2. Hosting",
+      "content1": "The website is hosted by:",
+      "content2": "Render (or other hosting provider to be specified)",
+      "content3": "Full hosting provider details will be provided once confirmed."
+    },
+    "external": {
+      "title": "3. External links",
+      "content": "The website may contain links to external sites. The publishers cannot be held responsible for the content of these third-party sites."
+    },
+    "contact": {
+      "title": "4. Contact",
+      "content": "For any questions, you can contact us at the following address:",
+      "email": "Email"
+    }
+  },
+
+  "footer": {
+    "backHome": "Back to home",
+    "privacy": "Privacy policy",
+    "cgu": "Terms of use",
+    "aria": {
+      "label": "Legal links",
+      "home": "Back to homepage",
+      "privacy": "View privacy policy",
+      "cgu": "View terms of use"
+    }
+  }
+}

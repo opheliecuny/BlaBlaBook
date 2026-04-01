@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { addBookToLibrary } from "@/services/libraryService";
 import type { ReadingStatus } from "@/types/library";
+import { useTranslations } from "next-intl";
 
 interface Props {
   openLibraryId: string;
@@ -31,6 +32,8 @@ export default function AddToLibraryPanel({
   const [added, setAdded] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const t = useTranslations("components.addToLibraryPanel");
+
   async function handleAdd() {
     setLoading(true);
     setError(null);
@@ -47,7 +50,7 @@ export default function AddToLibraryPanel({
       });
       setAdded(true);
     } catch {
-      setError("Erreur lors de l'ajout. Veuillez réessayer.");
+      setError(t("error"));
     } finally {
       setLoading(false);
     }
@@ -57,7 +60,7 @@ export default function AddToLibraryPanel({
     <div className="flex flex-col gap-2.5 border border-border rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-4">
       <div className="flex flex-col gap-1.5">
         <label htmlFor="status" className="text-xs text-foreground">
-          Statut de lecture
+          {t("readingStatusLabel")}
         </label>
         <select
           id="status"
@@ -67,9 +70,9 @@ export default function AddToLibraryPanel({
           disabled={!isAuthenticated || added || authLoading}
           className="w-full border border-border rounded px-3 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary disabled:opacity-60"
         >
-          <option value="TO_READ">À lire</option>
-          <option value="READING">En cours</option>
-          <option value="READ">Lu</option>
+          <option value="TO_READ">{t("statusToRead")}</option>
+          <option value="READING">{t("statusReading")}</option>
+          <option value="READ">{t("statusRead")}</option>
         </select>
       </div>
 
@@ -82,10 +85,10 @@ export default function AddToLibraryPanel({
             className="w-full inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-5 py-2 text-[0.65rem] font-medium hover:bg-primary/90 whitespace-nowrap disabled:opacity-60"
           >
             {loading
-              ? "Ajout en cours..."
+              ? t("loading")
               : added
-                ? "✓ Ajouté à ma bibliothèque"
-                : "+ Ajouter à ma bibliothèque"}
+              ? t("added")
+              : t("default")}
           </button>
           {error && <p className="text-xs text-red-500">{error}</p>}
         </>
@@ -94,7 +97,7 @@ export default function AddToLibraryPanel({
           href="/login"
           className="w-full inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-5 py-2 text-[0.65rem] font-medium hover:bg-primary/90 whitespace-nowrap"
         >
-          + Ajouter à ma bibliothèque
+          {t("default")}
         </Link>
       )}
     </div>

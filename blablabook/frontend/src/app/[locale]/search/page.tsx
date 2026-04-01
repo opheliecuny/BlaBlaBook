@@ -1,6 +1,8 @@
+// src/app/[locale]/search/page.tsx
 import Link from "next/link";
 import AddToLibraryButton from "@/components/AddToLibraryButton";
 import BookCover from "@/components/BookCover";
+import { getTranslations } from "next-intl/server";
 
 interface SearchPageProps {
   searchParams: Promise<{ q?: string; page?: string }>;
@@ -37,8 +39,9 @@ async function fetchBooks(
 }
 
 export default async function SearchPage({ searchParams }: SearchPageProps) {
-  const { q, page } = await searchParams;
+  const t = await getTranslations("search"); // traduction côté serveur
 
+  const { q, page } = await searchParams;
   const hasQuery = q !== undefined;
   const query = q?.trim() ?? "";
   const currentPage = Math.max(1, parseInt(page ?? "1", 10));
@@ -53,46 +56,46 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     <div className="py-10">
       <div className="sm:max-w-7xl mx-auto px-6 sm:px-12">
 
-        <form action="/search" method="GET" className="flex flex-col sm:flex-row gap-2 mb-10 px-4 sm:px-12" role="search">
-          <label htmlFor="search-input" className="sr-only">
-            Rechercher un livre ou un auteur
-          </label>
+        {/* Formulaire de recherche */}
+        <form
+          action="/search"
+          method="GET"
+          role="search"
+          className="flex flex-col sm:flex-row gap-2 mb-10 px-4 sm:px-12"
+        >
+          <label htmlFor="search-input" className="sr-only">{t("labelSearch")}</label>
           <input
             id="search-input"
             name="q"
             type="text"
             defaultValue={q ?? ""}
-            placeholder="Rechercher un livre, un auteur..."
+            placeholder={t("placeholderSearch")}
             className="w-full border border-border rounded-full px-4 h-10 text-sm outline-none focus:border-primary"
             autoComplete="off"
           />
           <button
             type="submit"
             className="h-10 rounded-full bg-[var(--accent-alt)] hover:bg-[var(--accent-alt-hover)] text-white text-xs font-medium px-8 shrink-0 w-full sm:w-auto"
-            aria-label="Lancer la recherche"
+            aria-label={t("btnSearch")}
           >
-            Rechercher
+            {t("btnSearch")}
           </button>
         </form>
 
         <h1 className="text-2xl font-bold mb-1 px-4 sm:px-12">
-          {hasQuery
-            ? `Résultats de recherche pour "${query}"`
-            : "Recherche de livres"}
+          {hasQuery ? t("resultsFor", { query }) : t("searchBooks")}
         </h1>
 
         {!hasQuery && (
           <div className="text-center py-20">
-            <p className="text-muted-foreground">
-              Utilisez la barre de recherche pour trouver un livre.
-            </p>
+            <p className="text-muted-foreground">{t("searchPrompt")}</p>
           </div>
         )}
 
         {hasQuery && results.length > 0 && (
           <>
             <p className="text-sm text-muted-foreground mb-4 px-4 sm:px-12">
-              {total} résultat{total > 1 ? "s" : ""}
+              {t("resultsCount", { count: total })}
             </p>
 
             <ul className="grid grid-cols-2 md:grid-cols-4 divide-y divide-border/50 [&>*]:border-r [&>*]:border-border/50 [&>*:nth-child(2n)]:border-r-0 md:[&>*:nth-child(2n)]:border-r md:[&>*:nth-child(4n)]:border-r-0">
@@ -107,14 +110,13 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     />
                     <div className="flex flex-col flex-1 mt-3">
                       <h2 className="font-bold text-sm leading-snug font-playfair">{book.title}</h2>
-                      <p className="text-xs text-muted-foreground mt-1">{book.author ?? "Auteur inconnu"}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{book.author ?? t("unknownAuthor")}</p>
                       <div className="mt-auto pt-4 flex flex-col gap-2">
                         {book.category && (
                           <span className="relative group text-base border rounded px-2 py-0.5 w-fit tag-terracotta">
                             {book.category.length > 20
                               ? `${book.category.slice(0, 17)}...`
                               : book.category}
-
                             <span className="absolute hidden group-hover:block left-0 -top-8 bg-white text-gray-800 text-xs px-2 py-1 rounded shadow-md border whitespace-nowrap z-10">
                               {book.category}
                             </span>
@@ -124,9 +126,9 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                           <Link
                             href={`/book/${bookId}`}
                             className="flex items-center justify-center rounded-md bg-[var(--color-btn-subtle)] hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] py-1.5 text-xs font-medium w-full sm:grow dark:bg-gray-800"
-                            aria-label={`Voir le détail du livre ${book.title}`}
+                            aria-label={t("viewBookDetails", { title: book.title })}
                           >
-                            Voir le détail
+                            {t("viewDetails")}
                           </Link>
                           <AddToLibraryButton
                             bookId={bookId}
@@ -151,26 +153,18 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                   href={`/search?q=${encodeURIComponent(query)}&page=${Math.max(1, currentPage - 1)}`}
                   className="inline-flex items-center gap-2 border border-primary rounded px-4 h-8 text-xs font-medium hover:bg-primary/5"
                 >
-                  <svg width="10" height="13" viewBox="0 0 12 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-primary" aria-hidden="true">
-                    <polyline points="6,1 1,5 6,9" />
-                    <line x1="1" y1="5" x2="11" y2="5" />
-                  </svg>
-                  <span className="text-foreground">Précédent</span>
+                  <span className="text-foreground">{t("previous")}</span>
                 </Link>
 
                 <span className="text-xs text-muted-foreground">
-                  Page {currentPage} / {totalPages}
+                  {t("pageOf", { current: currentPage, total: totalPages })}
                 </span>
 
                 <Link
                   href={`/search?q=${encodeURIComponent(query)}&page=${Math.min(totalPages, currentPage + 1)}`}
                   className="inline-flex items-center gap-2 border border-primary rounded px-4 h-8 text-xs font-medium hover:bg-primary/5"
                 >
-                  <span className="text-foreground">Suivant</span>
-                  <svg width="10" height="13" viewBox="0 0 12 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-primary" aria-hidden="true">
-                    <polyline points="6,1 11,5 6,9" />
-                    <line x1="11" y1="5" x2="1" y2="5" />
-                  </svg>
+                  <span className="text-foreground">{t("next")}</span>
                 </Link>
               </nav>
             )}
@@ -179,12 +173,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         {hasQuery && results.length === 0 && (
           <div className="text-center py-20">
-            <p className="text-lg font-medium mb-2">
-              Aucun résultat pour &quot;{query}&quot;
-            </p>
-            <p className="text-sm text-muted-foreground">
-              Essayez avec d&apos;autres mots-clés ou vérifiez l&apos;orthographe.
-            </p>
+            <p className="text-lg font-medium mb-2">{t("noResults", { query })}</p>
+            <p className="text-sm text-muted-foreground">{t("noResultsHint")}</p>
           </div>
         )}
 

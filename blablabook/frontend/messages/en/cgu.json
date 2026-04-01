@@ -1,0 +1,44 @@
+{
+  "title": "Terms of Use - BlaBlaBook",
+  "description": "Terms of Use of BlaBlaBook",
+
+  "header": {
+    "title": "Terms of Use",
+    "lastUpdate": "Last updated: March 16, 2026"
+  },
+
+  "sections": {
+    "objet": {
+      "title": "1. Purpose",
+      "content": "These Terms of Use define the legal framework for providing the website and services by BlaBlaBook and outline the conditions for accessing and using the services by the User."
+    },
+    "acces": {
+      "title": "2. Access to the website",
+      "content": "The website is accessible free of charge from anywhere to any User with Internet access. All costs incurred by the User to access the service (hardware, software, Internet connection, etc.) are their responsibility."
+    },
+    "propriete": {
+      "title": "3. Intellectual Property",
+      "content": "Trademarks, logos, signs, and all content on the site (texts, images, sounds, etc.) are protected by intellectual property law, in particular copyright law."
+    },
+    "responsabilite": {
+      "title": "4. Liability",
+      "content": "The sources of information provided on the site are considered reliable, but the site does not guarantee that it is free from defects, errors, or omissions. The publisher cannot be held responsible for the use or interpretation of the information contained on this site."
+    },
+    "droit": {
+      "title": "5. Applicable law",
+      "content": "French law applies to this contract. In the absence of an amicable resolution of a dispute between the parties, French courts shall have exclusive jurisdiction."
+    }
+  },
+
+  "footer": {
+    "backHome": "Back to home",
+    "privacy": "Privacy policy",
+    "legal": "Legal notice",
+    "aria": {
+      "home": "Back to homepage",
+      "privacy": "View privacy policy",
+      "legal": "View legal notice",
+      "label": "Legal links"
+    }
+  }
+}

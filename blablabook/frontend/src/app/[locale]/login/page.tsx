@@ -8,10 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/contexts/AuthContext";
 import { login } from "@/services/authService";
+import { useTranslations } from "next-intl";
 
 export default function LoginPage() {
   const router = useRouter();
   const { login: loginUser } = useAuth();
+  const t = useTranslations("login");
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -26,24 +28,22 @@ export default function LoginPage() {
     try {
       const response = await login({ email, password });
 
-      // Stocker les données utilisateur (le token est dans un cookie httpOnly)
       loginUser({
         id: response.id,
         email: response.email,
         username: response.username || email,
       });
 
-      // Rediriger vers la bibliothèque
       router.push("/library");
     } catch (err) {
       if (err instanceof Error) {
         if (err.message.includes("401")) {
-          setError("Email ou mot de passe incorrect");
+          setError(t("error.invalidCredentials"));
         } else {
-          setError("Impossible de se connecter pour le moment. Réessayez plus tard.");
+          setError(t("error.generic"));
         }
       } else {
-        setError("Une erreur inattendue est survenue.");
+        setError(t("error.unknown"));
       }
     } finally {
       setIsLoading(false);
@@ -54,10 +54,10 @@ export default function LoginPage() {
     <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center px-4 py-10">
       <section aria-labelledby="login-title" className="border-border w-full max-w-md rounded-xl border bg-white p-10 shadow-xl dark:bg-gray-900">
         <h1 id="login-title" className="mb-1 text-center text-2xl font-bold uppercase">
-          Connexion
+          {t("title")}
         </h1>
         <p className="text-muted-foreground mb-8 text-center text-sm">
-          Veuillez vous connecter pour accéder à votre compte BlaBlaBook.
+          {t("subtitle")}
         </p>
 
         <form onSubmit={handleLogin} className="flex flex-col gap-5" aria-labelledby="login-title">
@@ -68,12 +68,12 @@ export default function LoginPage() {
           )}
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="email">Adresse mail</Label>
+            <Label htmlFor="email">{t("emailLabel")}</Label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="nom@exemple.com"
+              placeholder={t("emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -82,12 +82,12 @@ export default function LoginPage() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="password">Mot de passe</Label>
+            <Label htmlFor="password">{t("passwordLabel")}</Label>
             <Input
               id="password"
               name="password"
               type="password"
-              placeholder="••••••"
+              placeholder={t("passwordPlaceholder")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -101,14 +101,14 @@ export default function LoginPage() {
             disabled={isLoading}
             aria-busy={isLoading}
           >
-            {isLoading ? "Connexion en cours..." : "Se connecter"}
+            {isLoading ? t("loading") : t("submit")}
           </Button>
         </form>
 
         <p className="text-muted-foreground mt-6 text-center text-sm">
-          Pas encore de compte ?{" "}
-          <Link href="/register" className="text-primary hover:underline" aria-label="Créer un compte BlaBlaBook">
-            Créer un compte
+          {t("noAccount")}{" "}
+          <Link href="/register" className="text-primary hover:underline" aria-label={t("registerLinkLabel")}>
+            {t("registerLinkText")}
           </Link>
         </p>
       </section>

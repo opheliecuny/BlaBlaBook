@@ -1,0 +1,17 @@
+{
+  "labelSearch": "Rechercher un livre ou un auteur",
+  "placeholderSearch": "Rechercher un livre, un auteur...",
+  "btnSearch": "Rechercher",
+  "searchBooks": "Recherche de livres",
+  "searchPrompt": "Utilisez la barre de recherche pour trouver un livre.",
+  "resultsFor": "Résultats de recherche pour \"{query}\"",
+  "resultsCount": "{count} résultat{count, plural, one {} other {s}}",
+  "unknownAuthor": "Auteur inconnu",
+  "viewDetails": "Voir les détails",
+  "viewBookDetails": "Voir les détails de {title}",
+  "previous": "Précédent",
+  "next": "Suivant",
+  "pageOf": "Page {current} / {total}",
+  "noResults": "Aucun résultat pour \"{query}\"",
+  "noResultsHint": "Essayez avec d'autres mots-clés ou vérifiez l'orthographe."
+}

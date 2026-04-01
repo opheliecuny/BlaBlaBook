@@ -1,0 +1,46 @@
+{
+  "title": "Mentions Légales - BlaBlaBook",
+  "description": "Mentions légales de BlaBlaBook",
+
+  "header": {
+    "title": "Mentions Légales",
+    "lastUpdate": "Dernière mise à jour : 24 mars 2026"
+  },
+
+  "sections": {
+    "editor": {
+      "title": "1. Éditeur du site",
+      "content1": "Le site BlaBlaBook est un projet réalisé dans le cadre de fin de formation à l’école O’clock.",
+      "content2": "Équipe projet : Christopher CART, Rémi CLOUET, Ophélie CUNY, Paul SEBAS",
+      "residence": "Résidence : France",
+      "publisher": "Responsable de publication : l’équipe projet"
+    },
+    "hosting": {
+      "title": "2. Hébergement",
+      "content1": "Le site est hébergé par :",
+      "content2": "Render (ou autre hébergeur à préciser)",
+      "content3": "Les informations complètes de l’hébergeur seront renseignées dès leur validation."
+    },
+    "external": {
+      "title": "3. Liens externes",
+      "content": "Le site peut contenir des liens vers des sites externes. Les éditeurs ne peuvent être tenus responsables du contenu de ces sites tiers."
+    },
+    "contact": {
+      "title": "4. Contact",
+      "content": "Pour toute question, vous pouvez nous contacter à l’adresse suivante :",
+      "email": "Email"
+    }
+  },
+
+  "footer": {
+    "backHome": "Retour à l'accueil",
+    "privacy": "Politique de confidentialité",
+    "cgu": "CGU",
+    "aria": {
+      "label": "Liens légaux",
+      "home": "Retour à la page d'accueil",
+      "privacy": "Voir la politique de confidentialité",
+      "cgu": "Voir les conditions générales d'utilisation"
+    }
+  }
+}

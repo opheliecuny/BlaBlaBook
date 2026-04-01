@@ -1,0 +1,45 @@
+{
+  "title": "Politique de Confidentialité",
+  "lastUpdate": "Dernière mise à jour : 24 mars 2026",
+  "intro": "La présente politique de confidentialité décrit comment l'application {strong} collecte, utilise et protège les données personnelles de ses utilisateurs.",
+  "section1": {
+    "title": "1. Données collectées",
+    "p1": "Nous collectons les informations suivantes :",
+    "li1": "Adresse email (pour l'authentification)",
+    "li2": "Pseudo ou nom d'utilisateur",
+    "li3": "Mot de passe (haché de manière sécurisée)",
+    "li4": "Données de bibliothèque : livres, avis, statuts de lecture",
+    "p2": "Nous utilisons également des cookies pour gérer votre session et maintenir votre connexion sécurisée."
+  },
+  "section2": {
+    "title": "2. Finalité du traitement",
+    "p1": "Les données collectées sont utilisées uniquement pour :",
+    "li1": "La création et la gestion de votre compte utilisateur",
+    "li2": "La sauvegarde et la consultation de votre bibliothèque personnelle",
+    "li3": "L’amélioration et le bon fonctionnement du service"
+  },
+  "section3": {
+    "title": "3. Services tiers",
+    "p1": "Nous utilisons l'API OpenLibrary pour enrichir les informations des livres. Aucune de vos données personnelles n'est transmise à ce service."
+  },
+  "section4": {
+    "title": "4. Sécurité",
+    "p1": "La sécurité de vos données est notre priorité. Nous mettons en œuvre des mesures techniques pour protéger vos informations personnelles contre tout accès non autorisé."
+  },
+  "section5": {
+    "title": "5. Durée de conservation",
+    "p1": "Vos données sont conservées tant que votre compte est actif. Elles sont supprimées immédiatement après la fermeture de votre compte."
+  },
+  "section6": {
+    "title": "6. Vos droits (RGPD)",
+    "p1": "Conformément au RGPD, vous disposez d'un droit d'accès, de rectification, de suppression et de portabilité de vos données. Vous pouvez également limiter ou vous opposer au traitement de vos données.",
+    "p2": "Pour exercer vos droits, contactez-nous à :",
+    "contactEmail": "Email :",
+    "cnil": "Vous pouvez également contacter la"
+  },
+  "footer": {
+    "home": "← Retour à l'accueil",
+    "cgu": "CGU",
+    "legal": "Mentions Légales"
+  }
+}

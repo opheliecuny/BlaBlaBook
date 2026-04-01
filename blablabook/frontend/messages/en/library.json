@@ -1,0 +1,42 @@
+{
+  "title": "My library",
+  "greeting": "Hello {username} — {count} book{plural} in your library",
+  "addBook": "Add a book",
+  "filters": {
+    "all": "All ({count})",
+    "toRead": "To read ({count})",
+    "reading": "Reading ({count})",
+    "read": "Read ({count})"
+  },
+  "stats": {
+    "toRead": "To read",
+    "reading": "Reading",
+    "read": "Read"
+  },
+  "status": {
+    "TO_READ": "To read",
+    "READING": "Reading",
+    "READ": "Read"
+  },
+  "loading": "Loading...",
+  "authError": "Unable to verify your session. Check your connection.",
+  "retry": "Retry",
+  "empty": "No books found in this category.",
+  "explore": "Browse catalog",
+  "delete": {
+    "title": "Delete this book?",
+    "description": "The book \"{title}\" will be permanently removed from your library.",
+    "confirm": "Delete",
+    "cancel": "Cancel"
+  },
+  "actions": {
+    "view": "View details",
+    "delete": "Delete {title}"
+  },
+  "authorUnknown": "Unknown author",
+  "unknownTitle": "This book",
+  "statusUpdated": "Status updated.",
+  "statusError": "Failed to update status.",
+  "deleteSuccess": "\"{title}\" removed from your library.",
+  "deleteError": "Failed to delete the book."
+}

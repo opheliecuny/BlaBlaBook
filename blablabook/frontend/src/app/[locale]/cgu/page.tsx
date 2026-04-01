@@ -1,112 +1,97 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { getTranslations } from "next-intl/server";
 
-export const metadata: Metadata = {
-  title: "CGU - BlaBlaBook",
-  description: "Conditions Générales d'Utilisation (CGU) de BlaBlaBook",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("cgu");
+
+  return {
+    title: t("title"),
+    description: t("description"),
+  };
+}
 
 export default function CGUPage() {
+  const t = useTranslations("cgu");
+
   return (
     <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
       <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm sm:p-10 md:p-12 dark:bg-gray-800">
         {/* Header */}
         <header className="mb-8 border-b border-border pb-8">
           <h1 className="mb-4 text-3xl font-bold tracking-tight text-foreground uppercase">
-            Conditions Générales d{"'"}Utilisation
+            {t("header.title")}
           </h1>
           <time dateTime="2026-03-16" className="text-sm text-gray-500 italic">
-            Dernière mise à jour : 16 mars 2026
+            {t("header.lastUpdate")}
           </time>
         </header>
 
         {/* Content */}
         <div className="space-y-8 text-muted-foreground">
           <section aria-labelledby="section-objet">
-            <h2 id="section-objet" className="mb-3 text-xl font-medium text-foreground">1. Objet</h2>
-            <p>
-              Les présentes Conditions Générales d{"'"}Utilisation ont pour
-              objet l{"'"}encadrement juridique des modalités de mise à
-              disposition du site et des services par{" "}
-              <strong>BlaBlaBook</strong> et de définir les conditions d{"'"}
-              accès et d{"'"}utilisation des services par l{"'"}Utilisateur.
-            </p>
+            <h2 id="section-objet" className="mb-3 text-xl font-medium text-foreground">
+              {t("sections.objet.title")}
+            </h2>
+            <p>{t("sections.objet.content")}</p>
           </section>
 
           <section aria-labelledby="section-acces">
             <h2 id="section-acces" className="mb-3 text-xl font-medium text-foreground">
-              2. Accès au site
+              {t("sections.acces.title")}
             </h2>
-            <p>
-              Le site est accessible gratuitement en tout lieu à tout
-              Utilisateur ayant un accès à Internet. Tous les frais supportés
-              par l{"'"}Utilisateur pour accéder au service (matériel
-              informatique, logiciels, connexion Internet, etc.) sont à sa
-              charge.
-            </p>
+            <p>{t("sections.acces.content")}</p>
           </section>
 
           <section aria-labelledby="section-propriete">
             <h2 id="section-propriete" className="mb-3 text-xl font-medium text-foreground">
-              3. Propriété Intellectuelle
+              {t("sections.propriete.title")}
             </h2>
-            <p>
-              Les marques, logos, signes ainsi que tous les contenus du site
-              (textes, images, son...) font l{"'"}objet d{"'"}une protection par
-              le Code de la propriété intellectuelle et plus particulièrement
-              par le droit d{"'"}auteur.
-            </p>
+            <p>{t("sections.propriete.content")}</p>
           </section>
 
           <section aria-labelledby="section-responsabilite">
             <h2 id="section-responsabilite" className="mb-3 text-xl font-medium text-foreground">
-              4. Responsabilité
+              {t("sections.responsabilite.title")}
             </h2>
-            <p>
-              Les sources des informations diffusées sur le site sont réputées
-              fiables mais le site ne garantit pas qu{"'"}il soit exempt de
-              défauts, d{"'"}erreurs ou d{"'"}omissions. L{"'"}éditeur ne pourra
-              être tenu responsable de l{"'"}usage et de l{"'"}interprétation de
-              l{"'"}information contenue dans ce site.
-            </p>
+            <p>{t("sections.responsabilite.content")}</p>
           </section>
 
           <section aria-labelledby="section-droit">
             <h2 id="section-droit" className="mb-3 text-xl font-medium text-foreground">
-              5. Droit applicable
+              {t("sections.droit.title")}
             </h2>
-            <p>
-              La législation française s{"'"}applique au présent contrat. En cas
-              d{"'"}absence de résolution amiable d{"'"}un litige né entre les
-              parties, les tribunaux français seront seuls compétents pour en
-              connaître.
-            </p>
+            <p>{t("sections.droit.content")}</p>
           </section>
         </div>
 
         {/* Footer links */}
-        <footer aria-label="Liens légaux" className="mt-12 flex flex-col items-center gap-3 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between">
+        <footer
+          aria-label={t("footer.aria.label")}
+          className="mt-12 flex flex-col items-center gap-3 border-t border-border pt-8 sm:flex-row sm:items-center sm:justify-between"
+        >
           <Link
             href="/"
             className="text-sm font-medium text-primary hover:underline"
-            aria-label="Retour à la page d'accueil"
+            aria-label={t("footer.aria.home")}
           >
-            ← Retour à l{"'"}accueil
+            ← {t("footer.backHome")}
           </Link>
           <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:divide-x sm:divide-gray-200">
             <Link
               href="/privacy"
               className="text-sm text-muted-foreground hover:text-gray-700 sm:pr-4"
-              aria-label="Voir la politique de confidentialité"
+              aria-label={t("footer.aria.privacy")}
             >
-              Politique de confidentialité
+              {t("footer.privacy")}
             </Link>
             <Link
               href="/legal"
               className="text-sm text-muted-foreground hover:text-gray-700 sm:pl-4"
-              aria-label="Voir les mentions légales"
+              aria-label={t("footer.aria.legal")}
             >
-              Mentions légales
+              {t("footer.legal")}
             </Link>
           </div>
         </footer>

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useTranslations } from "next-intl";
 
 export default function Footer() {
-  const t = useTranslations("footer");
+  const t = useTranslations("components.footer");
 
   return (
     <footer className="border-border bg-background mt-auto border-t">

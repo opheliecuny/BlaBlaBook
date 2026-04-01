@@ -28,6 +28,7 @@ import { getLibrary, updateReadingStatus, deleteBookFromLibrary } from "@/servic
 import type { ReadingStatus } from "@/types/library";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
+import { useTranslations } from "next-intl";
 
 interface DisplayBook {
   bookId: string;
@@ -39,6 +40,7 @@ interface DisplayBook {
 }
 
 export default function LibraryPage() {
+  const t = useTranslations("library");
   const router = useRouter();
   const [activeFilter, setActiveFilter] = useState<"ALL" | ReadingStatus>("ALL");
   const [books, setBooks] = useState<DisplayBook[]>([]);
@@ -48,7 +50,7 @@ export default function LibraryPage() {
 
   useEffect(() => {
     if (authLoading) return;
-    if (authError) return; // erreur réseau — on ne redirige pas, on affiche un message
+    if (authError) return;
     if (!isAuthenticated) {
       router.replace("/login");
       return;
@@ -60,7 +62,7 @@ export default function LibraryPage() {
           items.map((item) => ({
             bookId: item.id,
             title: item.title,
-            author: item.author ?? "Auteur inconnu",
+            author: item.author ?? t("authorUnknown"),
             cover: item.thumbnail ?? "/default-cover.png",
             status: item.status,
             openLibraryId: item.openLibraryId,
@@ -69,7 +71,7 @@ export default function LibraryPage() {
       })
       .catch(console.error)
       .finally(() => setIsLoading(false));
-  }, [authLoading, isAuthenticated, authError, router]);
+  }, [authLoading, isAuthenticated, authError, router, t]);
 
   const stats = useMemo(() => ({
     toRead: books.filter((b) => b.status === "TO_READ").length,
@@ -83,8 +85,8 @@ export default function LibraryPage() {
   if (authError) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
-        <p className="text-muted-foreground text-sm">Impossible de vérifier votre session. Vérifiez votre connexion.</p>
-        <Button variant="outline" onClick={() => window.location.reload()}>Réessayer</Button>
+        <p className="text-muted-foreground text-sm">{t("authError")}</p>
+        <Button variant="outline" onClick={() => window.location.reload()}>{t("retry")}</Button>
       </div>
     );
   }
@@ -94,7 +96,7 @@ export default function LibraryPage() {
   if (isLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <p className="text-muted-foreground text-sm">Chargement...</p>
+        <p className="text-muted-foreground text-sm">{t("loading")}</p>
       </div>
     );
   }
@@ -108,10 +110,10 @@ export default function LibraryPage() {
     ));
     try {
       await updateReadingStatus(bookId, { status: newStatus });
-      toast.success("Statut mis à jour.", { position: "bottom-right" });
+      toast.success(t("statusUpdated"), { position: "bottom-right" });
     } catch {
       setBooks(previous);
-      toast.error("Impossible de mettre à jour le statut.", { position: "bottom-right" });
+      toast.error(t("statusError"), { position: "bottom-right" });
     }
   };
 
@@ -121,17 +123,17 @@ export default function LibraryPage() {
     setBooks((prev) => prev.filter((book) => book.bookId !== bookId));
     try {
       await deleteBookFromLibrary(bookId);
-      toast.success(`"${deleted?.title}" supprimé de votre bibliothèque.`, { position: "bottom-right" });
+      toast.success(t("deleteSuccess", { title: deleted?.title ?? t("unknownTitle")}), { position: "bottom-right" });
     } catch {
       setBooks(previous);
-      toast.error("Impossible de supprimer le livre.", { position: "bottom-right" });
+      toast.error(t("deleteError"), { position: "bottom-right" });
     }
   };
 
   const STATUS_LABELS: Record<ReadingStatus, string> = {
-    TO_READ: "À lire",
-    READING: "En cours",
-    READ: "Lu",
+    TO_READ: t("status.TO_READ"),
+    READING: t("status.READING"),
+    READ: t("status.READ"),
   };
 
   return (
@@ -140,39 +142,43 @@ export default function LibraryPage() {
       {/* Header */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Ma bibliothèque</h1>
+          <h1 className="text-3xl font-bold">{t("title")}</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            Bonjour {user?.username} — {stats.total} livre{stats.total > 1 ? "s" : ""} dans votre bibliothèque
+            {t("greeting", {
+              username: user?.username ?? "",
+              count: stats.total,
+              plural: stats.total > 1 ? "s" : ""
+            })}
           </p>
         </div>
         <Link href="/search">
           <Button className="gap-2 shadow-sm">
             <Plus size={18} aria-hidden="true" />
-            Ajouter un livre
+            {t("addBook")}
           </Button>
         </Link>
       </div>
 
       {/* Stats Cards */}
       <div role="group" aria-label="Statistiques de lecture" className="mb-8 grid grid-cols-3 gap-3 sm:gap-4">
-        <StatCard icon={<Bookmark className="text-amber-500" size={18} aria-hidden="true" />} label="À lire" count={stats.toRead} />
-        <StatCard icon={<BookOpen className="text-blue-500" size={18} aria-hidden="true" />} label="En cours" count={stats.reading} />
-        <StatCard icon={<Check className="text-emerald-500" size={18} aria-hidden="true" />} label="Lus" count={stats.read} />
+        <StatCard icon={<Bookmark className="text-amber-500" size={18} aria-hidden="true" />} label={t("stats.toRead")} count={stats.toRead} />
+        <StatCard icon={<BookOpen className="text-blue-500" size={18} aria-hidden="true" />} label={t("stats.reading")} count={stats.reading} />
+        <StatCard icon={<Check className="text-emerald-500" size={18} aria-hidden="true" />} label={t("stats.read")} count={stats.read} />
       </div>
 
       {/* Filtres */}
       <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
         <Button variant={activeFilter === "ALL" ? "default" : "secondary"} onClick={() => setActiveFilter("ALL")} className="h-9 rounded-full px-5 min-w-max">
-          Tous ({stats.total})
+          {t("filters.all", { count: stats.total })}
         </Button>
         <Button variant={activeFilter === "TO_READ" ? "default" : "secondary"} onClick={() => setActiveFilter("TO_READ")} className="h-9 rounded-full px-5 min-w-max">
-          À lire ({stats.toRead})
+          {t("filters.toRead", { count: stats.toRead })}
         </Button>
         <Button variant={activeFilter === "READING" ? "default" : "secondary"} onClick={() => setActiveFilter("READING")} className="h-9 rounded-full px-5 min-w-max">
-          En cours ({stats.reading})
+          {t("filters.reading", { count: stats.reading })}
         </Button>
         <Button variant={activeFilter === "READ" ? "default" : "secondary"} onClick={() => setActiveFilter("READ")} className="h-9 rounded-full px-5 min-w-max">
-          Lus ({stats.read})
+          {t("filters.read", { count: stats.read })}
         </Button>
       </div>
 
@@ -187,7 +193,6 @@ export default function LibraryPage() {
               className={`
         flex flex-col px-4 py-6 bg-background
         border-b border-gray-200/50
-
         [&:nth-last-child(-n+2)]:border-b-0
         lg:[&:nth-last-child(-n+3)]:border-b-0
         xl:[&:nth-last-child(-n+4)]:border-b-0
@@ -204,7 +209,7 @@ export default function LibraryPage() {
                 <AlertDialog>
                   <AlertDialogTrigger
                     className="absolute top-2 right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm"
-                    aria-label={`Supprimer ${book.title}`}
+                    aria-label={t("actions.delete", { title: book.title })}
                   >
                     <Trash2 className="h-4 w-4" aria-hidden="true" />
                   </AlertDialogTrigger>
@@ -212,19 +217,21 @@ export default function LibraryPage() {
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
-                        Supprimer ce livre ?
+                        {t("delete.title")}
                       </AlertDialogTitle>
                       <AlertDialogDescription>
-                        Le livre &quot;{book.title}&quot; sera supprimé définitivement de votre bibliothèque.
+                        {t("delete.description", { title: book.title })}
                       </AlertDialogDescription>
                     </AlertDialogHeader>
 
                     <AlertDialogFooter>
-                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogCancel>
+                        {t("delete.cancel")}
+                      </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={() => handleDeleteBook(book.bookId)}
                       >
-                        Supprimer
+                        {t("delete.confirm")}
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
@@ -236,23 +243,22 @@ export default function LibraryPage() {
 
               <div className="mt-auto space-y-3">
                 <Select value={book.status} onValueChange={(value) => handleStatusChange(book.bookId, value as ReadingStatus)}>
-                  {/* Label uniquement pour les lecteurs d'écran */}
                   <label htmlFor={`status-${book.bookId}`} className="sr-only">
-                    Statut de lecture pour {book.title}
+                    {t("status.[status]")}
                   </label>
                   <SelectTrigger className="bg-background w-full">
                     <SelectValue>{STATUS_LABELS[book.status]}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="TO_READ">À lire</SelectItem>
-                    <SelectItem value="READING">En cours</SelectItem>
-                    <SelectItem value="READ">Lu</SelectItem>
+                    <SelectItem value="TO_READ">{t("status.TO_READ")}</SelectItem>
+                    <SelectItem value="READING">{t("status.READING")}</SelectItem>
+                    <SelectItem value="READ">{t("status.READ")}</SelectItem>
                   </SelectContent>
                 </Select>
 
                 <Link href={`/book/${book.openLibraryId}`}>
-                  <Button className="w-full active:scale-95 active:bg-gray-100 transition-all hover:bg-[#D1D5DB] dark:bg-gray-800 dark:hover:bg-gray-700" variant="secondary" aria-label={`Voir le détail de ${book.title}`}>
-                    Voir le détail
+                  <Button className="w-full active:scale-95 active:bg-gray-100 transition-all hover:bg-[#D1D5DB] dark:bg-gray-800 dark:hover:bg-gray-700" variant="secondary" aria-label={t("actions.view")}>
+                    {t("actions.view")}
                   </Button>
                 </Link>
               </div>
@@ -285,12 +291,13 @@ function StatCard({ icon, label, count }: {
 
 // EmptyState
 function EmptyState() {
+  const t = useTranslations("library");
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed py-20 text-center">
       <Search className="text-muted-foreground mb-4 h-10 w-10 opacity-20" aria-hidden="true" />
-      <p className="text-muted-foreground font-medium">Aucun livre trouvé dans cette catégorie.</p>
+      <p className="text-muted-foreground font-medium">{t("empty")}</p>
       <Link href="/search" className="mt-4">
-        <Button variant="outline" size="sm">Explorer le catalogue</Button>
+        <Button variant="outline" size="sm">{t("explore")}</Button>
       </Link>
     </div>
   );

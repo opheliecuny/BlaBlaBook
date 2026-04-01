@@ -1,0 +1,10 @@
+{
+  "readingStatusLabel": "Reading status",
+  "statusToRead": "To read",
+  "statusReading": "Reading",
+  "statusRead": "Read",
+  "loading": "Adding...",
+  "added": "✓ Added to my library",
+  "default": "+ Add to my library",
+  "error": "Error while adding. Please retry."
+}

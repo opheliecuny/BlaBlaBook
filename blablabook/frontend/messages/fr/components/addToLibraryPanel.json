@@ -1,0 +1,10 @@
+{
+  "readingStatusLabel": "Statut de lecture",
+  "statusToRead": "À lire",
+  "statusReading": "En cours",
+  "statusRead": "Lu",
+  "loading": "Ajout en cours...",
+  "added": "✓ Ajouté à ma bibliothèque",
+  "default": "+ Ajouter à ma bibliothèque",
+  "error": "Erreur lors de l'ajout. Veuillez réessayer."
+}

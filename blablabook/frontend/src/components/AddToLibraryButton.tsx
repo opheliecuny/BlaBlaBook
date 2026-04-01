@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
 import { addBookToLibrary } from "@/services/libraryService";
+import { useTranslations } from "next-intl";
 
 interface Props {
   bookId: string;
@@ -29,6 +30,8 @@ export default function AddToLibraryButton({
   const [loading, setLoading] = useState(false);
   const [added, setAdded] = useState(false);
   const [error, setError] = useState(false);
+
+  const t = useTranslations("components.addToLibraryButton");
 
   async function handleClick() {
     if (!isAuthenticated) {
@@ -69,23 +72,23 @@ export default function AddToLibraryButton({
           : "bg-primary text-primary-foreground hover:bg-primary/90"
       }`}
     >
-      {loading ? (
-        "..."
-      ) : added ? (
-        "✓ Ajouté"
-      ) : error ? (
-        "Erreur — réessayer"
-      ) : (
-        <>
-          <span
-            className="text-sm font-black leading-none mr-1.5"
-            style={{ WebkitTextStroke: "1px currentColor" }}
-          >
-            +
-          </span>
-          Biblio
-        </>
-      )}
+      {loading
+        ? t("loading")
+        : added
+        ? t("added")
+        : error
+        ? t("error")
+        : (
+          <>
+            <span
+              className="text-sm font-black leading-none mr-1.5"
+              style={{ WebkitTextStroke: "1px currentColor" }}
+            >
+              +
+            </span>
+            {t("default")}
+          </>
+        )}
     </button>
   );
 }

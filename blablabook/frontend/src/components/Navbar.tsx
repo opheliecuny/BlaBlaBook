@@ -19,10 +19,11 @@ import { useTranslations } from "next-intl";
 const ThemeToggle = dynamic(() => import("./ThemeToggle"), { ssr: false });
 
 export default function Navbar() {
-  const t = useTranslations("navbar");
+  const t = useTranslations("components.navbar");
   const { isAuthenticated, logout } = useAuth();
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const LanguageToggle = dynamic(() => import("./LanguageToggle"), { ssr: false });
 
   async function handleLogout() {
     await logoutService();
@@ -71,12 +72,14 @@ export default function Navbar() {
             </>
           )}
         </nav>
-        <div className="hidden sm:block">
+        <div className="hidden sm:flex items-center gap-3">
+          <LanguageToggle />
           <ThemeToggle />
         </div>
 
         {/* Mobile menu */}
         <div className="ml-auto flex items-center gap-3 sm:hidden">
+          <LanguageToggle/>
           <ThemeToggle />
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger aria-label="Ouvrir le menu">

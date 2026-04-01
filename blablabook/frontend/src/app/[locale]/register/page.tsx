@@ -10,8 +10,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/contexts/AuthContext";
 import { register } from "@/services/authService";
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function RegisterPage() {
+  const t = useTranslations("register");
   const router = useRouter();
   const { login: loginUser } = useAuth();
 
@@ -30,12 +32,12 @@ export default function RegisterPage() {
     setError("");
 
     if (password !== confirmPassword) {
-      setError("Les mots de passe ne correspondent pas");
+      setError(t("errors.passwordMismatch"));
       return;
     }
 
     if (!acceptTerms) {
-      setError("Vous devez accepter les conditions d'utilisation");
+      setError(t("errors.acceptTerms"));
       return;
     }
 
@@ -49,20 +51,18 @@ export default function RegisterPage() {
         username,
       });
 
-      // Stocker les données utilisateur (le token est dans un cookie httpOnly)
       loginUser({
         id: response.id,
         email: response.email,
         username: response.username || username,
       });
 
-      // Rediriger vers la bibliothèque
       router.push("/library");
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("Une erreur est survenue lors de l'inscription");
+        setError(t("errors.generic"));
       }
     } finally {
       setIsLoading(false);
@@ -80,10 +80,10 @@ export default function RegisterPage() {
     <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center px-4 py-10">
       <div className="border-border w-full max-w-md rounded-xl border bg-white p-10 shadow-xl dark:bg-gray-900">
         <h1 className="mb-1 text-center text-2xl font-bold uppercase">
-          Créer un compte
+          {t("title")}
         </h1>
         <p className="text-muted-foreground mb-8 text-center text-sm">
-          Rejoignez la communauté de lecteurs BlaBlaBook
+          {t("subtitle")}
         </p>
 
         <form onSubmit={handleRegister} className="flex flex-col gap-5">
@@ -98,12 +98,12 @@ export default function RegisterPage() {
           )}
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="username">Nom d{"'"}utilisateur</Label>
+            <Label htmlFor="username">{t("username")}</Label>
             <Input
               id="username"
               name="username"
               type="text"
-              placeholder="Entrez votre nom d'utilisateur"
+              placeholder={t("usernamePlaceholder")}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
@@ -112,12 +112,12 @@ export default function RegisterPage() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="email">Adresse mail</Label>
+            <Label htmlFor="email">{t("email")}</Label>
             <Input
               id="email"
               name="email"
               type="email"
-              placeholder="nom@exemple.com"
+              placeholder={t("emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
@@ -126,32 +126,33 @@ export default function RegisterPage() {
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="password">Mot de passe</Label>
-
+            <Label htmlFor="password">{t("password")}</Label>
             <div className="relative">
               <Input
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="••••••"
+                placeholder={t("passwordPlaceholder")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoComplete="new-password"
                 required
                 className="pr-10"
               />
-
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                aria-label={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                aria-label={
+                  showPassword
+                    ? t("aria.hidePassword")
+                    : t("aria.showPassword")
+                }
               >
                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
 
-            {/* Indicateur de force */}
             <div className="h-1 w-full bg-gray-200 rounded mt-2 dark:bg-gray-700" aria-hidden="true">
               <div
                 className={`h-full transition-all rounded ${score <= 1
@@ -165,43 +166,36 @@ export default function RegisterPage() {
               />
             </div>
 
-            {/* Texte critères */}
-            <p className="text-xs text-muted-foreground">
-              Votre mot de passe doit contenir au moins :
-            </p>
-
-            {/* Liste critères */}
+            <p className="text-xs text-muted-foreground">{t("passwordCriteria.text")}</p>
             <ul className="text-xs space-y-1 mt-1 list-disc pl-5">
               <li className={password.length >= 8 ? "text-green-600" : "text-gray-500"}>
-                8 caractères
+                {t("passwordCriteria.minLength")}
               </li>
               <li className={/[A-Z]/.test(password) ? "text-green-600" : "text-gray-500"}>
-                Une majuscule
+                {t("passwordCriteria.uppercase")}
               </li>
               <li className={/[0-9]/.test(password) ? "text-green-600" : "text-gray-500"}>
-                Un chiffre
+                {t("passwordCriteria.number")}
               </li>
               <li className={/[^A-Za-z0-9]/.test(password) ? "text-green-600" : "text-gray-500"}>
-                Un caractère spécial
+                {t("passwordCriteria.special")}
               </li>
             </ul>
           </div>
 
           <div className="flex flex-col gap-1.5">
-            <Label htmlFor="confirmPassword">Confirmer le mot de passe</Label>
-
+            <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
             <div className="relative">
               <Input
                 id="confirmPassword"
                 type={showConfirmPassword ? "text" : "password"}
-                placeholder="••••••"
+                placeholder={t("confirmPasswordPlaceholder")}
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 autoComplete="new-password"
                 required
                 className="pr-10"
               />
-
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword((v) => !v)}
@@ -219,19 +213,15 @@ export default function RegisterPage() {
                 checked={acceptTerms}
                 onCheckedChange={(checked) => setAcceptTerms(checked === true)}
               />
-              <label
-                htmlFor="terms"
-                className="cursor-pointer text-sm leading-none"
-                id="terms-label"
-              >
+              <label htmlFor="terms" className="cursor-pointer text-sm leading-none" id="terms-label">
                 <span>
-                  J{"'"}accepte les{" "}
+                  {t("terms.text1")}{" "}
                   <Link href="/cgu" className="text-primary hover:underline">
-                    Conditions d{"'"}utilisation
+                    {t("terms.cgu")}
                   </Link>{" "}
-                  et la{" "}
+                  {t("terms.text2")}{" "}
                   <Link href="/legal" className="text-primary hover:underline">
-                    Politique de confidentialité
+                    {t("terms.privacy")}
                   </Link>
                   .
                 </span>
@@ -239,20 +229,15 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <Button
-            type="submit"
-            className="hover:bg-primary/80 mt-2 w-full"
-            disabled={isLoading}
-            aria-busy={isLoading}
-          >
-            {isLoading ? "Inscription en cours..." : "S'inscrire"}
+          <Button type="submit" className="hover:bg-primary/80 mt-2 w-full" disabled={isLoading} aria-busy={isLoading}>
+            {isLoading ? t("loading") : t("submit")}
           </Button>
         </form>
 
         <p className="text-muted-foreground mt-6 text-center text-sm">
-          Déjà un compte ?{" "}
+          {t("alreadyAccount")}{" "}
           <Link href="/login" className="text-primary hover:underline">
-            Se connecter
+            {t("login")}
           </Link>
         </p>
       </div>

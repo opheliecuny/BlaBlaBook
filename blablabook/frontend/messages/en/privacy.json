@@ -1,0 +1,45 @@
+{
+  "title": "Privacy Policy",
+  "lastUpdate": "Last updated: March 24, 2026",
+  "intro": "This privacy policy describes how the {strong} app collects, uses, and protects its users' personal data.",
+  "section1": {
+    "title": "1. Data Collected",
+    "p1": "We collect the following information:",
+    "li1": "Email address (for authentication)",
+    "li2": "Username or display name",
+    "li3": "Password (securely hashed)",
+    "li4": "Library data: books, reviews, reading statuses",
+    "p2": "We also use cookies to manage your session and keep you securely logged in."
+  },
+  "section2": {
+    "title": "2. Purpose of Processing",
+    "p1": "Collected data is used solely to:",
+    "li1": "Create and manage your user account",
+    "li2": "Save and consult your personal library",
+    "li3": "Improve and maintain the service"
+  },
+  "section3": {
+    "title": "3. Third-party Services",
+    "p1": "We use the OpenLibrary API to enrich book information. None of your personal data is shared with this service."
+  },
+  "section4": {
+    "title": "4. Security",
+    "p1": "The security of your data is our priority. We implement technical measures to protect your personal information from unauthorized access."
+  },
+  "section5": {
+    "title": "5. Data Retention",
+    "p1": "Your data is kept as long as your account is active. It is deleted immediately after account closure."
+  },
+  "section6": {
+    "title": "6. Your Rights (GDPR)",
+    "p1": "Under GDPR, you have the right to access, rectify, delete, and port your data. You may also limit or object to its processing.",
+    "p2": "To exercise your rights, contact us at:",
+    "contactEmail": "Email:",
+    "cnil": "You may also contact the"
+  },
+  "footer": {
+    "home": "← Back to home",
+    "cgu": "Terms of Service",
+    "legal": "Legal Notice"
+  }
+}

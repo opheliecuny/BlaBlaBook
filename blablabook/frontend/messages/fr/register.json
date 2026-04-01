@@ -1,0 +1,38 @@
+{
+  "title": "Créer un compte",
+  "subtitle": "Rejoignez la communauté de lecteurs BlaBlaBook",
+  "username": "Nom d'utilisateur",
+  "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+  "email": "Adresse mail",
+  "emailPlaceholder": "nom@exemple.com",
+  "password": "Mot de passe",
+  "passwordPlaceholder": "••••••",
+  "confirmPassword": "Confirmer le mot de passe",
+  "confirmPasswordPlaceholder": "••••••",
+  "submit": "S'inscrire",
+  "loading": "Inscription en cours...",
+  "alreadyAccount": "Déjà un compte ?",
+  "login": "Se connecter",
+  "aria": {
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
+  },
+  "passwordCriteria": {
+    "text": "Votre mot de passe doit contenir au moins :",
+    "minLength": "8 caractères",
+    "uppercase": "Une majuscule",
+    "number": "Un chiffre",
+    "special": "Un caractère spécial"
+  },
+  "terms": {
+    "text1": "J'accepte les",
+    "cgu": "Conditions d'utilisation",
+    "text2": "et la",
+    "privacy": "Politique de confidentialité"
+  },
+  "errors": {
+    "passwordMismatch": "Les mots de passe ne correspondent pas",
+    "acceptTerms": "Vous devez accepter les conditions d'utilisation",
+    "generic": "Une erreur est survenue lors de l'inscription"
+  }
+}

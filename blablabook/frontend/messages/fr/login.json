@@ -1,0 +1,18 @@
+{
+  "title": "Connexion",
+  "subtitle": "Veuillez vous connecter pour accéder à votre compte BlaBlaBook.",
+  "emailLabel": "Adresse mail",
+  "emailPlaceholder": "nom@exemple.com",
+  "passwordLabel": "Mot de passe",
+  "passwordPlaceholder": "••••••",
+  "submit": "Se connecter",
+  "loading": "Connexion en cours...",
+  "noAccount": "Pas encore de compte ?",
+  "registerLinkText": "Créer un compte",
+  "registerLinkLabel": "Créer un compte BlaBlaBook",
+  "error": {
+    "invalidCredentials": "Email ou mot de passe incorrect",
+    "generic": "Impossible de se connecter pour le moment. Réessayez plus tard.",
+    "unknown": "Une erreur inattendue est survenue."
+  }
+}

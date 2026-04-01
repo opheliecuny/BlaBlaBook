@@ -1,26 +1,28 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 
 export const metadata: Metadata = {
-  title: "Politique de Confidentialité - BlaBlaBook",
-  description: "Comment BlaBlaBook protège et gère vos données personnelles.",
+  title: "Privacy Policy - BlaBlaBook",
+  description: "How BlaBlaBook collects, uses, and protects your personal data.",
 };
 
 export default function PrivacyPage() {
+  const t = useTranslations("privacy");
+
   return (
     <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
       <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12 dark:bg-gray-800">
         {/* Header */}
         <header className="mb-8 border-b border-border pb-8">
           <h1 className="mb-4 text-2xl sm:text-3xl font-bold tracking-tight text-foreground uppercase">
-            Politique de Confidentialité
+            {t("title")}
           </h1>
           <time dateTime="2026-03-24" className="text-sm text-gray-500 italic">
-            Dernière mise à jour : 24 mars 2026
+            {t("lastUpdate")}
           </time>
           <p className="mt-4 text-sm leading-relaxed text-gray-700 dark:text-gray-300">
-            La présente politique de confidentialité décrit comment l{"'"}application
-            <strong> BlaBlaBook</strong> collecte, utilise et protège les données personnelles de ses utilisateurs.
+            {t("intro", { strong: "BlaBlaBook" })}
           </p>
         </header>
 
@@ -28,83 +30,76 @@ export default function PrivacyPage() {
         <div className="space-y-8 text-muted-foreground">
           <section>
             <h2 className="mb-3 text-xl font-medium text-foreground">
-              1. Données collectées
+              {t("section1.title")}
             </h2>
-            <p>Nous collectons les informations suivantes :</p>
+            <p>{t("section1.p1")}</p>
             <ul className="mt-2 ml-4 list-inside list-disc space-y-1">
-              <li>Adresse email (pour l&apos;authentification)</li>
-              <li>Pseudo ou nom d&apos;utilisateur</li>
-              <li>Mot de passe (haché de manière sécurisée)</li>
-              <li>Données de bibliothèque : livres, avis, statuts de lecture</li>
+              <li>{t("section1.li1")}</li>
+              <li>{t("section1.li2")}</li>
+              <li>{t("section1.li3")}</li>
+              <li>{t("section1.li4")}</li>
             </ul>
-            <p className="mt-2">
-              Nous utilisons également des cookies pour gérer votre session et maintenir votre connexion sécurisée.
-            </p>
+            <p className="mt-2">{t("section1.p2")}</p>
           </section>
 
           <section>
             <h2 className="mb-3 text-xl font-medium text-foreground">
-              2. Finalité du traitement
+              {t("section2.title")}
             </h2>
-            <p>
-              Les données collectées sont utilisées uniquement pour :
-            </p>
+            <p>{t("section2.p1")}</p>
             <ul className="mt-2 ml-4 list-inside list-disc space-y-1">
-              <li>La création et la gestion de votre compte utilisateur</li>
-              <li>La sauvegarde et la consultation de votre bibliothèque personnelle</li>
-              <li>L’amélioration et le bon fonctionnement du service</li>
+              <li>{t("section2.li1")}</li>
+              <li>{t("section2.li2")}</li>
+              <li>{t("section2.li3")}</li>
             </ul>
           </section>
 
           <section>
             <h2 className="mb-3 text-xl font-medium text-foreground">
-              3. Services tiers
+              {t("section3.title")}
             </h2>
-            <p>
-              Nous utilisons l&apos;API <strong>OpenLibrary</strong> pour enrichir les informations des livres. Aucune de vos données personnelles n&apos;est transmise à ce service.
-            </p>
+            <p>{t("section3.p1")}</p>
           </section>
 
           <section>
             <h2 className="mb-3 text-xl font-medium text-foreground">
-              4. Sécurité
+              {t("section4.title")}
             </h2>
-            <p>
-              La sécurité de vos données est notre priorité. Nous mettons en œuvre des mesures techniques pour protéger vos informations personnelles contre tout accès non autorisé.
-            </p>
+            <p>{t("section4.p1")}</p>
           </section>
 
           <section>
             <h2 className="mb-3 text-xl font-medium text-foreground">
-              5. Durée de conservation
+              {t("section5.title")}
             </h2>
-            <p>
-              Vos données sont conservées tant que votre compte est actif. Elles sont supprimées immédiatement après la fermeture de votre compte.
-            </p>
+            <p>{t("section5.p1")}</p>
           </section>
 
           <section>
             <h2 className="mb-3 text-xl font-medium text-foreground">
-              6. Vos droits (RGPD)
+              {t("section6.title")}
             </h2>
-            <p>
-              Conformément au RGPD, vous disposez d&apos;un droit d&apos;accès, de rectification, de suppression et de portabilité de vos données. Vous pouvez également limiter ou vous opposer au traitement de vos données.
-            </p>
-            <p className="mt-2">
-              Pour exercer vos droits, contactez-nous à :
-            </p>
+            <p>{t("section6.p1")}</p>
+            <p className="mt-2">{t("section6.p2")}</p>
             <address className="mt-4 inline-block rounded-md border border-gray-200 bg-background p-4">
-              Email :{" "}
+              {t("section6.contactEmail")}{" "}
               <a
                 href="mailto:contact@blablabook.fr"
                 className="font-bold text-primary hover:underline"
-                aria-label="Envoyer un email à contact@blablabook.fr"
               >
                 contact@blablabook.fr
               </a>
             </address>
             <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
-              Vous pouvez également contacter la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">CNIL</a> pour toute réclamation concernant vos données personnelles.
+              {t("section6.cnil")}{" "}
+              <a
+                href="https://www.cnil.fr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+              >
+                CNIL
+              </a>
             </p>
           </section>
         </div>
@@ -115,15 +110,15 @@ export default function PrivacyPage() {
             href="/"
             className="text-sm font-medium text-primary hover:underline"
           >
-            ← Retour à l&apos;accueil
+            {t("footer.home")}
           </Link>
           <div className="flex items-center space-x-4">
             <Link
               href="/cgu"
               className="text-xs text-muted-foreground hover:text-gray-700"
-              aria-label="Voir les Conditions Générales d'Utilisation"
+              aria-label="Voir les CGU"
             >
-              CGU
+              {t("footer.cgu")}
             </Link>
             <div className="text-xs text-muted-foreground" aria-hidden="true">
               |
@@ -133,7 +128,7 @@ export default function PrivacyPage() {
               className="text-xs text-muted-foreground hover:text-gray-700"
               aria-label="Voir les Mentions Légales"
             >
-              Mentions Légales
+              {t("footer.legal")}
             </Link>
           </div>
         </footer>

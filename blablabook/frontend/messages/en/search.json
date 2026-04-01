@@ -1,0 +1,17 @@
+{
+  "labelSearch": "Search for a book or author",
+  "placeholderSearch": "Search for a book, an author...",
+  "btnSearch": "Search",
+  "searchBooks": "Book Search",
+  "searchPrompt": "Use the search bar to find a book.",
+  "resultsFor": "Search results for \"{query}\"",
+  "resultsCount": "{count} result{count, plural, one {} other {s}}",
+  "unknownAuthor": "Unknown author",
+  "viewDetails": "View details",
+  "viewBookDetails": "View details for {title}",
+  "previous": "Previous",
+  "next": "Next",
+  "pageOf": "Page {current} / {total}",
+  "noResults": "No results for \"{query}\"",
+  "noResultsHint": "Try different keywords or check the spelling."
+}

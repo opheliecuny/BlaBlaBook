@@ -1,0 +1,18 @@
+{
+  "title": "Login",
+  "subtitle": "Please log in to access your BlaBlaBook account.",
+  "emailLabel": "Email address",
+  "emailPlaceholder": "name@example.com",
+  "passwordLabel": "Password",
+  "passwordPlaceholder": "••••••",
+  "submit": "Log in",
+  "loading": "Logging in...",
+  "noAccount": "Don't have an account yet?",
+  "registerLinkText": "Create an account",
+  "registerLinkLabel": "Create a BlaBlaBook account",
+  "error": {
+    "invalidCredentials": "Invalid email or password",
+    "generic": "Unable to log in at the moment. Please try again later.",
+    "unknown": "An unexpected error occurred."
+  }
+}
