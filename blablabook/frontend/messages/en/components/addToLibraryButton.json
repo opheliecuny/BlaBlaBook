@@ -2,6 +2,5 @@
   "loading": "Adding...",
   "added": "✓ Added",
   "error": "Error — retry",
-  "default": "Add",
-  "alreadyAdded": "✓ Already added"
+  "default": "Add"
 }

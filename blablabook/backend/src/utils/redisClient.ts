@@ -11,6 +11,7 @@ if (REDIS_URL) {
     maxRetriesPerRequest: 3, // Limite les tentatives de reconnexion pour éviter les délais d'attente prolongés
     tls: {}, // Active TLS si REDIS_URL commence par rediss://
     connectTimeout: 10_000, // Timeout de connexion de 10 secondes
+    // lazyConnect: true,
     enableOfflineQueue: true, // IMPORTANT : permet au middleware d'attendre la connexion avant de faire des requêtes
   });
 

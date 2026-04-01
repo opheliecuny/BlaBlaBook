@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -23,12 +23,10 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { ArrowDownAZ, ArrowUpDown, Bookmark, BookOpen, Check, Library, Plus, Trash2, Search, X } from "lucide-react";
-import BookCover from "@/components/BookCover";
+import { Bookmark, BookOpen, Check, Plus, Trash2, Search } from "lucide-react";
 import { getLibrary, updateReadingStatus, deleteBookFromLibrary } from "@/services/libraryService";
 import type { ReadingStatus } from "@/types/library";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLibraryStatus } from "@/contexts/LibraryStatusContext";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
@@ -44,22 +42,15 @@ interface DisplayBook {
 export default function LibraryPage() {
   const t = useTranslations("library");
   const router = useRouter();
-  const ITEMS_PER_PAGE = 16;
-
   const [activeFilter, setActiveFilter] = useState<"ALL" | ReadingStatus>("ALL");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState<"createdAt" | "title" | "author">("createdAt");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [currentPage, setCurrentPage] = useState(1);
   const [books, setBooks] = useState<DisplayBook[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { isAuthenticated, isLoading: authLoading, authError, retryAuth, user } = useAuth();
-  const { removeLocal } = useLibraryStatus();
+  const { isAuthenticated, isLoading: authLoading, authError, user } = useAuth();
 
   useEffect(() => {
     if (authLoading) return;
-    if (authError === "network") return;
+    if (authError) return;
     if (!isAuthenticated) {
       router.replace("/login");
       return;
@@ -67,29 +58,16 @@ export default function LibraryPage() {
 
     getLibrary()
       .then((items) => {
-        const mapped = items.map((item) => ({
-          bookId: item.id,
-          title: item.title,
-          author: item.author ?? t("authorUnknown"),
-          cover: item.thumbnail ?? "/default-cover.png",
-          status: item.status,
-          openLibraryId: item.openLibraryId,
-        }));
-        setBooks(mapped);
-
-        // Toast de bienvenue après connexion
-        if (sessionStorage.getItem("just_logged_in")) {
-          sessionStorage.removeItem("just_logged_in");
-          const count = mapped.length;
-          toast.success(
-            t("welcomeToast", {
-              username: user?.username ?? "",
-              count,
-              plural: count > 1 ? "s" : ""
-            }),
-            { position: "bottom-right" },
-          );
-        }
+        setBooks(
+          items.map((item) => ({
+            bookId: item.id,
+            title: item.title,
+            author: item.author ?? t("authorUnknown"),
+            cover: item.thumbnail ?? "/default-cover.png",
+            status: item.status,
+            openLibraryId: item.openLibraryId,
+          }))
+        );
       })
       .catch(console.error)
       .finally(() => setIsLoading(false));
@@ -104,11 +82,11 @@ export default function LibraryPage() {
 
   if (authLoading) return null;
 
-  if (authError === "network") {
+  if (authError) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
         <p className="text-muted-foreground text-sm">{t("authError")}</p>
-        <Button variant="outline" onClick={retryAuth}>{t("retry")}</Button>
+        <Button variant="outline" onClick={() => window.location.reload()}>{t("retry")}</Button>
       </div>
     );
   }
@@ -123,39 +101,7 @@ export default function LibraryPage() {
     );
   }
 
-  const normalizedQuery = searchQuery.trim().toLowerCase();
-
-  const filteredBooks = books
-    .filter((b) => {
-      const matchesFilter = activeFilter === "ALL" || b.status === activeFilter;
-      const matchesSearch =
-        !normalizedQuery ||
-        b.title.toLowerCase().includes(normalizedQuery) ||
-        b.author.toLowerCase().includes(normalizedQuery);
-      return matchesFilter && matchesSearch;
-    })
-    .sort((a, b) => {
-      if (sortBy === "createdAt") return 0; // conserve l'ordre du backend (createdAt desc)
-      const dir = sortOrder === "asc" ? 1 : -1;
-      if (sortBy === "title") return dir * a.title.localeCompare(b.title, "fr");
-      return dir * a.author.localeCompare(b.author, "fr");
-    });
-
-  const totalPages = Math.ceil(filteredBooks.length / ITEMS_PER_PAGE);
-  const paginatedBooks = filteredBooks.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  function handleFilterChange(filter: "ALL" | ReadingStatus) {
-    setActiveFilter(filter);
-    setCurrentPage(1);
-  }
-
-  function handleSearchChange(value: string) {
-    setSearchQuery(value);
-    setCurrentPage(1);
-  }
+  const filteredBooks = activeFilter === "ALL" ? books : books.filter((b) => b.status === activeFilter);
 
   const handleStatusChange = async (bookId: string, newStatus: ReadingStatus) => {
     const previous = books;
@@ -177,7 +123,6 @@ export default function LibraryPage() {
     setBooks((prev) => prev.filter((book) => book.bookId !== bookId));
     try {
       await deleteBookFromLibrary(bookId);
-      if (deleted?.openLibraryId) removeLocal(deleted.openLibraryId);
       toast.success(t("deleteSuccess", { title: deleted?.title ?? t("unknownTitle")}), { position: "bottom-right" });
     } catch {
       setBooks(previous);
@@ -214,11 +159,6 @@ export default function LibraryPage() {
         </Link>
       </div>
 
-      {books.length === 0 ? (
-        <OnboardingEmpty />
-      ) : (
-      <>
-
       {/* Stats Cards */}
       <div role="group" aria-label="Statistiques de lecture" className="mb-8 grid grid-cols-3 gap-3 sm:gap-4">
         <StatCard icon={<Bookmark className="text-amber-500" size={18} aria-hidden="true" />} label={t("stats.toRead")} count={stats.toRead} />
@@ -226,104 +166,52 @@ export default function LibraryPage() {
         <StatCard icon={<Check className="text-emerald-500" size={18} aria-hidden="true" />} label={t("stats.read")} count={stats.read} />
       </div>
 
-      {/* Barre de recherche + Tri */}
-      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" aria-hidden="true" />
-          <Input
-            type="search"
-            placeholder="Rechercher par titre ou auteur…"
-            value={searchQuery}
-            onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-9 pr-9"
-            aria-label="Rechercher dans ma bibliothèque"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => handleSearchChange("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-              aria-label="Effacer la recherche"
-            >
-              <X className="h-4 w-4" aria-hidden="true" />
-            </button>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          <ArrowUpDown size={14} className="text-muted-foreground shrink-0" aria-hidden="true" />
-          <Select
-            value={sortBy}
-            onValueChange={(value) => {
-              if (!value) return;
-              setSortBy(value as "createdAt" | "title" | "author");
-              setSortOrder(value === "createdAt" ? "desc" : "asc");
-              setCurrentPage(1);
-            }}
-          >
-            <SelectTrigger className="w-[170px] h-9 text-xs">
-              <SelectValue>
-                {sortBy === "createdAt" && "Date d\u2019ajout"}
-                {sortBy === "title" && "Titre A → Z"}
-                {sortBy === "author" && "Auteur A → Z"}
-              </SelectValue>
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="createdAt">Date d&apos;ajout</SelectItem>
-              <SelectItem value="title">Titre A → Z</SelectItem>
-              <SelectItem value="author">Auteur A → Z</SelectItem>
-            </SelectContent>
-          </Select>
-          {sortBy !== "createdAt" && (
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-9 px-2"
-              onClick={() => {
-                setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
-                setCurrentPage(1);
-              }}
-              aria-label={sortOrder === "asc" ? "Trier en ordre décroissant" : "Trier en ordre croissant"}
-            >
-              <ArrowDownAZ size={16} className={sortOrder === "desc" ? "scale-y-[-1]" : ""} aria-hidden="true" />
-            </Button>
-          )}
-        </div>
-      </div>
-
       {/* Filtres */}
       <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
-        <Button variant={activeFilter === "ALL" ? "default" : "secondary"} onClick={() => handleFilterChange("ALL")} className="h-9 rounded-full px-5 min-w-max">
+        <Button variant={activeFilter === "ALL" ? "default" : "secondary"} onClick={() => setActiveFilter("ALL")} className="h-9 rounded-full px-5 min-w-max">
           {t("filters.all", { count: stats.total })}
         </Button>
-        <Button variant={activeFilter === "TO_READ" ? "default" : "secondary"} onClick={() => handleFilterChange("TO_READ")} className="h-9 rounded-full px-5 min-w-max">
+        <Button variant={activeFilter === "TO_READ" ? "default" : "secondary"} onClick={() => setActiveFilter("TO_READ")} className="h-9 rounded-full px-5 min-w-max">
           {t("filters.toRead", { count: stats.toRead })}
         </Button>
-        <Button variant={activeFilter === "READING" ? "default" : "secondary"} onClick={() => handleFilterChange("READING")} className="h-9 rounded-full px-5 min-w-max">
+        <Button variant={activeFilter === "READING" ? "default" : "secondary"} onClick={() => setActiveFilter("READING")} className="h-9 rounded-full px-5 min-w-max">
           {t("filters.reading", { count: stats.reading })}
         </Button>
-        <Button variant={activeFilter === "READ" ? "default" : "secondary"} onClick={() => handleFilterChange("READ")} className="h-9 rounded-full px-5 min-w-max">
+        <Button variant={activeFilter === "READ" ? "default" : "secondary"} onClick={() => setActiveFilter("READ")} className="h-9 rounded-full px-5 min-w-max">
           {t("filters.read", { count: stats.read })}
         </Button>
       </div>
 
       {/* Grille livres */}
       {filteredBooks.length === 0 ? (
-        <EmptyState hasBooks={books.length > 0} />
+        <EmptyState />
       ) : (
-        <ul className="grid grid-cols-2 md:grid-cols-4 divide-y divide-border/50 [&>*]:border-r [&>*]:border-border/50 [&>*:nth-child(2n)]:border-r-0 md:[&>*:nth-child(2n)]:border-r md:[&>*:nth-child(4n)]:border-r-0">
-          {paginatedBooks.map((book) => (
-            <li key={book.bookId} className="flex flex-col px-4 py-6 sm:px-8 sm:py-12">
-              <div className="relative mb-3">
-                <BookCover
+        <ul className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 divide-x divide-gray-200/50 -mx-4">
+          {filteredBooks.map((book) => (
+            <li
+              key={book.bookId}
+              className={`
+        flex flex-col px-4 py-6 bg-background
+        border-b border-gray-200/50
+        [&:nth-last-child(-n+2)]:border-b-0
+        lg:[&:nth-last-child(-n+3)]:border-b-0
+        xl:[&:nth-last-child(-n+4)]:border-b-0
+      `}
+            >
+              <div className="group relative mb-3 h-64 sm:h-80 md:h-96 lg:h-[420px] xl:h-[480px] overflow-hidden rounded-lg">
+                <Image
                   src={book.cover}
                   alt={`Couverture du livre ${book.title}`}
-                  className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
+                  fill
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                 />
                 <AlertDialog>
                   <AlertDialogTrigger
-                    className="absolute top-2 right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white dark:bg-gray-700 shadow-sm"
+                    className="absolute top-2 right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm"
                     aria-label={t("actions.delete", { title: book.title })}
                   >
-                    <Trash2 className="h-4 w-4 text-gray-600 dark:text-gray-200" aria-hidden="true" />
+                    <Trash2 className="h-4 w-4" aria-hidden="true" />
                   </AlertDialogTrigger>
 
                   <AlertDialogContent>
@@ -350,8 +238,8 @@ export default function LibraryPage() {
                 </AlertDialog>
               </div>
 
-              <h3 className="font-bold text-sm leading-snug font-playfair mt-3">{book.title}</h3>
-              <p className="text-xs text-muted-foreground mt-1 mb-4">{book.author}</p>
+              <h3 className="line-clamp-1 text-sm sm:text-base lg:text-lg font-bold">{book.title}</h3>
+              <p className="text-muted-foreground mb-4 text-sm">{book.author}</p>
 
               <div className="mt-auto space-y-3">
                 <Select value={book.status} onValueChange={(value) => handleStatusChange(book.bookId, value as ReadingStatus)}>
@@ -378,64 +266,6 @@ export default function LibraryPage() {
           ))}
         </ul>
       )}
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <nav aria-label="pagination" className="flex items-center justify-center gap-6 mt-12 px-4">
-          <button
-            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-            disabled={currentPage === 1}
-            className="inline-flex items-center gap-2 border border-primary rounded px-4 h-8 text-xs font-medium hover:bg-primary/5 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <svg width="10" height="13" viewBox="0 0 12 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-primary" aria-hidden="true">
-              <polyline points="6,1 1,5 6,9" />
-              <line x1="1" y1="5" x2="11" y2="5" />
-            </svg>
-            <span className="text-foreground">Précédent</span>
-          </button>
-
-          <span className="text-xs text-muted-foreground">
-            Page {currentPage} / {totalPages}
-          </span>
-
-          <button
-            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-            disabled={currentPage === totalPages}
-            className="inline-flex items-center gap-2 border border-primary rounded px-4 h-8 text-xs font-medium hover:bg-primary/5 disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <span className="text-foreground">Suivant</span>
-            <svg width="10" height="13" viewBox="0 0 12 10" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-primary" aria-hidden="true">
-              <polyline points="6,1 11,5 6,9" />
-              <line x1="11" y1="5" x2="1" y2="5" />
-            </svg>
-          </button>
-        </nav>
-      )}
-
-      </>
-      )}
-    </div>
-  );
-}
-
-// OnboardingEmpty — écran illustré quand la bibliothèque est vide
-function OnboardingEmpty() {
-  const t = useTranslations("library");
-  return (
-    <div className="flex flex-col items-center justify-center py-24 text-center">
-      <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-primary/10">
-        <Library className="h-12 w-12 text-primary" aria-hidden="true" />
-      </div>
-      <h2 className="text-xl font-semibold mb-2">{t("onboardingTitle")}</h2>
-      <p className="text-muted-foreground max-w-md mb-8 text-sm leading-relaxed">
-        {t("onboardingDescription")}
-      </p>
-      <Link href="/search">
-        <Button className="gap-2 shadow-sm" size="lg">
-          <Search className="h-4 w-4" aria-hidden="true" />
-          {t("onboardingCta")}
-        </Button>
-      </Link>
     </div>
   );
 }
@@ -460,21 +290,15 @@ function StatCard({ icon, label, count }: {
 }
 
 // EmptyState
-function EmptyState({ hasBooks }: { hasBooks: boolean }) {
+function EmptyState() {
   const t = useTranslations("library");
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed py-20 text-center">
       <Search className="text-muted-foreground mb-4 h-10 w-10 opacity-20" aria-hidden="true" />
-      {hasBooks ? (
-        <p className="text-muted-foreground font-medium">{t("emptySearch")}</p>
-      ) : (
-        <>
-          <p className="text-muted-foreground font-medium">{t("empty")}</p>
-          <Link href="/search" className="mt-4">
-            <Button variant="outline" size="sm">{t("explore")}</Button>
-          </Link>
-        </>
-      )}
+      <p className="text-muted-foreground font-medium">{t("empty")}</p>
+      <Link href="/search" className="mt-4">
+        <Button variant="outline" size="sm">{t("explore")}</Button>
+      </Link>
     </div>
   );
 }

@@ -17,13 +17,13 @@ describe("Library API Integration Tests", () => {
     it("devrait retourner une liste vide pour un nouvel utilisateur", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -45,13 +45,13 @@ describe("Library API Integration Tests", () => {
     it("devrait retourner les livres de l'utilisateur", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -85,13 +85,13 @@ describe("Library API Integration Tests", () => {
     it("devrait respecter la pagination", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -122,13 +122,13 @@ describe("Library API Integration Tests", () => {
     it("devrait trier par titre", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -161,13 +161,13 @@ describe("Library API Integration Tests", () => {
     it("devrait ajouter un livre avec succès", async () => {
       const user = await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -206,13 +206,13 @@ describe("Library API Integration Tests", () => {
     it("devrait ajouter un livre avec statut par défaut TO_READ", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -233,13 +233,13 @@ describe("Library API Integration Tests", () => {
     it("devrait utiliser openLibraryId comme fallback isbn si isbn absent", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -265,13 +265,13 @@ describe("Library API Integration Tests", () => {
     it("devrait retourner 400 si le titre est manquant", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -291,13 +291,13 @@ describe("Library API Integration Tests", () => {
     it("devrait retourner 400 si openLibraryId est manquant", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -317,13 +317,13 @@ describe("Library API Integration Tests", () => {
     it("devrait retourner 409 si le livre est déjà dans la bibliothèque", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -365,13 +365,13 @@ describe("Library API Integration Tests", () => {
     it("devrait mettre à jour le statut de lecture", async () => {
       const user = await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -407,13 +407,13 @@ describe("Library API Integration Tests", () => {
     it("devrait retourner 400 si le statut est invalide", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -441,13 +441,13 @@ describe("Library API Integration Tests", () => {
     it("devrait retourner 404 si le livre n'est pas dans la bibliothèque de l'utilisateur", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -465,13 +465,13 @@ describe("Library API Integration Tests", () => {
     it("devrait mettre à jour le rating", async () => {
       const user = await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -501,13 +501,13 @@ describe("Library API Integration Tests", () => {
     it("devrait mettre à jour la review", async () => {
       const user = await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -537,13 +537,13 @@ describe("Library API Integration Tests", () => {
     it("devrait mettre à jour status, rating et review simultanément", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -570,13 +570,13 @@ describe("Library API Integration Tests", () => {
     it("devrait retourner 400 si le rating est hors limites", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -610,13 +610,13 @@ describe("Library API Integration Tests", () => {
     it("devrait supprimer un livre de la bibliothèque", async () => {
       const user = await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -648,13 +648,13 @@ describe("Library API Integration Tests", () => {
     it("devrait retourner 404 si le livre n'existe pas dans la bibliothèque", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"

@@ -17,8 +17,8 @@ describe("Auth API Integration Tests", () => {
     it("devrait créer un nouvel utilisateur avec succès", async () => {
       const userData = {
         email: "newuser@example.com",
-        password: "Test@1234",
-        confirm: "Test@1234",
+        password: "Password123",
+        confirm: "Password123",
         username: "newuser",
       };
 
@@ -55,8 +55,8 @@ describe("Auth API Integration Tests", () => {
 
       const userData = {
         email: "existing@example.com",
-        password: "Test@1234",
-        confirm: "Test@1234",
+        password: "Password123",
+        confirm: "Password123",
         username: "newuser",
       };
 
@@ -103,8 +103,8 @@ describe("Auth API Integration Tests", () => {
     it("devrait retourner 400 si les passwords ne correspondent pas", async () => {
       const userData = {
         email: "user@example.com",
-        password: "Test@1234",
-        confirm: "DifferentTest@1234",
+        password: "Password123",
+        confirm: "DifferentPassword123",
         username: "user",
       };
 
@@ -119,8 +119,8 @@ describe("Auth API Integration Tests", () => {
     it("devrait retourner 400 si l'email est invalide", async () => {
       const userData = {
         email: "invalid-email",
-        password: "Test@1234",
-        confirm: "Test@1234",
+        password: "Password123",
+        confirm: "Password123",
         username: "user",
       };
 
@@ -137,12 +137,12 @@ describe("Auth API Integration Tests", () => {
     it("devrait connecter un utilisateur avec succès", async () => {
       await createTestUser({
         email: "login@example.com",
-        password: "Test@1234",
+        password: "Password123",
       });
 
       const loginData = {
         email: "login@example.com",
-        password: "Test@1234",
+        password: "Password123",
       };
 
       const response = await request(app)
@@ -171,7 +171,7 @@ describe("Auth API Integration Tests", () => {
     it("devrait retourner 401 si l'utilisateur n'existe pas", async () => {
       const loginData = {
         email: "nonexistent@example.com",
-        password: "Test@1234",
+        password: "Password123",
       };
 
       const response = await request(app)
@@ -185,12 +185,12 @@ describe("Auth API Integration Tests", () => {
     it("devrait retourner 401 si le password est incorrect", async () => {
       await createTestUser({
         email: "user@example.com",
-        password: "CorrectTest@1234",
+        password: "CorrectPassword123",
       });
 
       const loginData = {
         email: "user@example.com",
-        password: "WrongTest@1234",
+        password: "WrongPassword123",
       };
 
       const response = await request(app)
@@ -203,7 +203,7 @@ describe("Auth API Integration Tests", () => {
 
     it("devrait retourner 400 si l'email est manquant", async () => {
       const loginData = {
-        password: "Test@1234",
+        password: "Password123",
       };
 
       const response = await request(app)
@@ -219,13 +219,13 @@ describe("Auth API Integration Tests", () => {
     it("devrait déconnecter un utilisateur authentifié avec succès", async () => {
       const user = await createTestUser({
         email: "logout@example.com",
-        password: "Test@1234",
+        password: "Password123",
       });
 
       // D'abord se connecter pour obtenir un token
       const loginResponse = await request(app).post("/auth/login").send({
         email: "logout@example.com",
-        password: "Test@1234",
+        password: "Password123",
       });
 
       const cookies = loginResponse.headers["set-cookie"];
@@ -246,12 +246,12 @@ describe("Auth API Integration Tests", () => {
     it("devrait effacer les cookies avec les attributs corrects", async () => {
       await createTestUser({
         email: "logout-cookies@example.com",
-        password: "Test@1234",
+        password: "Password123",
       });
 
       const loginResponse = await request(app).post("/auth/login").send({
         email: "logout-cookies@example.com",
-        password: "Test@1234",
+        password: "Password123",
       });
 
       const cookies = loginResponse.headers["set-cookie"];
@@ -292,11 +292,11 @@ describe("Auth API Integration Tests", () => {
 
   describe("POST /auth/refresh", () => {
     it("devrait émettre de nouveaux tokens à partir d'un refresh token valide", async () => {
-      await createTestUser({ email: "refresh@example.com", password: "Test@1234" });
+      await createTestUser({ email: "refresh@example.com", password: "Password123" });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "refresh@example.com", password: "Test@1234" });
+        .send({ email: "refresh@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
       const refreshCookie = cookies.find((c: string) => c.startsWith("refreshToken="));
@@ -330,7 +330,7 @@ describe("Auth API Integration Tests", () => {
     });
 
     it("devrait retourner 401 si le refresh token est expiré", async () => {
-      const user = await createTestUser({ email: "expired@example.com", password: "Test@1234" });
+      const user = await createTestUser({ email: "expired@example.com", password: "Password123" });
 
       await prisma.refresh_token.create({
         data: {
@@ -350,11 +350,11 @@ describe("Auth API Integration Tests", () => {
     });
 
     it("devrait remplacer l'ancien refresh token en BDD (rotation)", async () => {
-      const user = await createTestUser({ email: "rotation@example.com", password: "Test@1234" });
+      const user = await createTestUser({ email: "rotation@example.com", password: "Password123" });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "rotation@example.com", password: "Test@1234" });
+        .send({ email: "rotation@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
       const oldTokenStr = (cookies.find((c: string) => c.startsWith("refreshToken=")) ?? "")
@@ -376,13 +376,13 @@ describe("Auth API Integration Tests", () => {
     it("devrait retourner les infos de l'utilisateur connecté", async () => {
       await createTestUser({
         email: "me@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "meuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "me@example.com", password: "Test@1234" });
+        .send({ email: "me@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers["set-cookie"];
 
@@ -409,7 +409,7 @@ describe("Auth API Integration Tests", () => {
       // Créer un autre utilisateur avec un token expiré en BDD
       const otherUser = await createTestUser({
         email: "other@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "otheruser",
       });
 
@@ -425,14 +425,14 @@ describe("Auth API Integration Tests", () => {
       // Créer l'utilisateur qui va se connecter
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       // Login → déclenche le cleanup global
       await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" })
+        .send({ email: "user@example.com", password: "Password123" })
         .expect(200);
 
       // Vérifier que le token expiré de l'autre utilisateur a été supprimé
@@ -447,7 +447,7 @@ describe("Auth API Integration Tests", () => {
       // Créer un autre utilisateur avec un token valide
       const otherUser = await createTestUser({
         email: "other@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "otheruser",
       });
 
@@ -462,13 +462,13 @@ describe("Auth API Integration Tests", () => {
 
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" })
+        .send({ email: "user@example.com", password: "Password123" })
         .expect(200);
 
       await new Promise((resolve) => setTimeout(resolve, 50));

@@ -19,13 +19,13 @@ describe("User API Integration Tests", () => {
       // Créer un utilisateur et se connecter
       const user = await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -57,13 +57,13 @@ describe("User API Integration Tests", () => {
       // Créer un utilisateur et se connecter
       const user = await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "oldusername",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -90,13 +90,13 @@ describe("User API Integration Tests", () => {
       // Créer un utilisateur et se connecter
       const user = await createTestUser({
         email: "old@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "old@example.com", password: "Test@1234" });
+        .send({ email: "old@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -122,13 +122,13 @@ describe("User API Integration Tests", () => {
       // Créer un utilisateur et se connecter
       const user = await createTestUser({
         email: "user@example.com",
-        password: "OldTest@1234",
+        password: "OldPassword123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "OldTest@1234" });
+        .send({ email: "user@example.com", password: "OldPassword123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -138,7 +138,7 @@ describe("User API Integration Tests", () => {
       await request(app)
         .patch("/user/profile")
         .set("Cookie", cookies)
-        .send({ password: "NewTest@1234", currentPassword: "OldTest@1234" })
+        .send({ password: "NewPassword123", currentPassword: "OldPassword123" })
         .expect(200);
 
       // Vérifier que le nouveau password est hashé en BDD
@@ -146,17 +146,17 @@ describe("User API Integration Tests", () => {
         where: { id: user.id },
       });
 
-      expect(updatedUser?.password).not.toBe("NewTest@1234");
+      expect(updatedUser?.password).not.toBe("NewPassword123");
       const isValidPassword = await argon2.verify(
         updatedUser!.password,
-        "NewTest@1234",
+        "NewPassword123",
       );
       expect(isValidPassword).toBe(true);
 
       // Vérifier qu'on peut se connecter avec le nouveau password
       const newLoginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "NewTest@1234" })
+        .send({ email: "user@example.com", password: "NewPassword123" })
         .expect(200);
 
       expect(newLoginResponse.body).toHaveProperty("id");
@@ -164,18 +164,18 @@ describe("User API Integration Tests", () => {
     });
 
     it("devrait retourner 400 si currentPassword est absent lors du changement de mot de passe", async () => {
-      await createTestUser({ email: "user@example.com", password: "Test@1234", username: "testuser" });
+      await createTestUser({ email: "user@example.com", password: "Password123", username: "testuser" });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
 
       const response = await request(app)
         .patch("/user/profile")
         .set("Cookie", cookies)
-        .send({ password: "NewTest@1234" })
+        .send({ password: "NewPassword123" })
         .expect(400);
 
       expect(response.body.message).toBe("Validation error");
@@ -183,18 +183,18 @@ describe("User API Integration Tests", () => {
     });
 
     it("devrait retourner 401 si currentPassword est incorrect", async () => {
-      await createTestUser({ email: "user@example.com", password: "Test@1234", username: "testuser" });
+      await createTestUser({ email: "user@example.com", password: "Password123", username: "testuser" });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers["set-cookie"] as unknown as string[];
 
       const response = await request(app)
         .patch("/user/profile")
         .set("Cookie", cookies)
-        .send({ password: "NewTest@1234", currentPassword: "WrongTest@1234" })
+        .send({ password: "NewPassword123", currentPassword: "WrongPassword123" })
         .expect(401);
 
       expect(response.body.message).toBe("Current password is incorrect");
@@ -204,20 +204,20 @@ describe("User API Integration Tests", () => {
       // Créer deux utilisateurs
       await createTestUser({
         email: "user1@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "user1",
       });
 
       await createTestUser({
         email: "user2@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "user2",
       });
 
       // Se connecter avec user1
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user1@example.com", password: "Test@1234" });
+        .send({ email: "user1@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -235,13 +235,13 @@ describe("User API Integration Tests", () => {
       // Créer un utilisateur et se connecter
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -261,13 +261,13 @@ describe("User API Integration Tests", () => {
       // Créer un utilisateur et se connecter
       await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -296,13 +296,13 @@ describe("User API Integration Tests", () => {
       // Créer un utilisateur et se connecter
       const user = await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"
@@ -334,13 +334,13 @@ describe("User API Integration Tests", () => {
       // Créer un utilisateur et se connecter
       const user = await createTestUser({
         email: "user@example.com",
-        password: "Test@1234",
+        password: "Password123",
         username: "testuser",
       });
 
       const loginResponse = await request(app)
         .post("/auth/login")
-        .send({ email: "user@example.com", password: "Test@1234" });
+        .send({ email: "user@example.com", password: "Password123" });
 
       const cookies = loginResponse.headers[
         "set-cookie"

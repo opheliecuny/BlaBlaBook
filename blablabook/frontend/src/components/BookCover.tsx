@@ -10,22 +10,9 @@ interface Props {
 }
 
 export default function BookCover({ src, alt, className }: Props) {
-  const resolvedSrc = src && !src.includes("undefined") ? src : "/default-cover.png";
-  const [imgSrc, setImgSrc] = useState(resolvedSrc);
-
-  const isExternal = imgSrc.startsWith("http");
-
-  if (isExternal) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return (
-      <img
-        src={imgSrc}
-        alt={alt}
-        className={className}
-        onError={() => setImgSrc("/default-cover.png")}
-      />
-    );
-  }
+  const [imgSrc, setImgSrc] = useState(
+    src && !src.includes("undefined") ? src : "/default-cover.png"
+  );
 
   return (
     <Image
@@ -35,6 +22,7 @@ export default function BookCover({ src, alt, className }: Props) {
       height={300}
       className={className}
       onError={() => setImgSrc("/default-cover.png")}
+      unoptimized={imgSrc.startsWith("http")}
     />
   );
 }

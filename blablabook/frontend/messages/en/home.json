@@ -4,15 +4,12 @@
     "title": "BlaBlaBook",
     "description": "A simple and pleasant way to never lose track of your reading. Our app lets you organize your personal library easily: add your books, track your reading and find in an instant the books you love.",
     "loginCta": "Log in",
-    "registerCta": "Create an account",
-    "libraryCta": "My library",
-    "searchCta": "Search for a book"
+    "registerCta": "Create an account"
   },
   "section": {
     "moment": {
       "title": "BOOKS OF THE MOMENT",
-      "subtitle": "RANDOM SELECTION",
-      "subtitlePersonalized": "PERSONALIZED SELECTION"
+      "subtitle": "RANDOM SELECTION"
     }
   },
   "error": {

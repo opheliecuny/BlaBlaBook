@@ -10,14 +10,11 @@ import {
 import { API_URL } from "@/lib/api";
 import type { AuthUser } from "@/types/auth";
 
-type AuthErrorType = "network" | "expired" | null;
-
 interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  authError: AuthErrorType;
-  retryAuth: () => void;
+  authError: boolean;
   login: (user: AuthUser) => void;
   logout: () => void;
   updateUser: (user: AuthUser) => void;
@@ -28,52 +25,48 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [authError, setAuthError] = useState<AuthErrorType>(null);
+  const [authError, setAuthError] = useState(false);
 
-  async function checkSession() {
-    setIsLoading(true);
-    setAuthError(null);
-    try {
-      const res = await fetch(`${API_URL}/auth/me`, {
-        credentials: "include",
-      });
-
-      if (res.ok) {
-        setUser(await res.json());
-        return;
-      }
-
-      if (res.status === 401) {
-        // Access token expiré — on tente le refresh
-        const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
-          method: "POST",
+  // Le token est maintenant dans un cookie httpOnly et n'est plus stocké ici
+  useEffect(() => {
+    async function checkSession() {
+      try {
+        const res = await fetch(`${API_URL}/auth/me`, {
           credentials: "include",
         });
 
-        if (refreshRes.ok) {
-          // Nouveau access token reçu — on revalide la session
-          const retryRes = await fetch(`${API_URL}/auth/me`, {
+        if (res.ok) {
+          setUser(await res.json());
+          return;
+        }
+
+        if (res.status === 401) {
+          // Access token expiré — on tente le refresh
+          const refreshRes = await fetch(`${API_URL}/auth/refresh`, {
+            method: "POST",
             credentials: "include",
           });
-          if (retryRes.ok) {
-            setUser(await retryRes.json());
-            return;
-          }
-        }
-        // Refresh échoué → session vraiment expirée
-        setUser(null);
-        setAuthError("expired");
-      }
-    } catch (error) {
-      // Erreur réseau (backend inaccessible)
-      console.error("Erreur lors de la vérification de session :", error);
-      setAuthError("network");
-    } finally {
-      setIsLoading(false);
-    }
-  }
 
-  useEffect(() => {
+          if (refreshRes.ok) {
+            // Nouveau access token reçu — on revalide la session
+            const retryRes = await fetch(`${API_URL}/auth/me`, {
+              credentials: "include",
+            });
+            if (retryRes.ok) {
+              setUser(await retryRes.json());
+            }
+          }
+          // Si le refresh échoue → session vraiment expirée, user reste null
+        }
+      } catch (error) {
+        // Erreur réseau (backend inaccessible)
+        console.error("Erreur lors de la vérification de session :", error);
+        setAuthError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
     checkSession();
   }, []);
 
@@ -91,10 +84,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const value = {
     user,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user, // L'utilisateur est authentifié si user est présent (le token est dans les cookies)
     isLoading,
     authError,
-    retryAuth: checkSession,
     login,
     logout,
     updateUser,

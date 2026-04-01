@@ -1,11 +1,13 @@
 "use client";
 
-import { useLibraryStatus } from "@/contexts/LibraryStatusContext";
-import { useAddToLibrary } from "@/hooks/useAddToLibrary";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/AuthContext";
+import { addBookToLibrary } from "@/services/libraryService";
 import { useTranslations } from "next-intl";
 
 interface Props {
-  bookId: string; // openLibraryId (ex: "OL12345W")
+  bookId: string;
   isbn: string | null;
   title: string;
   author: string | null;
@@ -23,34 +25,47 @@ export default function AddToLibraryButton({
   thumbnail,
   category,
 }: Props) {
-  const { isLoaded } = useLibraryStatus();
-  const { add, loading, error, isInLibrary, authLoading } = useAddToLibrary();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [added, setAdded] = useState(false);
+  const [error, setError] = useState(false);
 
   const t = useTranslations("components.addToLibraryButton");
 
-  if (isLoaded && isInLibrary(bookId)) {
-    return (
-      <span className="flex items-center justify-center rounded-md bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400 px-3 py-1.5 text-xs font-medium whitespace-nowrap shrink-0">
-        {t("alreadyAdded")}
-      </span>
-    );
+  async function handleClick() {
+    if (!isAuthenticated) {
+      router.push("/login");
+      return;
+    }
+
+    setLoading(true);
+    setError(false);
+    try {
+      await addBookToLibrary({
+        isbn: isbn ?? `ol-${bookId}`,
+        openLibraryId: bookId,
+        title,
+        author: author ?? undefined,
+        genre: category ?? undefined,
+        thumbnail: thumbnail ?? undefined,
+        publishedYear: publishedYear ?? undefined,
+        status: "TO_READ",
+      });
+
+      setAdded(true);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <button
       type="button"
-      onClick={() =>
-        add({
-          openLibraryId: bookId,
-          isbn,
-          title,
-          author: author ?? undefined,
-          genre: category ?? undefined,
-          thumbnail: thumbnail ?? undefined,
-          publishedYear: publishedYear ?? undefined,
-        })
-      }
-      disabled={authLoading || loading}
+      onClick={handleClick}
+      disabled={authLoading || loading || added}
       className={`flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium whitespace-nowrap shrink-0 disabled:opacity-60 ${
         error
           ? "bg-red-500 hover:bg-red-600 text-white"
@@ -59,6 +74,8 @@ export default function AddToLibraryButton({
     >
       {loading
         ? t("loading")
+        : added
+        ? t("added")
         : error
         ? t("error")
         : (

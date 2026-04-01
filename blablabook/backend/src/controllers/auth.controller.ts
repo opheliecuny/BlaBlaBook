@@ -10,12 +10,10 @@ export async function registerUser(req: Request, res: Response) {
   const registerUserBodySchema = z.object({
     email: z.email(),
     password: z.string()
-      .min(8, "password should have at least 8 characters")
-      .max(100, "password should have at most 100 characters")
-      .regex(/[a-z]/, "password should contain at least a lowercase character")
-      .regex(/[A-Z]/, "password should contain at least an uppercase character")
-      .regex(/[0-9]/, "password should contain at least a digit")
-      .regex(/[^a-zA-Z0-9]/, "password should contain at least a special character"),
+      .min(8, "password should have at least 8 caracters") // CNIL recommande plutôt 12 caractères
+      .max(100, "password should have at most 100 caracters")
+      .regex(/[a-z]/, "password should contain at least a lowercase caracter")
+      .regex(/[A-Z]/, "password should contain at least a uppercase caracter"),
     confirm: z.string(),
     username: z.string().min(1)
   }).refine(data => data.password === data.confirm, {
