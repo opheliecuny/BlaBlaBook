@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Wireframe — Profil utilisateur</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { overflow-x: hidden; }
+  body { font-family: Arial, sans-serif; background: #e8e8e8; font-size: 14px; color: #333; }
+  .top-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 5px 14px; font-size: 11px; color: #aaa; }
+  .top-bar .route { background: #555; color: #fff; padding: 1px 7px; font-size: 11px; margin: 0 2px; }
+  .wrapper { background: #fff; max-width: 1140px; margin: 0 auto; }
+  .navbar { background: #fff; border-bottom: 1px solid #ddd; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { background: #555; color: #fff; padding: 7px 14px; font-weight: bold; font-size: 15px; display: inline-block; }
+  .nav-links { display: flex; gap: 6px; }
+  .nav-btn { border: 1px solid #bbb; padding: 7px 14px; background: #fff; font-size: 13px; color: #555; cursor: pointer; }
+  .nav-btn.active { background: #666; color: #fff; border-color: #666; }
+  .content { padding: 24px 28px; }
+  .section-label-center { display: flex; align-items: center; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #999; margin: 20px 0 14px; gap: 14px; }
+  .section-label-center::before, .section-label-center::after { content: ''; flex: 1; height: 1px; background: #e0e0e0; }
+  .dash { border: 1px dashed #ccc; padding: 6px 10px; background: #fafafa; font-size: 12px; color: #bbb; }
+  .hatch { background: repeating-linear-gradient(45deg, #ebebeb, #ebebeb 5px, #ddd 5px, #ddd 6px); border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 12px; }
+  .btn-primary { background: #666; color: #fff; border: none; padding: 9px 22px; font-size: 13px; cursor: pointer; }
+  .btn-secondary { background: #fff; color: #555; border: 1px solid #bbb; padding: 9px 22px; font-size: 13px; cursor: pointer; }
+  .form-group { margin-bottom: 16px; }
+  .form-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 5px; display: block; }
+  .form-input { width: 100%; border: 1px solid #bbb; padding: 9px 10px; font-size: 13px; color: #444; background: #fff; }
+  .form-input.placeholder { color: #ccc; }
+  .form-textarea { width: 100%; border: 1px solid #bbb; padding: 9px 10px; font-size: 13px; color: #444; background: #fff; height: 70px; }
+  .form-hint { border: 1px dashed #ccc; background: #f8f8f8; padding: 6px 10px; font-size: 11px; color: #aaa; margin-top: 4px; }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  .form-actions { display: flex; gap: 10px; margin-top: 4px; }
+  .strength-bar { display: flex; gap: 4px; margin-top: 5px; }
+  .strength-seg { flex: 1; height: 4px; background: #e0e0e0; }
+  .strength-seg.on { background: #888; }
+  .footer { background: #e0e0e0; border-top: 1px solid #ccc; padding: 18px; text-align: center; font-size: 13px; color: #888; }
+</style>
+</head>
+<body>
+<div class="top-bar">Wireframe · <span class="route">/profil</span> — Page de profil · Utilisateur connecté</div>
+<div class="wrapper">
+  <div class="navbar">
+    <div class="logo">BlaBlaBook</div>
+    <div class="nav-links">
+      <button class="nav-btn">Accueil</button>
+      <button class="nav-btn">Rechercher</button>
+      <button class="nav-btn">Ma bibliothèque</button>
+      <button class="nav-btn active">Profil</button>
+      <button class="nav-btn">Déconnexion</button>
+    </div>
+  </div>
+  <div class="content">
+
+    <div class="section-label-center">Profil utilisateur</div>
+    <div style="display:flex;align-items:center;gap:20px;border:1px solid #ddd;padding:20px;margin-bottom:4px;background:#fafafa;">
+      <div class="hatch" style="width:80px;height:80px;flex-shrink:0;">Photo</div>
+      <div>
+        <div style="font-size:17px;font-weight:bold;color:#333;margin-bottom:3px;">John Doe</div>
+        <div style="font-size:13px;color:#888;margin-bottom:3px;">john.doe@email.com</div>
+        <div style="font-size:11px;color:#aaa;font-style:italic;margin-bottom:10px;">Membre depuis janvier 2025</div>
+      </div>
+    </div>
+
+    <div class="section-label-center" style="margin-top:20px;">Informations personnelles</div>
+    <div style="border:1px solid #ddd;padding:20px;background:#fafafa;margin-bottom:4px;">
+      <div class="form-row">
+        <div class="form-group" style="margin-bottom:0;">
+          <div class="form-label">Prénom</div>
+          <div class="form-input">John</div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <div class="form-label">Nom</div>
+          <div class="form-input">Doe</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Adresse e-mail</div>
+        <div class="form-input">john.doe@email.com</div>
+        <div class="form-hint">⚠ La modification de l'email nécessite une confirmation par lien</div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-primary">Enregistrer</button>
+        <button class="btn-secondary">Annuler</button>
+      </div>
+    </div>
+
+    <div class="section-label-center" style="margin-top:20px;">Sécurité — Changer le mot de passe</div>
+    <div style="border:1px solid #ddd;padding:20px;background:#fafafa;margin-bottom:4px;">
+      <div class="form-row-3">
+        <div class="form-group" style="margin-bottom:0;">
+          <div class="form-label">Mot de passe actuel</div>
+          <div class="form-input placeholder">••••••••</div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <div class="form-label">Nouveau mot de passe</div>
+          <div class="form-input placeholder">••••••••••</div>
+        </div>
+        <div class="form-group" style="margin-bottom:0;">
+          <div class="form-label">Confirmer le mot de passe</div>
+          <div class="form-input placeholder">••••••••••</div>
+          <div class="form-hint">✓ Les mots de passe correspondent</div>
+        </div>
+      </div>
+      <div class="form-actions" style="margin-top:14px;">
+        <button class="btn-primary">Mettre à jour</button>
+        <button class="btn-secondary">Annuler</button>
+      </div>
+      <div class="form-hint" style="margin-top:10px;">Règles : min. 8 caractères, 1 majuscule, 1 chiffre, 1 caractère spécial (!@#...)</div>
+    </div>
+
+    <div class="section-label-center" style="margin-top:20px;">Zone de danger</div>
+    <div style="border:1px dashed #ccc;padding:20px;background:#fafafa;margin-bottom:4px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div>
+          <div style="font-size:13px;font-weight:bold;color:#555;">Supprimer mon compte</div>
+          <div style="font-size:11px;color:#aaa;margin-top:4px;">Action irréversible — toutes vos données seront supprimées (bibliothèque, profil)</div>
+        </div>
+        <button class="btn-secondary" style="padding:7px 16px;font-size:12px;">Supprimer le compte</button>
+      </div>
+      <div class="dash" style="text-align:center;margin-top:12px;font-size:11px;">Une confirmation par email sera envoyée avant suppression définitive</div>
+    </div>
+
+  </div>
+  <div class="footer">BlaBlaBook — Pied de page</div>
+</div>
+</body>
+</html>

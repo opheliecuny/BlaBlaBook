@@ -34,6 +34,7 @@ export default function LoginPage() {
         username: response.username || email,
       });
 
+      sessionStorage.setItem("just_logged_in", "true");
       router.push("/library");
     } catch (err) {
       if (err instanceof Error) {

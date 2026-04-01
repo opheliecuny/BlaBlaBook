@@ -5,6 +5,8 @@ import { router as userRouter } from "../../src/routes/user.router";
 import { router as libraryRouter } from "../../src/routes/library.router";
 import { router as bookRouter } from "../../src/routes/book.router";
 import { errorHandler } from "../../src/middlewares/errorHandler";
+import { xssSanitizer } from "../../src/middlewares/xss-sanitizer.middleware";
+import { helmetMiddleware } from "../../src/middlewares/helmet.middleware";
 
 /**
  * Crée une application Express de test avec toutes les routes
@@ -15,6 +17,8 @@ export function createTestServer(): Express {
   // Middlewares
   app.use(express.json());
   app.use(cookieParser());
+  app.use(xssSanitizer);
+  app.use(helmetMiddleware);
 
   // Routes
   app.use(authRouter);

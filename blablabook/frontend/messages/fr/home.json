@@ -4,12 +4,15 @@
     "title": "BlaBlaBook",
     "description": "Une façon simple et agréable de ne plus jamais perdre le fil de vos lectures. Notre application vous permet d'organiser facilement votre bibliothèque personnelle : ajoutez vos ouvrages, suivez vos lectures et retrouvez en un instant les livres que vous aimez.",
     "loginCta": "Se connecter",
-    "registerCta": "Créer un compte"
+    "registerCta": "Créer un compte",
+    "libraryCta": "Ma bibliothèque",
+    "searchCta": "Rechercher un livre"
   },
   "section": {
     "moment": {
       "title": "LIVRES DU MOMENT",
-      "subtitle": "SÉLECTION ALÉATOIRE"
+      "subtitle": "SÉLECTION ALÉATOIRE",
+      "subtitlePersonalized": "SÉLECTION PERSONNALISÉE"
     }
   },
   "error": {

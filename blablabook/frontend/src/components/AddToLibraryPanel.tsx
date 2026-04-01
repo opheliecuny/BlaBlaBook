@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
-import { addBookToLibrary } from "@/services/libraryService";
+import { useAddToLibrary } from "@/hooks/useAddToLibrary";
 import type { ReadingStatus } from "@/types/library";
 import { useTranslations } from "next-intl";
 
@@ -27,34 +27,9 @@ export default function AddToLibraryPanel({
   genre,
 }: Props) {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { add, loading, added, error } = useAddToLibrary();
   const [status, setStatus] = useState<ReadingStatus>("TO_READ");
-  const [loading, setLoading] = useState(false);
-  const [added, setAdded] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
   const t = useTranslations("components.addToLibraryPanel");
-
-  async function handleAdd() {
-    setLoading(true);
-    setError(null);
-    try {
-      await addBookToLibrary({
-        isbn: isbn ?? `ol-${openLibraryId}`,
-        openLibraryId,
-        title,
-        author: author ?? undefined,
-        genre: genre ?? undefined,
-        thumbnail,
-        publishedYear: publishedYear ? parseInt(publishedYear) : undefined,
-        status,
-      });
-      setAdded(true);
-    } catch {
-      setError(t("error"));
-    } finally {
-      setLoading(false);
-    }
-  }
 
   return (
     <div className="flex flex-col gap-2.5 border border-border rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-4">
@@ -80,7 +55,18 @@ export default function AddToLibraryPanel({
         <>
           <button
             type="button"
-            onClick={handleAdd}
+            onClick={() =>
+              add({
+                openLibraryId,
+                isbn,
+                title,
+                author: author ?? undefined,
+                genre: genre ?? undefined,
+                thumbnail,
+                publishedYear: publishedYear ? parseInt(publishedYear) : undefined,
+                status,
+              })
+            }
             disabled={loading || added || authLoading}
             className="w-full inline-flex items-center justify-center rounded-md bg-primary text-primary-foreground px-5 py-2 text-[0.65rem] font-medium hover:bg-primary/90 whitespace-nowrap disabled:opacity-60"
           >

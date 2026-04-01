@@ -1,8 +1,8 @@
 // src/app/[locale]/search/page.tsx
 import Link from "next/link";
-import AddToLibraryButton from "@/components/AddToLibraryButton";
 import BookCover from "@/components/BookCover";
 import { getTranslations } from "next-intl/server";
+import SearchBookActions from "@/components/SearchBookActions";
 
 interface SearchPageProps {
   searchParams: Promise<{ q?: string; page?: string }>;
@@ -130,7 +130,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                           >
                             {t("viewDetails")}
                           </Link>
-                          <AddToLibraryButton
+                          <SearchBookActions
                             bookId={bookId}
                             isbn={book.isbn}
                             title={book.title}

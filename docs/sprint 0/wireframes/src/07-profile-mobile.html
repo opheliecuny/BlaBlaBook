@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Wireframe Mobile — Profil</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { overflow-x: hidden; }
+  body { font-family: Arial, sans-serif; background: #e8e8e8; font-size: 14px; color: #333; width: 375px; }
+  .top-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 5px 12px; font-size: 10px; color: #aaa; }
+  .top-bar .route { background: #555; color: #fff; padding: 1px 6px; font-size: 10px; margin: 0 2px; }
+  .wrapper { background: #fff; }
+  .navbar { background: #fff; border-bottom: 1px solid #ddd; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { background: #555; color: #fff; padding: 6px 12px; font-weight: bold; font-size: 14px; }
+  .hamburger { display: flex; flex-direction: column; gap: 5px; }
+  .hamburger span { width: 22px; height: 2px; background: #555; display: block; }
+  .content { padding: 16px; }
+  .section-label-center { display: flex; align-items: center; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #999; margin: 14px 0 10px; gap: 12px; }
+  .section-label-center::before, .section-label-center::after { content: ''; flex: 1; height: 1px; background: #e0e0e0; }
+  .dash { border: 1px dashed #ccc; padding: 6px 10px; background: #fafafa; font-size: 12px; color: #bbb; }
+  .hatch { background: repeating-linear-gradient(45deg, #ebebeb, #ebebeb 5px, #ddd 5px, #ddd 6px); border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 11px; }
+  .btn-primary { background: #666; color: #fff; border: none; padding: 11px; font-size: 13px; cursor: pointer; width: 100%; margin-bottom: 8px; display: block; }
+  .btn-secondary { background: #fff; color: #555; border: 1px solid #bbb; padding: 11px; font-size: 13px; cursor: pointer; width: 100%; margin-bottom: 8px; display: block; }
+  .btn-sm { background: #fff; color: #555; border: 1px solid #bbb; padding: 6px 14px; font-size: 12px; cursor: pointer; width: 100%; }
+  .form-group { margin-bottom: 12px; }
+  .form-label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 5px; display: block; }
+  .form-input { width: 100%; border: 1px solid #bbb; padding: 10px; font-size: 13px; color: #444; background: #fff; }
+  .form-input.placeholder { color: #ccc; }
+  .form-textarea { width: 100%; border: 1px solid #bbb; padding: 10px; font-size: 13px; color: #444; background: #fff; height: 60px; }
+  .form-hint { border: 1px dashed #ccc; background: #f8f8f8; padding: 5px 10px; font-size: 11px; color: #aaa; margin-top: 4px; }
+  .strength-bar { display: flex; gap: 4px; margin-top: 5px; }
+  .strength-seg { flex: 1; height: 4px; background: #e0e0e0; }
+  .strength-seg.on { background: #888; }
+  .footer { background: #e0e0e0; border-top: 1px solid #ccc; padding: 14px; text-align: center; font-size: 12px; color: #888; }
+</style>
+</head>
+<body>
+<div class="top-bar">Wireframe · <span class="route">/profil</span> — Page de profil · Utilisateur connecté</div>
+<div class="wrapper">
+  <div class="navbar">
+    <div class="logo">BlaBlaBook</div>
+    <div class="hamburger"><span></span><span></span><span></span></div>
+  </div>
+  <div class="content">
+
+    <div class="section-label-center">Profil utilisateur</div>
+    <div style="border:1px solid #ddd;padding:16px;text-align:center;background:#fafafa;margin-bottom:4px;display:flex;flex-direction:column;align-items:center;gap:10px;">
+      <div class="hatch" style="width:70px;height:70px;">Photo</div>
+      <div style="font-size:16px;font-weight:bold;color:#333;">John Doe</div>
+      <div style="font-size:12px;color:#888;">john.doe@email.com</div>
+      <div style="font-size:11px;color:#aaa;font-style:italic;">Membre depuis janvier 2025</div>
+    </div>
+
+    <div class="section-label-center">Informations personnelles</div>
+    <div style="border:1px solid #ddd;padding:16px;background:#fafafa;margin-bottom:4px;">
+      <div class="form-group">
+        <div class="form-label">Prénom</div>
+        <div class="form-input">John</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Nom</div>
+        <div class="form-input">Doe</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Adresse e-mail</div>
+        <div class="form-input">john.doe@email.com</div>
+        <div class="form-hint">⚠ Confirmation par lien requise</div>
+      </div>
+      <button class="btn-primary">Enregistrer</button>
+      <button class="btn-secondary" style="margin-bottom:0;">Annuler</button>
+    </div>
+
+    <div class="section-label-center">Sécurité — Mot de passe</div>
+    <div style="border:1px solid #ddd;padding:16px;background:#fafafa;margin-bottom:4px;">
+      <div class="form-group">
+        <div class="form-label">Mot de passe actuel</div>
+        <div class="form-input placeholder">••••••••</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Nouveau mot de passe</div>
+        <div class="form-input placeholder">••••••••••</div>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Confirmer le mot de passe</div>
+        <div class="form-input placeholder">••••••••••</div>
+        <div class="form-hint">✓ Les mots de passe correspondent</div>
+      </div>
+      <button class="btn-primary">Mettre à jour</button>
+      <button class="btn-secondary" style="margin-bottom:0;">Annuler</button>
+    </div>
+
+    <div class="section-label-center">Zone de danger</div>
+    <div style="border:1px dashed #ccc;padding:16px;background:#fafafa;margin-bottom:4px;">
+      <div style="font-size:13px;font-weight:bold;color:#555;margin-bottom:4px;">Supprimer mon compte</div>
+      <div style="font-size:11px;color:#aaa;margin-bottom:12px;">Action irréversible — bibliothèque et profil supprimés définitivement</div>
+      <button class="btn-secondary" style="margin-bottom:8px;">Supprimer le compte</button>
+      <div class="dash" style="text-align:center;font-size:11px;">Confirmation par email avant suppression</div>
+    </div>
+
+  </div>
+  <div class="footer">BlaBlaBook — Pied de page</div>
+</div>
+</body>
+</html>

@@ -22,6 +22,7 @@
   "authError": "Unable to verify your session. Check your connection.",
   "retry": "Retry",
   "empty": "No books found in this category.",
+  "emptySearch": "No books match your search.",
   "explore": "Browse catalog",
   "delete": {
     "title": "Delete this book?",
@@ -38,5 +39,9 @@
   "statusUpdated": "Status updated.",
   "statusError": "Failed to update status.",
   "deleteSuccess": "\"{title}\" removed from your library.",
-  "deleteError": "Failed to delete the book."
+  "deleteError": "Failed to delete the book.",
+  "welcomeToast": "Welcome {username} — {count} book{plural} in your library",
+  "onboardingTitle": "Your library is empty",
+  "onboardingDescription": "Start by searching for books and adding them to your collection to track your reading.",
+  "onboardingCta": "Discover books"
 }

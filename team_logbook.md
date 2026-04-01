@@ -180,14 +180,14 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 ### 31/03/2026
 
-*Résumé*
+*Sprint 3 Jour 2 : fix backend dev (Redis/Prisma), review PR #161, adaptation pagination bibliothèque, recherche /library*
 
 #### Infos individuelles
 
 - **Ophélie :** Correction de contraste du mode sombre (variable --primary de la classe dark) qui se fondait trop par rapport au fond de l'application. Correction du fond du bouton "se connecter" sur la page d'accueil en mode dark responsive pour harmoniser le visuel. optimisation du chargement de l'image du hero sur la page d'accueil (propiété sizes était manquante, impérative selon la doc render) et ajout d'une peropriété priority sur celle-ci.
 - **Rémi :**Terminé le contenu en/fr de toutes les pages et implémenté les composants également (du effectuer une petite modification du fichier de configuration pour cela). Ajout d'une fonctionnalité de toggle pour gérer le choix de la langue d'affichage. 
 - **Paul :**
-- **Christopher :**
+- **Christopher :** Fix démarrage backend dev (RedisStore crash, Prisma binaire, Turbopack lockfile). Review PR #161 : bug cookie refreshToken via proxy. Page `/library` : réponse paginée + recherche + pagination 16/page + harmonisation layout. Fix couvertures (upsert + BookCover `<img>` natif). `LibraryStatusContext` + `SearchBookActions` (badge "Déjà ajouté" + suppression sur `/search`). Fix dark mode + conflits ports Docker/CORS. Homepage : `HeroCTAs` conditionnel, bouton `+ Biblio`. **Algorithme de recommandation personnalisée** : profil utilisateur pondéré (genre/auteur/époque × statut × rating), scoring multi-critères 0-100, requête sérendipité anti bulle de filtre, cache Redis 30min/user, fallback aléatoire si <3 livres. **Préparation standup 01/04** : 16 propositions UX rédigées et partagées à l'équipe. PR #162.
 
 ---
 
@@ -240,6 +240,19 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 - **Rémi :**
 - **Paul :**
 - **Christopher :** Mise en place GitHub Actions CI (PR #86). Corrections TypeScript backend (PR #87) : imports cassés suite PR #84, type `req.user` aligné. Fix CI suite diagnostic (PR #89) : `DATABASE_URL` factice pour `prisma generate`, lint backend (semicolons, unused vars, ESLint config) — CI verte ✅ Backend + Frontend. Bug signalé à Rémi (login ne retourne plus les données user) et Paul (conflit export types — corrigé PR #88).
+
+---
+
+### 01/04/2026
+
+*Standup équipe + début d'implémentation des améliorations UX sprint 3.*
+
+#### Infos individuelles
+
+- **Ophélie :**
+- **Rémi :**
+- **Paul :**
+- **Christopher :** Standup — présentation et priorisation des 16 propositions UX (11 validées). Implémentation point #3 (label "Sélection personnalisée" homepage, i18n fr+en), point #6 (sélecteur de tri `/library`), point #16 (toast de bienvenue après login). PR #172 : correction backlog complet (AuthContext typé, validation mdp backend alignée, hook useAddToLibrary, 10 tests sécurité). Point #11 : onboarding bibliothèque vide (écran illustré + CTA recherche, masquage stats/filtres quand vide). Préparation point Amo #3.
 
 ---
 

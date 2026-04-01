@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Wireframe Mobile — Accueil</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { overflow-x: hidden; }
+  body { font-family: Arial, sans-serif; background: #e8e8e8; font-size: 14px; color: #333; width: 375px; }
+  .top-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 5px 12px; font-size: 10px; color: #aaa; }
+  .top-bar .route { background: #555; color: #fff; padding: 1px 6px; font-size: 10px; margin: 0 2px; }
+  .wrapper { background: #fff; }
+  .navbar { background: #fff; border-bottom: 1px solid #ddd; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; }
+  .logo { background: #555; color: #fff; padding: 6px 12px; font-weight: bold; font-size: 14px; }
+  .hamburger { display: flex; flex-direction: column; gap: 5px; }
+  .hamburger span { width: 22px; height: 2px; background: #555; display: block; }
+  .content { padding: 16px; }
+  .section-label { display: flex; align-items: center; font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #999; margin: 16px 0 12px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: #e0e0e0; margin-left: 10px; }
+  .dash { border: 1px dashed #ccc; padding: 6px 10px; background: #fafafa; font-size: 12px; color: #bbb; text-align: center; }
+  .hatch { background: repeating-linear-gradient(45deg, #ebebeb, #ebebeb 5px, #ddd 5px, #ddd 6px); border: 1px solid #ccc; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 11px; }
+  .btn-primary { background: #666; color: #fff; border: none; padding: 11px; font-size: 14px; cursor: pointer; width: 100%; display: block; }
+  .btn-secondary { background: #fff; color: #555; border: 1px solid #bbb; padding: 11px; font-size: 14px; cursor: pointer; width: 100%; display: block; }
+  .book-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  .book-card { border: 1px solid #ddd; }
+  .book-cover { width: 100%; height: 120px; }
+  .book-body { padding: 8px; display: flex; flex-direction: column; gap: 5px; }
+  .tag { border: 1px solid #ccc; border-radius: 20px; padding: 2px 8px; font-size: 10px; color: #888; display: inline-block; }
+  .footer { background: #e0e0e0; border-top: 1px solid #ccc; padding: 14px; text-align: center; font-size: 12px; color: #888; }
+</style>
+</head>
+<body>
+<div class="top-bar">Wireframe · <span class="route">/</span> — Page d'accueil · Visiteur non connecté</div>
+<div class="wrapper">
+  <div class="navbar">
+    <div class="logo">BlaBlaBook</div>
+    <div class="hamburger"><span></span><span></span><span></span></div>
+  </div>
+  <div class="content">
+
+    <div class="section-label">Hero — Présentation du projet</div>
+    <div style="border:1px dashed #ccc;padding:20px 14px;text-align:center;background:#fafafa;margin-bottom:16px;display:flex;flex-direction:column;gap:12px;">
+      <div class="dash" style="font-size:16px;font-weight:bold;">BlaBlaBook</div>
+      <div class="dash">Gérez votre bibliothèque personnelle, découvrez de nouveaux livres et interagissez avec une communauté de lecteurs.</div>
+      <button class="btn-primary">Créer un compte</button>
+      <button class="btn-secondary">Se connecter</button>
+    </div>
+
+    <div class="section-label">Livres du moment — Sélection aléatoire (Google Books API)</div>
+    <div class="book-grid">
+      <div class="book-card">
+        <div class="book-cover hatch">Couverture</div>
+        <div class="book-body">
+          <div class="dash" style="font-size:11px;">Titre du livre</div>
+          <div class="dash" style="font-size:11px;">Auteur</div>
+          <div style="display:flex;gap:4px;"><span class="tag">Genre</span><span class="tag">Année</span></div>
+          <button class="btn-primary" style="padding:7px;font-size:12px;">Voir le détail</button>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-cover hatch">Couverture</div>
+        <div class="book-body">
+          <div class="dash" style="font-size:11px;">Titre du livre</div>
+          <div class="dash" style="font-size:11px;">Auteur</div>
+          <div style="display:flex;gap:4px;"><span class="tag">Genre</span><span class="tag">Année</span></div>
+          <button class="btn-primary" style="padding:7px;font-size:12px;">Voir le détail</button>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-cover hatch">Couverture</div>
+        <div class="book-body">
+          <div class="dash" style="font-size:11px;">Titre du livre</div>
+          <div class="dash" style="font-size:11px;">Auteur</div>
+          <div style="display:flex;gap:4px;"><span class="tag">Genre</span><span class="tag">Année</span></div>
+          <button class="btn-primary" style="padding:7px;font-size:12px;">Voir le détail</button>
+        </div>
+      </div>
+      <div class="book-card">
+        <div class="book-cover hatch">Couverture</div>
+        <div class="book-body">
+          <div class="dash" style="font-size:11px;">Titre du livre</div>
+          <div class="dash" style="font-size:11px;">Auteur</div>
+          <div style="display:flex;gap:4px;"><span class="tag">Genre</span><span class="tag">Année</span></div>
+          <button class="btn-primary" style="padding:7px;font-size:12px;">Voir le détail</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Call to Action — Recherche</div>
+    <div style="border:1px dashed #ccc;padding:16px;background:#fafafa;margin-bottom:16px;display:flex;flex-direction:column;gap:10px;">
+      <div class="dash">Vous cherchez un livre en particulier ?</div>
+      <input type="text" placeholder="Rechercher un livre, un auteur..." style="width:100%;border:1px solid #bbb;padding:9px 12px;font-size:13px;color:#aaa;background:#fff;">
+      <button class="btn-primary">Rechercher</button>
+    </div>
+
+  </div>
+  <div class="footer">BlaBlaBook — Pied de page</div>
+</div>
+</body>
+</html>
