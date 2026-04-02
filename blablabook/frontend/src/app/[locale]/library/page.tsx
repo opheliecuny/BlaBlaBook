@@ -314,7 +314,7 @@ export default function LibraryPage() {
         <EmptyState hasBooks={books.length > 0} />
       ) : (
         <ul className="divide-border/50 border-border/50 *:border-border/50 2n:border-r-0 md:2n:border-r md:4n:border-r-0 grid grid-cols-2 divide-y *:border-r md:grid-cols-4">
-          {paginatedBooks.map((book) => (
+          {paginatedBooks.map((book, i) => (
             <li
               key={book.bookId}
               className="flex flex-col px-4 py-6 sm:px-8 sm:py-12"
@@ -324,6 +324,7 @@ export default function LibraryPage() {
                   src={book.cover}
                   alt={`Couverture du livre ${book.title}`}
                   className="aspect-2/3 w-full rounded-xl object-cover shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
+                  priority={i === 0}
                 />
                 <AlertDialog>
                   <AlertDialogTrigger

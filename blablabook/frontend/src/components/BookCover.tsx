@@ -7,9 +7,10 @@ interface Props {
   src: string | null;
   alt: string;
   className?: string;
+  priority?: boolean;
 }
 
-export default function BookCover({ src, alt, className }: Props) {
+export default function BookCover({ src, alt, className, priority }: Props) {
   // Image par défaut si src est null ou contient "undefined"
   const defaultFallback = "/default-cover.png";
 
@@ -33,7 +34,7 @@ export default function BookCover({ src, alt, className }: Props) {
       className={className}
       onError={() => setHasError(true)}
       // Optimisation : charge les couvertures visibles plus rapidement
-      priority={false}
+      priority={priority ?? false}
     />
   );
 }

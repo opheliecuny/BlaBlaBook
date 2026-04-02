@@ -87,6 +87,7 @@ export default function RandomBooksSection({
                     src={book.coverThumbnail}
                     alt={`Couverture de ${book.title}`}
                     className="aspect-2/3 w-full rounded-xl object-cover shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
+                    priority={i === 0} // Prioriser le chargement de la première image pour une meilleure performance perçue
                   />
                   <div className="mt-3 flex flex-1 flex-col">
                     <h3 className="font-playfair text-base leading-snug font-bold">
