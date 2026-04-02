@@ -17,8 +17,9 @@ export default function LanguageToggle() {
     const newLocale = isEnglish ? "fr" : "en";
     const segments = pathname.split("/");
     segments[1] = newLocale;
+    const search = window.location.search;
     startTransition(() => {
-      router.replace(segments.join("/"));
+      router.replace(segments.join("/") + search);
     });
   }
 
