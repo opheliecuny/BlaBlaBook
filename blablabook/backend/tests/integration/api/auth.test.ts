@@ -402,6 +402,32 @@ describe("Auth API Integration Tests", () => {
     it("devrait retourner 401 si l'utilisateur n'est pas authentifié", async () => {
       await request(app).get("/auth/me").expect(401);
     });
+
+    // Couvre auth.controller.ts ligne 150 : user supprimé après émission du token
+    it("devrait retourner 401 si l'utilisateur a été supprimé après la connexion (ligne 150)", async () => {
+      const user = await createTestUser({
+        email: "ghost@example.com",
+        password: "Password123",
+        username: "ghostuser",
+      });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "ghost@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers["set-cookie"];
+
+      // Supprimer les refresh tokens puis l'utilisateur (contrainte FK sur la DB de test)
+      await prisma.refresh_token.deleteMany({ where: { userId: user.id } });
+      await prisma.user.delete({ where: { id: user.id } });
+
+      const response = await request(app)
+        .get("/auth/me")
+        .set("Cookie", cookies)
+        .expect(401);
+
+      expect(response.body.message).toBe("User does not exist");
+    });
   });
 
   describe("POST /auth/login — nettoyage des tokens expirés", () => {

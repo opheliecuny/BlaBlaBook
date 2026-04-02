@@ -50,6 +50,32 @@ describe("User API Integration Tests", () => {
     it("devrait retourner 401 si l'utilisateur n'est pas authentifié", async () => {
       await request(app).get("/user/profile").expect(401);
     });
+
+    // Couvre user.controller.ts ligne 23 : user supprimé après émission du token
+    it("devrait retourner 401 si l'utilisateur a été supprimé après la connexion (ligne 23)", async () => {
+      const user = await createTestUser({
+        email: "deleted@example.com",
+        password: "Password123",
+        username: "deleteduser",
+      });
+
+      const loginResponse = await request(app)
+        .post("/auth/login")
+        .send({ email: "deleted@example.com", password: "Password123" });
+
+      const cookies = loginResponse.headers["set-cookie"];
+
+      // Supprimer les refresh tokens puis l'utilisateur (contrainte FK sur la DB de test)
+      await prisma.refresh_token.deleteMany({ where: { userId: user.id } });
+      await prisma.user.delete({ where: { id: user.id } });
+
+      const response = await request(app)
+        .get("/user/profile")
+        .set("Cookie", cookies)
+        .expect(401);
+
+      expect(response.body.message).toBe("User does not exist");
+    });
   });
 
   describe("PATCH /user/profile", () => {

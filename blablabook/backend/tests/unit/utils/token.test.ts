@@ -157,6 +157,35 @@ describe("Token Utils", () => {
         },
       );
     });
+
+    // Couvre la branche ligne 62 : path = "/api/auth/refresh" en production
+    it("devrait utiliser /api/auth/refresh comme path en production (ligne 62)", () => {
+      vi.stubEnv("NODE_ENV", "production");
+
+      const mockResponse = {
+        cookie: vi.fn(),
+      } as unknown as Response;
+
+      const mockRefreshToken = {
+        token: "mock-refresh-token",
+        type: "Bearer" as const,
+        expiresInMS: 7 * 24 * 60 * 60 * 1000,
+      };
+
+      setRefreshTokenCookie(mockResponse, mockRefreshToken);
+
+      expect(mockResponse.cookie).toHaveBeenCalledWith(
+        "refreshToken",
+        mockRefreshToken.token,
+        expect.objectContaining({
+          path: "/api/auth/refresh",
+          secure: true,
+          sameSite: "lax",
+        }),
+      );
+
+      vi.unstubAllEnvs();
+    });
   });
 
   describe("replaceRefreshTokenInDatabase", () => {

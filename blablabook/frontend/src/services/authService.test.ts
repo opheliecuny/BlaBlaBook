@@ -58,8 +58,20 @@ describe("authService", () => {
     });
 
     it("ne lève pas d'erreur si la requête échoue", async () => {
+      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
       mockApiClient.post.mockRejectedValueOnce(new Error("Network error"));
       await expect(logout()).resolves.toBeUndefined();
+      consoleSpy.mockRestore();
+    });
+
+    // Couvre authService.ts ligne 30 : branche false de typeof window !== "undefined"
+    it("ne lève pas d'erreur si window est indisponible (contexte SSR, ligne 30)", async () => {
+      mockApiClient.post.mockResolvedValueOnce(null);
+      vi.stubGlobal("window", undefined);
+
+      await expect(logout()).resolves.toBeUndefined();
+
+      vi.unstubAllGlobals();
     });
   });
 });

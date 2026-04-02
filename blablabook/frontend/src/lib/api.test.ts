@@ -104,9 +104,33 @@ describe("ApiClient", () => {
       expect(window.location.href).toBe("/login");
     });
 
-    it("lève une erreur réseau si fetch échoue", async () => {
+    // Couvre api.ts ligne 52 : refresh réussi → rejoue la requête originale
+    it("rejoue la requête originale après un refresh réussi (ligne 52)", async () => {
+      // Appel 1 : /library → 401 (token expiré)
+      mockFetch.mockReturnValueOnce(mockResponse({ message: "Non autorisé" }, 401));
+      // Appel 2 : /auth/refresh → 200 (nouveau token reçu)
+      mockFetch.mockReturnValueOnce(mockResponse({}, 200));
+      // Appel 3 : /library rejoué → 200 (succès)
+      mockFetch.mockReturnValueOnce(mockResponse([{ id: "1" }]));
+
+      const result = await apiClient.get("/library");
+
+      expect(mockFetch).toHaveBeenCalledTimes(3);
+      expect(result).toEqual([{ id: "1" }]);
+    });
+
+    it("lève une erreur réseau si fetch échoue avec une Error", async () => {
       mockFetch.mockRejectedValueOnce(new TypeError("Failed to fetch"));
       await expect(apiClient.get("/books")).rejects.toThrow("Failed to fetch");
+    });
+
+    // Couvre api.ts ligne 76 : catch quand l'exception n'est pas une instance d'Error
+    it("lève une erreur réseau générique si l'exception n'est pas une Error (ligne 76)", async () => {
+      // fetch rejette avec une valeur non-Error (chaîne, objet, etc.)
+      mockFetch.mockRejectedValueOnce("network failure");
+      await expect(apiClient.get("/books")).rejects.toThrow(
+        "Une erreur réseau est survenue",
+      );
     });
   });
 });
