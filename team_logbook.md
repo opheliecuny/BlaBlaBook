@@ -112,8 +112,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 - **Ophélie :** Passage en front, prise en main du code. Premier travail de dynamisation sur la page de profil (affichage des données personnelles) et connexion à l'API dont nouvelles routes (GET et DELETE) pour rendre les fonctionnalités fonctionnelles, ajout de services user en accord avec les nouvelles routes API Express.
 - **Rémi :** Perdu un temps fou à essayer de modifier le code front pour ne plus utiliser le localStorage et passer uniquement aux cookies. Commenc" un début de responsive sur la page book:id.
 - **Paul :** Installation complète de Vitest pour le backend. Création de 45 tests (33 unitaires + 12 intégration) avec 100% de succès. Configuration base de données de test (testdb) et helpers de test. Ajout routes GET /user/profile et DELETE /user. Résolution problèmes Prisma (Query Engine, credentials, migrations). Correction conflit types frontend (UpdateProfileResponse).
-
-- **Christopher :**
+- **Christopher :** Mise en place GitHub Actions CI (PR #86). Corrections TypeScript backend (PR #87) : imports cassés suite PR #84, type `req.user` aligné. Fix CI suite diagnostic (PR #89) : `DATABASE_URL` factice pour `prisma generate`, lint backend (semicolons, unused vars, ESLint config) — CI verte ✅ Backend + Frontend. Bug signalé à Rémi (login ne retourne plus les données user) et Paul (conflit export types — corrigé PR #88).
 
 ---
 
@@ -161,7 +160,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 - **Ophélie :** Amélioration générale de l'UX avec notamment un message d'erreur plutôt que des placeholders sur la page d'accueil lorsque le fetch vers l'API ne fonctionne pas. Sur la page de recherche les genres sont coupés si trop longs avec possibilité de l'afficher en entier au survol. Indications précises avec un indicateur de force sur l'entrée du mot de passe lors de l'inscription et possibilité de cacher ou afficher le contenu des input de type password.
 - **Rémi :** Refactorisation de l'ensemble du code pour utiliser le moins possible de valeurs hardcodées et pouvoir synchroniser autant que possible notre site. Préparé l'exposé de la semaine en me basant sur le carnet de bord de l'équipe.
 - **Paul :** Refonte complète du guide de déploiement (12 sections mises à jour) : migration architecture Vercel → Render, documentation des deux variables d'environnement frontend (`NEXT_PUBLIC_API_URL` + `API_URL`), CI/CD simplifié avec deux deploy hooks Render, troubleshooting enrichi. Ajout endpoint `GET /health` dans le backend (test connexion Neon via `prisma.$queryRaw`, réponse `status/db/timestamp/uptime`) pour Render Health Check. Configuration du Health Check Path `/health` sur Render et création des 2 monitors UptimeRobot (backend + frontend) pour éviter le cold start du free tier.
-- **Christopher :** Implémentation du rate limiting global (`express-rate-limit`) et corrections sécurité cookies (PR #140). Fix : effacement cookies au logout (#136), username manquant au register (#137), feedback visuel ajout bibliothèque (#138), vérification `currentPassword` avant mise à jour profil (#139), distinction erreur réseau vs 401 dans `AuthContext` (#141). Correction assertion 404 dans `book.test.ts` (#145).
+- **Christopher :** Implémentation du rate limiting global (`express-rate-limit`) et corrections sécurité cookies (PR #140). Fix : effacement cookies au logout (#136), username manquant au register (#137), feedback visuel ajout bibliothèque (#138), vérification `currentPassword` avant mise à jour profil (#139), distinction erreur réseau vs 401 dans `AuthContext` (#141). Correction assertion 404 dans `book.test.ts` (#145).  Audit complet du codebase — backlog de 30+ corrections identifiées. Corrections PRs : #138 (feedback erreur "+ Biblio"), #139 (currentPassword vérifié argon2), #140 (rate limiting + cookies NODE_ENV), #145 (assertion book.test.ts). Fix ESLint `varsIgnorePattern: '^_'`. Fix homepage Docker (`--force-recreate`). Implémentation `POST /auth/refresh` (rotation token, `onDelete: Cascade`, fix path cookie) — PR #149. Branchement AuthContext + ApiClient sur refresh silencieux. Fix upsert library sur `openLibraryId`. Rebase PR #149 sur main (conflits résolus). Fix Prisma `binaryTargets` musl pour Docker Alpine. Exposition `rating`/`review` sur `GET /library` et `PATCH /library/:id` — PR #150. Purge refresh tokens expirés au login (fire & forget) + randomisation genre homepage + cap page 100 + User-Agent unifié + 400 sur id manquant — PR #151. Pagination et tri sur `GET /library` (`?page`, `?limit`, `?sort`, `?order`). **95/95 tests ✅**
 
 ---
 
@@ -197,49 +196,23 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 #### Infos individuelles
 
-- **Ophélie :**
+- **Ophélie :** améliorations UX sur la page de déails d'un livre : bouton partager pour copier le lien de la page du livre et carroussel "Vous pourriez aimer..." pour suggérer 10 livres du même auteur (+ logique associée en backend)
 - **Rémi :**Corrigé ma fonction de changement de la langue pour utiliser des drapeaux GB/FR d'une librairie externe afin d'avoir un affichage sur tous les systèmes possibles. Ajouter un robot.txt, sitemap.ts ainsi qu'un openGraph pour améliorer le SEO de notre site.
 - **Paul :**
 - **Christopher :**
 
 ---
 
-### 27/03/2026
-
-*Journée de travail backend intensive — audit, fixes sécurité/qualité, nouvelles fonctionnalités.*
-
-#### Infos individuelles
-
-- **Ophélie :**
-- **Rémi :**
-- **Paul :**
-- **Christopher :** Audit complet du codebase — backlog de 30+ corrections identifiées. Corrections PRs : #138 (feedback erreur "+ Biblio"), #139 (currentPassword vérifié argon2), #140 (rate limiting + cookies NODE_ENV), #145 (assertion book.test.ts). Fix ESLint `varsIgnorePattern: '^_'`. Fix homepage Docker (`--force-recreate`). Implémentation `POST /auth/refresh` (rotation token, `onDelete: Cascade`, fix path cookie) — PR #149. Branchement AuthContext + ApiClient sur refresh silencieux. Fix upsert library sur `openLibraryId`. Rebase PR #149 sur main (conflits résolus). Fix Prisma `binaryTargets` musl pour Docker Alpine. Exposition `rating`/`review` sur `GET /library` et `PATCH /library/:id` — PR #150. Purge refresh tokens expirés au login (fire & forget) + randomisation genre homepage + cap page 100 + User-Agent unifié + 400 sur id manquant — PR #151. Pagination et tri sur `GET /library` (`?page`, `?limit`, `?sort`, `?order`). **95/95 tests ✅**
-
----
-
 ### 02/04/2026
 
-*Résumé*
+*Réunion sur la matinée pour assurer une version stable de l'application et le merge des PR ouvertes sans entraîner de régression(s)*
 
 #### Infos individuelles
 
-- **Ophélie :**
+- **Ophélie :** Design d'une vignette pour le partage de l'application sur les réseaux pour l'utilisation d'OpenGraph
 - **Rémi :**
 - **Paul :**
 - **Christopher :**
-
----
-
-### 23/03/2026
-
-*Nouvelle répartition des tâches : GitHub Actions + tests backend + déploiement (Paul + Christopher) ; Profile page + Notes & avis (Ophélie + Rémi).*
-
-#### Infos individuelles
-
-- **Ophélie :**
-- **Rémi :**
-- **Paul :**
-- **Christopher :** Mise en place GitHub Actions CI (PR #86). Corrections TypeScript backend (PR #87) : imports cassés suite PR #84, type `req.user` aligné. Fix CI suite diagnostic (PR #89) : `DATABASE_URL` factice pour `prisma generate`, lint backend (semicolons, unused vars, ESLint config) — CI verte ✅ Backend + Frontend. Bug signalé à Rémi (login ne retourne plus les données user) et Paul (conflit export types — corrigé PR #88).
 
 ---
 
