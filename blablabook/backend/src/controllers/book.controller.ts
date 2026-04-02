@@ -28,6 +28,23 @@ const RANDOM_GENRES = [
 ];
 const USER_AGENT = "BlaBlaBook/1.0 (contact@blablabook.fr)";
 
+/**
+ * Extrait un genre lisible depuis les sujets Open Library.
+ * Filtre les valeurs inutiles (series:*, noms propres, sujets trop courts).
+ */
+function pickCategory(subjects?: string[]): string | null {
+  if (!subjects?.length) return null;
+  const skip = /^(series:|nyt:|place:|time:|person:|the |a |an )/i;
+  const isGenre = (s: string) =>
+    s.length >= 4 &&
+    s.length <= 40 &&
+    !skip.test(s) &&
+    /[a-z]/i.test(s) &&
+    // Exclure les mots isolés en minuscule (noms communs trop vagues : "orphans", "wizards")
+    (s.includes(" ") || /^[A-Z]/.test(s));
+  return subjects.find(isGenre) ?? null;
+}
+
 // Constantes de temps pour le cache (TTL = Time To Live en secondes)
 const TTL_SEARCH = 60 * 60; // 1h — résultats de recherche
 const TTL_BOOK = 60 * 60 * 24; // 24h — détail d'un livre (données stables)
@@ -149,7 +166,7 @@ export async function searchBooks(req: Request, res: Response) {
       coverThumbnail: doc.cover_i
         ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
         : null,
-      category: doc.subject?.[0] ?? null,
+      category: pickCategory(doc.subject),
       isbn: doc.isbn?.[0] ?? null,
     })),
     total: numFound,
@@ -184,7 +201,7 @@ export async function getBookById(req: Request, res: Response) {
   const book = {
     title: doc.title,
     publishedYear: doc.first_publish_year ?? null,
-    category: doc.subject?.[0] ?? null,
+    category: pickCategory(doc.subject),
     description: doc.description ?? null,
     authorId: doc.author_key?.[0] ?? null,
     author: doc.author_name?.[0] ?? null,

@@ -19,7 +19,7 @@ export async function createTestUser(data?: {
   password?: string;
   username?: string;
 }) {
-  const hashedPassword = await argon2.hash(data?.password || "TestPassword123");
+  const hashedPassword = await argon2.hash(data?.password || "TestPassword123!");
 
   return prisma.user.create({
     data: {

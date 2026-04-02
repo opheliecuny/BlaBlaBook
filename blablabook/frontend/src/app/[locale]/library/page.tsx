@@ -99,6 +99,22 @@ export default function LibraryPage() {
       .finally(() => setIsLoading(false));
   }, [authLoading, isAuthenticated, authError, router, t]);
 
+  useEffect(() => {
+    if (!user?.username) return;
+
+    if (sessionStorage.getItem("just_logged_in")) {
+      sessionStorage.removeItem("just_logged_in");
+      toast.success(
+        t("welcomeToast", {
+          username: user.username,
+          count: books.length,
+          plural: books.length > 1 ? "s" : "",
+        }),
+        { position: "top-center" },
+      );
+    }
+  }, [user?.username, books.length, t]);
+
   const stats = useMemo(
     () => ({
       toRead: books.filter((b) => b.status === "TO_READ").length,

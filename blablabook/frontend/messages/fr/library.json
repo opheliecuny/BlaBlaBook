@@ -44,5 +44,9 @@
   "statusUpdated": "Statut mis à jour.",
   "statusError": "Impossible de mettre à jour le statut.",
   "deleteSuccess": "\"{title}\" supprimé de votre bibliothèque.",
-  "deleteError": "Impossible de supprimer le livre."
+  "deleteError": "Impossible de supprimer le livre.",
+  "welcomeToast": "Bienvenue {username} — {count} livre{plural} dans votre bibliothèque",
+  "onboardingTitle": "Votre bibliothèque est vide",
+  "onboardingDescription": "Commencez par rechercher des livres et ajoutez-les à votre bibliothèque pour suivre vos lectures.",
+  "onboardingCta": "Rechercher des livres"
 }

@@ -44,5 +44,9 @@
   "statusUpdated": "Status updated.",
   "statusError": "Failed to update status.",
   "deleteSuccess": "\"{title}\" removed from your library.",
-  "deleteError": "Failed to delete the book."
+  "deleteError": "Failed to delete the book.",
+  "welcomeToast": "Welcome {username} — {count} book{plural} in your library",
+  "onboardingTitle": "Your library is empty",
+  "onboardingDescription": "Start by searching for books and adding them to your library to track your reading.",
+  "onboardingCta": "Search for books"
 }
