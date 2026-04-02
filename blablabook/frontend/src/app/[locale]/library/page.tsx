@@ -344,11 +344,11 @@ export default function LibraryPage() {
                 />
                 <AlertDialog>
                   <AlertDialogTrigger
-                    className="absolute top-2 right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm dark:bg-gray-700"
+                    className="absolute top-2 right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-card shadow-sm transition-colors hover:bg-muted active:bg-border dark:hover:bg-gray-700"
                     aria-label={t("actions.delete", { title: book.title })}
                   >
                     <Trash2
-                      className="h-4 w-4 text-gray-600 dark:text-gray-200"
+                      className="h-4 w-4 text-muted-foreground dark:text-secondary-foreground"
                       aria-hidden="true"
                     />
                   </AlertDialogTrigger>
@@ -405,7 +405,7 @@ export default function LibraryPage() {
 
                 <Link href={`/book/${book.openLibraryId}`}>
                   <Button
-                    className="w-full transition-all hover:bg-[#D1D5DB] active:scale-95 active:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
+                    className="w-full transition-all hover:bg-(--color-btn-subtle-hover) active:scale-95 active:bg-(--color-btn-subtle-active) dark:bg-secondary dark:hover:bg-gray-700"
                     variant="secondary"
                     aria-label={t("actions.view")}
                   >
@@ -487,7 +487,7 @@ function StatCard({
   count: number;
 }) {
   return (
-    <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
+    <div className="flex flex-col rounded-xl border border-border bg-card dark:border-border dark:bg-card">
       <div className="self-start" aria-hidden="true">
         {icon}
       </div>

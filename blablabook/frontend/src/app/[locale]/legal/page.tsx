@@ -17,13 +17,13 @@ export default function LegalPage() {
 
   return (
     <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12 dark:bg-gray-800">
+      <article className="mx-auto max-w-4xl rounded-2xl bg-card p-8 shadow-sm md:p-12 dark:bg-card">
         {/* Header */}
         <header className="mb-8 border-b border-border pb-8">
           <h1 className="mb-4 text-3xl font-bold tracking-tight text-foreground uppercase">
             {t("header.title")}
           </h1>
-          <time dateTime="2026-03-24" className="text-sm text-gray-500 italic">
+          <time dateTime="2026-03-24" className="text-sm text-muted-foreground italic">
             {t("header.lastUpdate")}
           </time>
         </header>
@@ -97,7 +97,7 @@ export default function LegalPage() {
           <div className="flex items-center space-x-4">
             <Link
               href="/privacy"
-              className="text-xs text-muted-foreground hover:text-gray-700"
+              className="text-xs text-muted-foreground hover:text-foreground"
               aria-label={t("footer.aria.privacy")}
             >
               {t("footer.privacy")}
@@ -107,7 +107,7 @@ export default function LegalPage() {
             </div>
             <Link
               href="/cgu"
-              className="text-xs text-muted-foreground hover:text-gray-700"
+              className="text-xs text-muted-foreground hover:text-foreground"
               aria-label={t("footer.aria.cgu")}
             >
               {t("footer.cgu")}

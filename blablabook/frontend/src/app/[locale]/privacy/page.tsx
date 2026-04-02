@@ -12,16 +12,16 @@ export default function PrivacyPage() {
 
   return (
     <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm md:p-12 dark:bg-gray-800">
+      <article className="mx-auto max-w-4xl rounded-2xl p-8 shadow-sm md:p-12 bg-card dark:bg-card">
         {/* Header */}
         <header className="mb-8 border-b border-border pb-8">
           <h1 className="mb-4 text-2xl sm:text-3xl font-bold tracking-tight text-foreground uppercase">
             {t("title")}
           </h1>
-          <time dateTime="2026-03-24" className="text-sm text-gray-500 italic">
+          <time dateTime="2026-03-24" className="text-sm text-muted-foreground italic">
             {t("lastUpdate")}
           </time>
-          <p className="mt-4 text-sm leading-relaxed text-gray-700 dark:text-gray-300">
+          <p className="mt-4 text-sm leading-relaxed text-foreground">
             {t("intro", { strong: "BlaBlaBook" })}
           </p>
         </header>
@@ -81,7 +81,7 @@ export default function PrivacyPage() {
             </h2>
             <p>{t("section6.p1")}</p>
             <p className="mt-2">{t("section6.p2")}</p>
-            <address className="mt-4 inline-block rounded-md border border-gray-200 bg-background p-4">
+            <address className="mt-4 inline-block rounded-md border border-border bg-background p-4">
               {t("section6.contactEmail")}{" "}
               <a
                 href="mailto:contact@blablabook.fr"
@@ -90,7 +90,7 @@ export default function PrivacyPage() {
                 contact@blablabook.fr
               </a>
             </address>
-            <p className="mt-2 text-sm text-gray-500 dark:text-gray-300">
+            <p className="mt-2 text-sm text-muted-foreground">
               {t("section6.cnil")}{" "}
               <a
                 href="https://www.cnil.fr"
@@ -115,7 +115,7 @@ export default function PrivacyPage() {
           <div className="flex items-center space-x-4">
             <Link
               href="/cgu"
-              className="text-xs text-muted-foreground hover:text-gray-700"
+              className="text-xs text-muted-foreground hover:text-foreground"
               aria-label="Voir les CGU"
             >
               {t("footer.cgu")}
@@ -125,7 +125,7 @@ export default function PrivacyPage() {
             </div>
             <Link
               href="/legal"
-              className="text-xs text-muted-foreground hover:text-gray-700"
+              className="text-xs text-muted-foreground hover:text-foreground"
               aria-label="Voir les Mentions Légales"
             >
               {t("footer.legal")}

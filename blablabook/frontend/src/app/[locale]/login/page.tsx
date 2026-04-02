@@ -53,7 +53,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center px-4 py-10">
-      <section aria-labelledby="login-title" className="border-border w-full max-w-md rounded-xl border bg-white p-10 shadow-xl dark:bg-gray-900">
+      <section aria-labelledby="login-title" className="border-border w-full max-w-md rounded-xl border p-10 shadow-xl bg-card dark:bg-card">
         <h1 id="login-title" className="mb-1 text-center text-2xl font-bold uppercase">
           {t("title")}
         </h1>

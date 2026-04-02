@@ -105,7 +105,7 @@ export default function ProfilePage() {
             <h1 className="text-2xl font-bold">{username}</h1>
             <p className="text-muted-foreground mt-1">{email}</p>
 
-            <div className="bg-secondary mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium dark:bg-gray-700">
+            <div className="bg-secondary mt-4 inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium dark:bg-muted">
               <User className="h-4 w-4" aria-hidden="true" />
               <p className="text-xs uppercase">{t("memberSince", { date: dateJoined })}</p>
             </div>
@@ -199,9 +199,9 @@ export default function ProfilePage() {
         </section>
 
         {/* Zone de danger */}
-        <section aria-labelledby="danger-zone" className="flex flex-col items-center justify-between gap-6 rounded-2xl border-2 border-[var(--accent-alt)] bg-[var(--accent-alt)]/10 p-8 sm:flex-row">
+        <section aria-labelledby="danger-zone" className="flex flex-col items-center justify-between gap-6 rounded-2xl border-2 border-(--accent-alt) bg-(--accent-alt)/10 p-8 sm:flex-row">
           <div className="flex items-start space-x-4">
-            <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--accent-alt)] text-white">
+            <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-(--accent-alt) text-white">
               <AlertTriangle className="h-6 w-6" aria-hidden="true" />
             </div>
 
@@ -214,7 +214,7 @@ export default function ProfilePage() {
 
           <AlertDialog>
             <AlertDialogTrigger
-              className="ml-4 shrink-0 rounded-md border-[var(--accent-alt)] bg-[var(--accent-alt)] p-2 text-white"
+              className="ml-4 shrink-0 rounded-md border-(--accent-alt) bg-(--accent-alt) p-2 text-white"
               aria-label={t("deleteAccount")}
             >
               {t("deleteForever")}

@@ -90,7 +90,7 @@ export default async function BookPage({ params }: BookPageProps) {
           {genre && (
             <div className="self-start md:hidden">
               <p aria-label={`${tBooks("labels.genre")} : ${genre}`}>
-                <span className="rounded-md bg-[#E2725B] px-3 py-1 text-xs font-medium tracking-wide text-white uppercase">
+                <span className="rounded-md bg-(--accent-alt) px-3 py-1 text-xs font-medium tracking-wide text-white uppercase">
                   {genre}
                 </span>
               </p>

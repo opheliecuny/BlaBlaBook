@@ -32,9 +32,7 @@ export default async function HomePage() {
       <section className="relative mx-auto flex flex-col items-center gap-12 overflow-hidden px-6 py-10 sm:max-w-7xl sm:flex-row sm:px-12">
         <div className="bg-card/60 relative z-10 mt-6 max-w-[83%] flex-1 rounded-xl p-6 backdrop-blur-sm sm:mt-0 sm:bg-transparent sm:px-0">
           <span
-            className="tag-terracotta-filled mb-4 hidden items-center gap-1.5 rounded px-2 py-1 text-xs font-semibold sm:inline-flex dark:bg-gray-800"
-            style={{ color: "#E8927A" }}
-          >
+            className="tag-terracotta-filled mb-4 hidden items-center gap-1.5 rounded px-2 py-1 text-xs font-semibold sm:inline-flex dark:bg-secondary">
             <Bookmark size={11} aria-hidden="true" />
             {t("hero.taglineShort")}
           </span>

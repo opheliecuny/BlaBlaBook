@@ -78,7 +78,7 @@ export default function RegisterPage() {
 
   return (
     <div className="flex min-h-[calc(100vh-14rem)] items-center justify-center px-4 py-10">
-      <div className="border-border w-full max-w-md rounded-xl border bg-white p-10 shadow-xl dark:bg-gray-900">
+      <div className="border-border w-full max-w-md rounded-xl border p-10 shadow-xl bg-card dark:bg-card">
         <h1 className="mb-1 text-center text-2xl font-bold uppercase">
           {t("title")}
         </h1>
@@ -142,7 +142,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                 aria-label={
                   showPassword
                     ? t("aria.hidePassword")
@@ -153,7 +153,7 @@ export default function RegisterPage() {
               </button>
             </div>
 
-            <div className="h-1 w-full bg-gray-200 rounded mt-2 dark:bg-gray-700" aria-hidden="true">
+            <div className="h-1 w-full rounded mt-2 dark:bg-gray-700" aria-hidden="true">
               <div
                 className={`h-full transition-all rounded ${score <= 1
                   ? "w-1/4 bg-red-500"
@@ -168,16 +168,16 @@ export default function RegisterPage() {
 
             <p className="text-xs text-muted-foreground">{t("passwordCriteria.text")}</p>
             <ul className="text-xs space-y-1 mt-1 list-disc pl-5">
-              <li className={password.length >= 8 ? "text-green-600" : "text-gray-500"}>
+              <li className={password.length >= 8 ? "text-green-600" : "text-muted-foreground"}>
                 {t("passwordCriteria.minLength")}
               </li>
-              <li className={/[A-Z]/.test(password) ? "text-green-600" : "text-gray-500"}>
+              <li className={/[A-Z]/.test(password) ? "text-green-600" : "text-muted-foreground"}>
                 {t("passwordCriteria.uppercase")}
               </li>
-              <li className={/[0-9]/.test(password) ? "text-green-600" : "text-gray-500"}>
+              <li className={/[0-9]/.test(password) ? "text-green-600" : "text-muted-foreground"}>
                 {t("passwordCriteria.number")}
               </li>
-              <li className={/[^A-Za-z0-9]/.test(password) ? "text-green-600" : "text-gray-500"}>
+              <li className={/[^A-Za-z0-9]/.test(password) ? "text-green-600" : "text-muted-foreground"}>
                 {t("passwordCriteria.special")}
               </li>
             </ul>
@@ -199,7 +199,7 @@ export default function RegisterPage() {
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword((v) => !v)}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-gray-700"
               >
                 {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>

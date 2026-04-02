@@ -123,7 +123,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                         <div className="flex w-full flex-col gap-2 lg:flex-row">
                           <Link
                             href={`/book/${bookId}`}
-                            className="flex w-full items-center justify-center rounded-md bg-(--color-btn-subtle) py-1.5 text-xs font-medium hover:bg-(--color-btn-subtle-hover) active:bg-(--color-btn-subtle-active) sm:grow dark:bg-gray-800"
+                            className="flex w-full items-center justify-center rounded-md bg-(--color-btn-subtle) py-1.5 text-xs font-medium hover:bg-(--color-btn-subtle-hover) active:bg-(--color-btn-subtle-active) sm:grow dark:bg-secondary"
                             aria-label={t("viewBookDetails", {
                               title: book.title,
                             })}

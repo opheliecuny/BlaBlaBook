@@ -17,13 +17,13 @@ export default function CGUPage() {
 
   return (
     <div className="min-h-screen bg-background px-4 py-12 sm:px-6 lg:px-8">
-      <article className="mx-auto max-w-4xl rounded-2xl bg-white p-8 shadow-sm sm:p-10 md:p-12 dark:bg-gray-800">
+      <article className="mx-auto max-w-4xl rounded-2xl bg-card p-8 shadow-sm sm:p-10 md:p-12 dark:bg-card">
         {/* Header */}
         <header className="mb-8 border-b border-border pb-8">
           <h1 className="mb-4 text-3xl font-bold tracking-tight text-foreground uppercase">
             {t("header.title")}
           </h1>
-          <time dateTime="2026-03-16" className="text-sm text-gray-500 italic">
+          <time dateTime="2026-03-16" className="text-sm text-muted-foreground italic">
             {t("header.lastUpdate")}
           </time>
         </header>
@@ -81,14 +81,14 @@ export default function CGUPage() {
           <div className="flex flex-col items-center gap-2 sm:flex-row sm:items-center sm:divide-x sm:divide-gray-200">
             <Link
               href="/privacy"
-              className="text-sm text-muted-foreground hover:text-gray-700 sm:pr-4"
+              className="text-sm text-muted-foreground hover:text-foreground sm:pr-4"
               aria-label={t("footer.aria.privacy")}
             >
               {t("footer.privacy")}
             </Link>
             <Link
               href="/legal"
-              className="text-sm text-muted-foreground hover:text-gray-700 sm:pl-4"
+              className="text-sm text-muted-foreground hover:text-foreground sm:pl-4"
               aria-label={t("footer.aria.legal")}
             >
               {t("footer.legal")}
