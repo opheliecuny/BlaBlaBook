@@ -12,6 +12,7 @@
     "moment": {
       "title": "BOOKS OF THE MOMENT",
       "subtitle": "RANDOM SELECTION",
+      "subtitlePersonalized": "PERSONALIZED SELECTION",
       "refresh": "Refresh",
       "refreshAriaLabel": "Load new books"
     }

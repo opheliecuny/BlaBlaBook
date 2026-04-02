@@ -8,6 +8,7 @@ import BookCover from "@/components/BookCover";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getRandomBooks } from "@/services/bookService";
 import type { BookSearchResult } from "@/types/book";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface RandomBooksSectionProps {
   initialBooks: BookSearchResult[];
@@ -17,6 +18,7 @@ export default function RandomBooksSection({
   initialBooks,
 }: RandomBooksSectionProps) {
   const t = useTranslations("home");
+  const { isAuthenticated } = useAuth();
   const [books, setBooks] = useState<BookSearchResult[]>(initialBooks);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -46,7 +48,9 @@ export default function RandomBooksSection({
             {t("section.moment.title")}
           </h2>
           <p className="text-muted-foreground text-center text-xs tracking-widest sm:text-left">
-            {t("section.moment.subtitle")}
+            {isAuthenticated
+              ? t("section.moment.subtitlePersonalized")
+              : t("section.moment.subtitle")}
           </p>
         </div>
 
