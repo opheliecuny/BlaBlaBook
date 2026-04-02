@@ -19,15 +19,16 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
 
 /**
  * Déconnexion d'un utilisateur
+ * Utilise fetch directement (pas apiClient) pour éviter d'envoyer
+ * Content-Type: application/json avec un corps vide.
  */
 export async function logout(): Promise<void> {
   try {
-    await apiClient.post<void>("/auth/logout");
-  } catch (error) {
-    console.error("Erreur lors de la déconnexion:", error);
-  } finally {
-    // Nettoyer le localStorage même si la requête échoue
-    if (typeof window !== "undefined") {
-    }
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+  } catch {
+    // Session locale nettoyée par AuthContext même si la requête échoue
   }
 }

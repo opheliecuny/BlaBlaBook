@@ -20,7 +20,12 @@ beforeEach(() => {
 describe("authService", () => {
   describe("register()", () => {
     it("appelle POST /auth/register avec les données", async () => {
-      const data = { email: "a@b.com", password: "Pw123456", confirm: "Pw123456", username: "alice" };
+      const data = {
+        email: "a@b.com",
+        password: "Pw123456",
+        confirm: "Pw123456",
+        username: "alice",
+      };
       mockApiClient.post.mockResolvedValueOnce({ id: "1", email: "a@b.com" });
       await register(data);
       expect(mockApiClient.post).toHaveBeenCalledWith("/auth/register", data);
@@ -29,7 +34,12 @@ describe("authService", () => {
     it("retourne la réponse du serveur", async () => {
       const response = { id: "1", email: "a@b.com" };
       mockApiClient.post.mockResolvedValueOnce(response);
-      const result = await register({ email: "a@b.com", password: "Pw123456", confirm: "Pw123456", username: "alice" });
+      const result = await register({
+        email: "a@b.com",
+        password: "Pw123456",
+        confirm: "Pw123456",
+        username: "alice",
+      });
       expect(result).toEqual(response);
     });
   });
@@ -37,7 +47,11 @@ describe("authService", () => {
   describe("login()", () => {
     it("appelle POST /auth/login avec les données", async () => {
       const data = { email: "a@b.com", password: "Pw123456" };
-      mockApiClient.post.mockResolvedValueOnce({ id: "1", email: "a@b.com", username: "alice" });
+      mockApiClient.post.mockResolvedValueOnce({
+        id: "1",
+        email: "a@b.com",
+        username: "alice",
+      });
       await login(data);
       expect(mockApiClient.post).toHaveBeenCalledWith("/auth/login", data);
     });
@@ -51,23 +65,25 @@ describe("authService", () => {
   });
 
   describe("logout()", () => {
-    it("appelle POST /auth/logout", async () => {
-      mockApiClient.post.mockResolvedValueOnce(null);
+    it("appelle POST /api/auth/logout avec credentials include", async () => {
+      const mockFetch = vi.fn().mockResolvedValueOnce({ status: 204 });
+      vi.stubGlobal("fetch", mockFetch);
+
       await logout();
-      expect(mockApiClient.post).toHaveBeenCalledWith("/auth/logout");
+
+      expect(mockFetch).toHaveBeenCalledWith("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      vi.unstubAllGlobals();
     });
 
     it("ne lève pas d'erreur si la requête échoue", async () => {
-      const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
-      mockApiClient.post.mockRejectedValueOnce(new Error("Network error"));
-      await expect(logout()).resolves.toBeUndefined();
-      consoleSpy.mockRestore();
-    });
-
-    // Couvre authService.ts ligne 30 : branche false de typeof window !== "undefined"
-    it("ne lève pas d'erreur si window est indisponible (contexte SSR, ligne 30)", async () => {
-      mockApiClient.post.mockResolvedValueOnce(null);
-      vi.stubGlobal("window", undefined);
+      vi.stubGlobal(
+        "fetch",
+        vi.fn().mockRejectedValueOnce(new Error("Network error")),
+      );
 
       await expect(logout()).resolves.toBeUndefined();
 
