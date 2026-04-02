@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const BACKEND_URL = process.env.API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const BACKEND_URL =
+  process.env.API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "http://localhost:3001";
 
-async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ path: string[] }> }) {
+async function proxyRequest(
+  req: NextRequest,
+  { params }: { params: Promise<{ path: string[] }> },
+) {
   try {
     const { path } = await params;
     const targetPath = path.join("/");
@@ -12,12 +18,18 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pa
     const headers = new Headers(req.headers);
     headers.delete("host");
 
+    headers.set("accept-encoding", "identify");
+
     const init: RequestInit = {
       method: req.method,
       headers,
     };
 
-    if (req.method !== "GET" && req.method !== "HEAD" && req.method !== "OPTIONS") {
+    if (
+      req.method !== "GET" &&
+      req.method !== "HEAD" &&
+      req.method !== "OPTIONS"
+    ) {
       init.body = await req.text();
     }
 
@@ -26,10 +38,11 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pa
     const resHeaders = new Headers();
     backendRes.headers.forEach((value, key) => {
       if (key.toLowerCase() === "transfer-encoding") return;
+      if (key.toLowerCase() === "content-encoding") return;
       resHeaders.append(key, value);
     });
 
-    const body = backendRes.body;
+    const body = await backendRes.arrayBuffer();
 
     return new NextResponse(body, {
       status: backendRes.status,
@@ -38,7 +51,7 @@ async function proxyRequest(req: NextRequest, { params }: { params: Promise<{ pa
   } catch {
     return NextResponse.json(
       { message: "Backend unavailable" },
-      { status: 502 }
+      { status: 502 },
     );
   }
 }
