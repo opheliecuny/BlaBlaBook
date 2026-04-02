@@ -1,0 +1,7 @@
+{
+  "toastSuccess": "Lien copié dans le presse-papiers.",
+  "toastError": "Échec de la copie du lien.",
+  "ariaLabel": "Copier le lien",
+  "copied": "Lien copié",
+  "share": "Partager"
+}

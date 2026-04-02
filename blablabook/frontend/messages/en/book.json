@@ -25,5 +25,6 @@
     "loadingBooks": "Error loading books.",
     "tryAgain": "Please try again later."
   },
-  "loading": "Loading..."
+  "loading": "Loading...",
+  "unknownAuthor": "Unknown author"
 }

@@ -1,0 +1,10 @@
+{
+  "toastSuccess": "\"{title}\" retiré de votre bibliothèque.",
+  "toastError": "Impossible de supprimer le livre.",
+  "alreadyAdded": "✓ Déjà ajouté",
+  "ariaLabel": "Retirer {title} de la bibliothèque",
+  "dialogTitle": "Retirer ce livre ?",
+  "dialogDescription": "Le livre \"{title}\" sera supprimé définitivement de votre bibliothèque.",
+  "cancel": "Annuler",
+  "confirm": "Supprimer"
+}

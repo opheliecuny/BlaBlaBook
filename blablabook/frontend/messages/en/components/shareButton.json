@@ -1,0 +1,7 @@
+{
+  "toastSuccess": "Link copied to clipboard.",
+  "toastError": "Failed to copy the link.",
+  "ariaLabel": "Copy link",
+  "copied": "Link copied",
+  "share": "Share"
+}

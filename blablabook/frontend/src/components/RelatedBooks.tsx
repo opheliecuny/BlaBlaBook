@@ -59,7 +59,7 @@ export default async function RelatedBooks({
                     {book.title}
                   </h3>
                   <p className="text-muted-foreground mt-1 text-xs">
-                    {book.author ?? "Auteur inconnu"}
+                    {book.author ?? tBooks("unknownAuthor")}
                   </p>
                   <div className="mt-auto pt-4">
                     <Link

@@ -25,5 +25,6 @@
     "loadingBooks": "Erreur lors du chargement des livres.",
     "tryAgain": "Veuillez réessayer plus tard."
   },
-  "loading": "Chargement..."
+  "loading": "Chargement...",
+  "unknownAuthor": "Auteur inconnu"
 }
