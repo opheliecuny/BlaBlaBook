@@ -1,0 +1,14 @@
+# robots.txt - BlaBlaBook
+User-agent: *
+Allow: /
+
+Disallow: /login
+Disallow: /register
+Disallow: /loading
+Disallow: /not-found
+Disallow: /library
+Disallow: /profile
+Disallow: /*?*
+Disallow: /search?*
+
+Sitemap: https://blablabook-front.onrender.com/sitemap.xml
