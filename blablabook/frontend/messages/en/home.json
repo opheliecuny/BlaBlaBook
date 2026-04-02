@@ -11,7 +11,9 @@
   "section": {
     "moment": {
       "title": "BOOKS OF THE MOMENT",
-      "subtitle": "RANDOM SELECTION"
+      "subtitle": "RANDOM SELECTION",
+      "refresh": "Refresh",
+      "refreshAriaLabel": "Load new books"
     }
   },
   "error": {

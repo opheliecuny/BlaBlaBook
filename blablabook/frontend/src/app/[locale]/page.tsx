@@ -1,22 +1,13 @@
 import Image from "next/image";
-import Link from "next/link";
 import { cookies } from "next/headers";
 import { Bookmark } from "lucide-react";
-import BookCover from "@/components/BookCover";
 import HeroCTAs from "@/components/HeroCTAs";
-import HomepageAddButton from "@/components/HomepageAddButton";
 import { getTranslations } from "next-intl/server";
+import RandomBooksSection from "@/components/RandomBooksSection";
+import type { BookSearchResult } from "@/types/book";
 
-interface RandomBook {
-  id: string;
-  title: string;
-  author: string | null;
-  coverThumbnail: string | null;
-}
-
-async function fetchRandomBooks(): Promise<RandomBook[]> {
+async function fetchRandomBooks(): Promise<BookSearchResult[]> {
   try {
-    // Transmettre le cookie d'auth pour les recommandations personnalisées
     const cookieStore = await cookies();
     const accessToken = cookieStore.get("accessToken")?.value;
 
@@ -55,96 +46,20 @@ export default async function HomePage() {
           </p>
           <HeroCTAs />
         </div>
-        <div className="absolute inset-0 z-0 mx-6 mt-6 min-h-[220px] self-stretch overflow-hidden rounded-xl sm:relative sm:mx-0 sm:mt-0 sm:flex-1 sm:shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
+        <div className="min-h-220px absolute inset-0 z-0 mx-6 mt-6 self-stretch overflow-hidden rounded-xl sm:relative sm:mx-0 sm:mt-0 sm:flex-1 sm:shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
           <Image
             src="/book-pile.jpg"
             alt="Pile de livres"
             fill
-            sizes="(max-width: 640px) 100 vw, 50vw"
+            sizes="(max-width: 640px) 100vw, 50vw"
             priority
             className="object-cover sm:opacity-100"
           />
         </div>
       </section>
 
-      {/* Livres du moment */}
-      <section
-        aria-labelledby="livres-du-moment"
-        className="mx-auto px-5 py-8 sm:max-w-7xl sm:px-10"
-      >
-        <div className="mt-8 mb-8 px-2 sm:mt-0 sm:mb-0">
-          <h2
-            id="livres-du-moment"
-            className="mb-1 text-center text-2xl font-bold sm:text-left"
-          >
-            {t("section.moment.title")}
-          </h2>
-          <p className="text-muted-foreground text-center text-xs tracking-widest sm:text-left">
-            {t("section.moment.subtitle")}
-          </p>
-        </div>
-        <div className="mx-auto">
-          <ul className="grid grid-cols-2 md:grid-cols-4">
-            {randomBooks.length > 0 ? (
-              randomBooks.map((book, i) => {
-                const bookId = book.id?.split("/").pop() ?? null;
-                return (
-                  <li key={i} className="flex flex-col p-3 sm:p-8">
-                    <BookCover
-                      src={book.coverThumbnail}
-                      alt={`Couverture de ${book.title}`}
-                      className="aspect-[2/3] w-full rounded-xl object-cover shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
-                    />
-                    <div className="mt-3 flex flex-1 flex-col">
-                      <h3 className="font-playfair text-base leading-snug font-bold">
-                        {book.title}
-                      </h3>
-                      <p className="text-muted-foreground mt-1 text-xs">
-                        {book.author ?? "Auteur inconnu"}
-                      </p>
-                      <div className="mt-auto flex w-full flex-col gap-2 pt-4 lg:flex-row">
-                        <Link
-                          href={
-                            bookId
-                              ? `/book/${bookId}`
-                              : `/search?q=${encodeURIComponent(book.title)}`
-                          }
-                          className="flex grow items-center justify-center rounded-md bg-[var(--color-btn-subtle)] px-3 py-1.5 text-xs font-medium hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] dark:bg-gray-800"
-                          aria-label={t("book.viewDetailAriaLabel", {
-                            title: book.title,
-                          })}
-                        >
-                          {t("book.viewDetail")}
-                        </Link>
-                        {bookId && (
-                          <HomepageAddButton
-                            bookId={bookId}
-                            title={book.title}
-                            author={book.author}
-                            thumbnail={book.coverThumbnail}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  </li>
-                );
-              })
-            ) : (
-              <div
-                className="border-border col-span-full my-17 flex flex-col items-center rounded-xl border p-12"
-                role="status"
-              >
-                <p className="text-muted-foreground col-span-full text-center">
-                  {t("error.loadingBooks")}
-                </p>
-                <p className="text-muted-foreground col-span-full text-center">
-                  {t("error.tryAgain")}
-                </p>
-              </div>
-            )}
-          </ul>
-        </div>
-      </section>
+      {/* Livres du moment — Version Feature (plus propre) */}
+      <RandomBooksSection initialBooks={randomBooks} />
 
       {/* CTA Recherche */}
       <section className="mx-auto px-6 py-8 sm:max-w-7xl sm:px-12">
@@ -170,7 +85,7 @@ export default async function HomePage() {
             />
             <button
               type="submit"
-              className="h-10 w-full rounded-full bg-[var(--accent-alt)] px-8 text-sm font-semibold text-white hover:bg-[var(--accent-alt-hover)] sm:w-auto"
+              className="h-10 w-full rounded-full bg-(--accent-alt) px-8 text-sm font-semibold text-white hover:bg-(--accent-alt-hover) sm:w-auto"
             >
               {t("cta.search.button")}
             </button>

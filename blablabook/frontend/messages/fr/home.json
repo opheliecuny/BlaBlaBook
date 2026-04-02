@@ -11,7 +11,9 @@
   "section": {
     "moment": {
       "title": "LIVRES DU MOMENT",
-      "subtitle": "SÉLECTION ALÉATOIRE"
+      "subtitle": "SÉLECTION ALÉATOIRE",
+      "refresh": "Rafraîchir",
+      "refreshAriaLabel": "Charger de nouveaux livres"
     }
   },
   "error": {
