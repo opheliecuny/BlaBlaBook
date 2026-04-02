@@ -8,4 +8,5 @@ export const router = Router();
 
 router.get("/books", optionalAuth, asyncWrapper(booksController.getRandomBooks));
 router.get("/books/search", searchRateLimit, asyncWrapper(booksController.searchBooks));
+router.get("/books/suggest", asyncWrapper(booksController.suggestBooks));
 router.get("/books/:openLibraryId", asyncWrapper(booksController.getBookById));

@@ -58,7 +58,10 @@ export async function getRandomBooks(req: Request, res: Response) {
     const cached = await cacheGet(cacheKey);
     if (cached) return res.send(JSON.parse(cached));
 
-    const authorRes = await fetch(`https://openlibrary.org/authors/${encodeURIComponent(authorId)}.json`, { headers: { "User-Agent": USER_AGENT } });
+    const authorRes = await fetch(
+      `https://openlibrary.org/authors/${encodeURIComponent(authorId)}.json`,
+      { headers: { "User-Agent": USER_AGENT } },
+    );
     if (!authorRes.ok) return res.send([]);
 
     const authorData = await authorRes.json();
@@ -68,8 +71,8 @@ export async function getRandomBooks(req: Request, res: Response) {
 
     const result = await fetch(
       `https://openlibrary.org/search.json?author=${encodeURIComponent(
-        authorName
-      )}&limit=10&fields=key,title,author_name,author_key,cover_i,first_publish_year,isbn`
+        authorName,
+      )}&limit=10&fields=key,title,author_name,author_key,cover_i,first_publish_year,isbn`,
     );
 
     if (!result.ok) return res.send([]);
@@ -213,4 +216,34 @@ export async function getBookById(req: Request, res: Response) {
 
   await cacheSet(cacheKey, JSON.stringify(book), TTL_BOOK);
   return res.send(book);
+}
+
+export async function suggestBooks(req: Request, res: Response) {
+  const query = (req.query.q as string)?.trim();
+  if (!query || query.length < 4) return res.send([]);
+
+  const limit = 6;
+  const cacheKey = `suggest:${query}`;
+  const cached = await cacheGet(cacheKey);
+  if (cached) return res.send(JSON.parse(cached));
+
+  const result = await fetch(
+    `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&limit=${limit}&fields=key,title,author_name,cover_i`,
+    { headers: { "User-Agent": USER_AGENT } },
+  );
+
+  if (!result.ok) return res.send([]);
+
+  const data: OpenLibraryResponse = await result.json();
+  const suggestions = data.docs.map((doc) => ({
+    id: doc.key,
+    title: doc.title,
+    author: doc.author_name?.[0] ?? null,
+    coverThumbnail: doc.cover_i
+      ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-S.jpg`
+      : null,
+  }));
+
+  await cacheSet(cacheKey, JSON.stringify(suggestions), TTL_SEARCH);
+  return res.send(suggestions);
 }

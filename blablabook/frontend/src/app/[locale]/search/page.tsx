@@ -3,6 +3,7 @@ import Link from "next/link";
 import BookCover from "@/components/BookCover";
 import SearchBookActions from "@/components/SearchBookActions";
 import { getTranslations } from "next-intl/server";
+import SearchAutocomplete from "@/components/SearchAutocomplete";
 
 interface SearchPageProps {
   searchParams: Promise<{ q?: string; page?: string }>;
@@ -62,18 +63,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           role="search"
           className="mb-10 flex flex-col gap-2 px-4 sm:flex-row sm:px-12"
         >
-          <label htmlFor="search-input" className="sr-only">
-            {t("labelSearch")}
-          </label>
-          <input
-            id="search-input"
-            name="q"
-            type="text"
-            defaultValue={q ?? ""}
-            placeholder={t("placeholderSearch")}
-            className="border-border focus:border-primary h-10 w-full rounded-full border px-4 text-sm outline-none"
-            autoComplete="off"
-          />
+          <SearchAutocomplete defaultValue={q ?? ""} />
           <button
             type="submit"
             className="h-10 w-full shrink-0 rounded-full bg-(--accent-alt) px-8 text-xs font-medium text-white hover:bg-(--accent-alt-hover) sm:w-auto"
