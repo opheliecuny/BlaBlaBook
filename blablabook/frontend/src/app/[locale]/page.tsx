@@ -1,7 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { Bookmark } from "lucide-react";
 import BookCover from "@/components/BookCover";
+import HeroCTAs from "@/components/HeroCTAs";
+import HomepageAddButton from "@/components/HomepageAddButton";
 import { getTranslations } from "next-intl/server";
 
 interface RandomBook {
@@ -13,8 +16,13 @@ interface RandomBook {
 
 async function fetchRandomBooks(): Promise<RandomBook[]> {
   try {
+    // Transmettre le cookie d'auth pour les recommandations personnalisées
+    const cookieStore = await cookies();
+    const accessToken = cookieStore.get("accessToken")?.value;
+
     const res = await fetch(`${process.env.API_URL}/books`, {
       cache: "no-store",
+      headers: accessToken ? { Cookie: `accessToken=${accessToken}` } : {},
     });
     if (!res.ok) return [];
     return await res.json();
@@ -45,20 +53,7 @@ export default async function HomePage() {
           <p className="font-inter mt-8 mb-8 max-w-md text-center text-[0.9375rem] leading-tight normal-case drop-shadow-[0_1px_2px_rgba(30,64,175,0.25)] sm:text-justify sm:drop-shadow-none">
             {t("hero.description")}
           </p>
-          <div className="flex justify-around gap-2 sm:justify-start sm:gap-3">
-            <Link
-              href="/login"
-              className="sm:border-input sm:text-foreground inline-flex h-auto items-center justify-center rounded-md border border-[var(--accent-alt)] bg-[var(--color-btn-subtle)] p-2 text-center text-sm font-semibold text-[var(--accent-alt)] hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] dark:bg-white sm:dark:bg-gray-800"
-            >
-              {t("hero.loginCta")}
-            </Link>
-            <Link
-              href="/register"
-              className="inline-flex h-auto items-center justify-center rounded-md bg-[var(--accent-alt)] p-2 text-center text-sm font-semibold text-white hover:bg-[var(--accent-alt-hover)]"
-            >
-              {t("hero.registerCta")}
-            </Link>
-          </div>
+          <HeroCTAs />
         </div>
         <div className="absolute inset-0 z-0 mx-6 mt-6 min-h-[220px] self-stretch overflow-hidden rounded-xl sm:relative sm:mx-0 sm:mt-0 sm:flex-1 sm:shadow-[0_4px_20px_rgba(0,0,0,0.25)]">
           <Image
@@ -107,18 +102,28 @@ export default async function HomePage() {
                       <p className="text-muted-foreground mt-1 text-xs">
                         {book.author ?? "Auteur inconnu"}
                       </p>
-                      <div className="mt-auto pt-4">
+                      <div className="mt-auto flex w-full flex-col gap-2 pt-4 lg:flex-row">
                         <Link
                           href={
                             bookId
                               ? `/book/${bookId}`
                               : `/search?q=${encodeURIComponent(book.title)}`
                           }
-                          className="inline-flex w-full items-center justify-center rounded-md bg-[var(--color-btn-subtle)] px-3 py-1.5 text-xs font-medium hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] dark:bg-gray-800"
-                          aria-label={t("book.viewDetailAriaLabel", { title: book.title })}
+                          className="flex grow items-center justify-center rounded-md bg-[var(--color-btn-subtle)] px-3 py-1.5 text-xs font-medium hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] dark:bg-gray-800"
+                          aria-label={t("book.viewDetailAriaLabel", {
+                            title: book.title,
+                          })}
                         >
                           {t("book.viewDetail")}
                         </Link>
+                        {bookId && (
+                          <HomepageAddButton
+                            bookId={bookId}
+                            title={book.title}
+                            author={book.author}
+                            thumbnail={book.coverThumbnail}
+                          />
+                        )}
                       </div>
                     </div>
                   </li>

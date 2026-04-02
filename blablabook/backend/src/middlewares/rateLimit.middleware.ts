@@ -4,10 +4,12 @@ import { redis } from "../utils/redisClient";
 
 const isTest = process.env.NODE_ENV === "test";
 
-// Si Redis est disponible, on utilise un store persistant (survit aux redémarrages Render)
-// Sinon, fallback sur le store mémoire par défaut (comportement actuel)
+// En production avec Redis disponible : store persistant (survit aux redémarrages Render)
+// En dev ou sans Redis : fallback store mémoire (évite les problèmes de timing de connexion)
+const isProduction = process.env.NODE_ENV === "production";
+
 function makeStore(prefix: string) {
-  if (!redis) return undefined;
+  if (!redis || !isProduction) return undefined;
   return new RedisStore({
     prefix,
     sendCommand: async (...args: string[]) => {

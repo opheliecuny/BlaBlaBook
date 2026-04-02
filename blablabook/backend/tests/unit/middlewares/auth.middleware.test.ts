@@ -1,7 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import type { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { isAuthenticated } from "../../../src/middlewares/auth.middleware";
+import {
+  isAuthenticated,
+  optionalAuth,
+} from "../../../src/middlewares/auth.middleware";
 
 // Mock config
 vi.mock("../../../config", () => ({
@@ -27,6 +30,40 @@ describe("Auth Middleware", () => {
     };
 
     mockNext = vi.fn();
+  });
+
+  describe("optionalAuth", () => {
+    it("appelle next() sans définir req.user si aucun cookie accessToken", () => {
+      mockRequest.cookies = {};
+      optionalAuth(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(mockNext).toHaveBeenCalledTimes(1);
+      expect(mockRequest.user).toBeUndefined();
+    });
+
+    it("définit req.user et appelle next() si le token est valide (lignes 18-20)", () => {
+      const userId = "test-user-id";
+      mockRequest.cookies = { accessToken: "valid-token" };
+      vi.spyOn(jwt, "verify").mockReturnValue({ userId } as any);
+      optionalAuth(mockRequest as Request, mockResponse as Response, mockNext);
+      expect(mockRequest.user).toEqual({ id: userId });
+      expect(mockNext).toHaveBeenCalledTimes(1);
+    });
+
+    it("appelle next() sans req.user si le token est invalide - pas d'erreur levée (lignes 21-23)", () => {
+      mockRequest.cookies = { accessToken: "bad-token" };
+      vi.spyOn(jwt, "verify").mockImplementation(() => {
+        throw new Error("invalid signature");
+      });
+      expect(() =>
+        optionalAuth(
+          mockRequest as Request,
+          mockResponse as Response,
+          mockNext,
+        ),
+      ).not.toThrow();
+      expect(mockNext).toHaveBeenCalledTimes(1);
+      expect(mockRequest.user).toBeUndefined();
+    });
   });
 
   describe("isAuthenticated", () => {

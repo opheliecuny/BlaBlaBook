@@ -1,41 +1,59 @@
 import { describe, it, expect, vi, beforeAll } from "vitest";
 
-// Capture du sendCommand passé à RedisStore lors de l'import du module
+// ─── Mocks hoistés statiquement ──────────────────────────────────────────────
+// Ces mocks DOIVENT être déclarés avant tout import du module testé.
+// vi.mock() est automatiquement hoisted par Vitest, contrairement à vi.doMock().
+
 let capturedSendCommand: ((...args: string[]) => Promise<unknown>) | null =
   null;
 const mockRedisCall = vi.fn();
 
-class MockRedis {
-  call = mockRedisCall;
-  on = vi.fn();
-  constructor(_url?: string, _opts?: unknown) {}
-}
+// Mock de RedisStore : capture sendCommand dans le constructeur
+vi.mock("rate-limit-redis", () => ({
+  RedisStore: class MockRedisStore {
+    increment = vi
+      .fn()
+      .mockResolvedValue({ totalHits: 1, resetTime: new Date() });
+    decrement = vi.fn().mockResolvedValue(undefined);
+    resetKey = vi.fn().mockResolvedValue(undefined);
 
-// Implémente l'interface Store d'express-rate-limit (increment, decrement, resetKey)
-class MockRedisStore {
-  increment = vi
-    .fn()
-    .mockResolvedValue({ totalHits: 1, resetTime: new Date() });
-  decrement = vi.fn().mockResolvedValue(undefined);
-  resetKey = vi.fn().mockResolvedValue(undefined);
+    constructor(opts: {
+      sendCommand: (...args: string[]) => Promise<unknown>;
+    }) {
+      capturedSendCommand = opts.sendCommand;
+    }
+  },
+}));
 
-  constructor(opts: { sendCommand: (...args: string[]) => Promise<unknown> }) {
-    capturedSendCommand = opts.sendCommand;
-  }
-}
+// Mock de ioredis (utilisé dans le bloc sans Redis)
+vi.mock("ioredis", () => ({
+  default: class MockRedis {
+    call = mockRedisCall;
+    on = vi.fn();
+  },
+}));
+
+// ─── Tests ───────────────────────────────────────────────────────────────────
 
 describe("rateLimit.middleware", () => {
-  // ─── Sans Redis (comportement actuel en test) ────────────────────────────
+  // ─── Sans Redis ────────────────────────────────────────────────────────────
 
   describe("makeStore sans REDIS_URL", () => {
     let globalRateLimit: unknown;
     let authRateLimit: unknown;
 
     beforeAll(async () => {
+      capturedSendCommand = null;
+
       vi.stubEnv("REDIS_URL", "");
       vi.resetModules();
-      vi.doMock("ioredis", () => ({ default: MockRedis }));
-      vi.doMock("rate-limit-redis", () => ({ RedisStore: MockRedisStore }));
+
+      // redisClient expose redis = null quand REDIS_URL est vide
+      vi.doMock("../../../src/utils/redisClient", () => ({
+        redis: null,
+        cacheGet: vi.fn(),
+        cacheSet: vi.fn(),
+      }));
 
       const m = await import("../../../src/middlewares/rateLimit.middleware");
       globalRateLimit = m.globalRateLimit;
@@ -55,24 +73,35 @@ describe("rateLimit.middleware", () => {
     });
 
     it("makeStore retourne undefined sans Redis (pas de RedisStore créé)", () => {
-      // Sans REDIS_URL, capturedSendCommand ne doit pas être défini par ce bloc
       expect(capturedSendCommand).toBeNull();
     });
   });
 
-  // ─── Avec Redis : makeStore + sendCommand (lignes 11-21) ─────────────────
+  // ─── Avec Redis ────────────────────────────────────────────────────────────
 
   describe("makeStore avec REDIS_URL (lignes 11-21)", () => {
     beforeAll(async () => {
       capturedSendCommand = null;
       mockRedisCall.mockReset();
 
-      vi.stubEnv("REDIS_URL", "redis://localhost:6379");
+      // makeStore exige redis non-null ET NODE_ENV=production (ligne 12)
+      vi.stubEnv("NODE_ENV", "production");
       vi.resetModules();
-      vi.doMock("ioredis", () => ({ default: MockRedis }));
-      vi.doMock("rate-limit-redis", () => ({ RedisStore: MockRedisStore }));
 
+      // ✅ doMock AVANT l'import — redisClient expose un redis non-null
+      vi.doMock("../../../src/utils/redisClient", () => {
+        const mockRedis = {
+          call: mockRedisCall,
+          on: vi.fn(),
+        };
+        return { redis: mockRedis, cacheGet: vi.fn(), cacheSet: vi.fn() };
+      });
+
+      // L'import déclenche makeStore → new RedisStore({ sendCommand })
+      // → capturedSendCommand est assigné dans le constructeur du mock
       await import("../../../src/middlewares/rateLimit.middleware");
+
+      vi.unstubAllEnvs();
     });
 
     it("makeStore crée un RedisStore et capture le sendCommand (ligne 11)", () => {
@@ -107,22 +136,45 @@ describe("rateLimit.middleware", () => {
     });
   });
 
-  // ─── skip: () => isTest (ligne 33) ───────────────────────────────────────
+  // ─── skip: isTest ──────────────────────────────────────────────────────────
 
   describe("skip function — isTest = true en environnement de test", () => {
     it("les middlewares de rate limit sont désactivés en environnement de test (NODE_ENV=test)", async () => {
       vi.resetModules();
-      vi.doMock("ioredis", () => ({ default: MockRedis }));
-      vi.doMock("rate-limit-redis", () => ({ RedisStore: MockRedisStore }));
 
-      // NODE_ENV est déjà 'test' — on vérifie que skip() retourne true
-      // en inspectant le comportement : supertest ne doit pas recevoir 429
+      vi.doMock("../../../src/utils/redisClient", () => ({
+        redis: null,
+        cacheGet: vi.fn(),
+        cacheSet: vi.fn(),
+      }));
+
       const m = await import("../../../src/middlewares/rateLimit.middleware");
 
-      // Les middlewares sont des fonctions Express valides
       expect(typeof m.globalRateLimit).toBe("function");
       expect(typeof m.authRateLimit).toBe("function");
       expect(typeof m.searchRateLimit).toBe("function");
+    });
+
+    it("skip() est appelé et retourne true - la requête n'est pas bloquée (ligne 35)", async () => {
+      const { default: express } = await import("express");
+      const { default: request } = await import("supertest");
+
+      vi.resetModules();
+      vi.doMock("../../../src/utils/redisClient", () => ({
+        redis: null,
+        cacheGet: vi.fn(),
+        cacheSet: vi.fn(),
+      }));
+
+      const m = await import("../../../src/middlewares/rateLimit.middleware");
+
+      const app = express();
+      app.use(m.globalRateLimit);
+      app.get("/ping", (_req, res) => res.json({ ok: true }));
+
+      // NODE_ENV=test → skip() retourne true → pas de rate limiting
+      const res = await request(app).get("/ping");
+      expect(res.status).toBe(200);
     });
   });
 });

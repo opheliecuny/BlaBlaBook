@@ -2,9 +2,9 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -23,10 +23,24 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { Bookmark, BookOpen, Check, Plus, Trash2, Search } from "lucide-react";
-import { getLibrary, updateReadingStatus, deleteBookFromLibrary } from "@/services/libraryService";
+import {
+  Bookmark,
+  BookOpen,
+  Check,
+  Plus,
+  Trash2,
+  Search,
+  X,
+} from "lucide-react";
+import BookCover from "@/components/BookCover";
+import {
+  getLibrary,
+  updateReadingStatus,
+  deleteBookFromLibrary,
+} from "@/services/libraryService";
 import type { ReadingStatus } from "@/types/library";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLibraryStatus } from "@/contexts/LibraryStatusContext";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
@@ -42,11 +56,23 @@ interface DisplayBook {
 export default function LibraryPage() {
   const t = useTranslations("library");
   const router = useRouter();
-  const [activeFilter, setActiveFilter] = useState<"ALL" | ReadingStatus>("ALL");
+  const ITEMS_PER_PAGE = 16;
+
+  const [activeFilter, setActiveFilter] = useState<"ALL" | ReadingStatus>(
+    "ALL",
+  );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const [books, setBooks] = useState<DisplayBook[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { isAuthenticated, isLoading: authLoading, authError, user } = useAuth();
+  const {
+    isAuthenticated,
+    isLoading: authLoading,
+    authError,
+    user,
+  } = useAuth();
+  const { removeLocal } = useLibraryStatus();
 
   useEffect(() => {
     if (authLoading) return;
@@ -66,19 +92,22 @@ export default function LibraryPage() {
             cover: item.thumbnail ?? "/default-cover.png",
             status: item.status,
             openLibraryId: item.openLibraryId,
-          }))
+          })),
         );
       })
       .catch(console.error)
       .finally(() => setIsLoading(false));
   }, [authLoading, isAuthenticated, authError, router, t]);
 
-  const stats = useMemo(() => ({
-    toRead: books.filter((b) => b.status === "TO_READ").length,
-    reading: books.filter((b) => b.status === "READING").length,
-    read: books.filter((b) => b.status === "READ").length,
-    total: books.length,
-  }), [books]);
+  const stats = useMemo(
+    () => ({
+      toRead: books.filter((b) => b.status === "TO_READ").length,
+      reading: books.filter((b) => b.status === "READING").length,
+      read: books.filter((b) => b.status === "READ").length,
+      total: books.length,
+    }),
+    [books],
+  );
 
   if (authLoading) return null;
 
@@ -86,7 +115,9 @@ export default function LibraryPage() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4">
         <p className="text-muted-foreground text-sm">{t("authError")}</p>
-        <Button variant="outline" onClick={() => window.location.reload()}>{t("retry")}</Button>
+        <Button variant="outline" onClick={() => window.location.reload()}>
+          {t("retry")}
+        </Button>
       </div>
     );
   }
@@ -101,13 +132,43 @@ export default function LibraryPage() {
     );
   }
 
-  const filteredBooks = activeFilter === "ALL" ? books : books.filter((b) => b.status === activeFilter);
+  const normalizedQuery = searchQuery.trim().toLowerCase();
 
-  const handleStatusChange = async (bookId: string, newStatus: ReadingStatus) => {
+  const filteredBooks = books.filter((b) => {
+    const matchesFilter = activeFilter === "ALL" || b.status === activeFilter;
+    const matchesSearch =
+      !normalizedQuery ||
+      b.title.toLowerCase().includes(normalizedQuery) ||
+      b.author.toLowerCase().includes(normalizedQuery);
+    return matchesFilter && matchesSearch;
+  });
+
+  const totalPages = Math.ceil(filteredBooks.length / ITEMS_PER_PAGE);
+  const paginatedBooks = filteredBooks.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE,
+  );
+
+  function handleFilterChange(filter: "ALL" | ReadingStatus) {
+    setActiveFilter(filter);
+    setCurrentPage(1);
+  }
+
+  function handleSearchChange(value: string) {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  }
+
+  const handleStatusChange = async (
+    bookId: string,
+    newStatus: ReadingStatus,
+  ) => {
     const previous = books;
-    setBooks((prev) => prev.map((book) =>
-      book.bookId === bookId ? { ...book, status: newStatus } : book
-    ));
+    setBooks((prev) =>
+      prev.map((book) =>
+        book.bookId === bookId ? { ...book, status: newStatus } : book,
+      ),
+    );
     try {
       await updateReadingStatus(bookId, { status: newStatus });
       toast.success(t("statusUpdated"), { position: "bottom-right" });
@@ -123,7 +184,11 @@ export default function LibraryPage() {
     setBooks((prev) => prev.filter((book) => book.bookId !== bookId));
     try {
       await deleteBookFromLibrary(bookId);
-      toast.success(t("deleteSuccess", { title: deleted?.title ?? t("unknownTitle")}), { position: "bottom-right" });
+      if (deleted?.openLibraryId) removeLocal(deleted.openLibraryId);
+      toast.success(
+        t("deleteSuccess", { title: deleted?.title ?? t("unknownTitle") }),
+        { position: "bottom-right" },
+      );
     } catch {
       setBooks(previous);
       toast.error(t("deleteError"), { position: "bottom-right" });
@@ -138,7 +203,6 @@ export default function LibraryPage() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
-
       {/* Header */}
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -147,7 +211,7 @@ export default function LibraryPage() {
             {t("greeting", {
               username: user?.username ?? "",
               count: stats.total,
-              plural: stats.total > 1 ? "s" : ""
+              plural: stats.total > 1 ? "s" : "",
             })}
           </p>
         </div>
@@ -160,65 +224,121 @@ export default function LibraryPage() {
       </div>
 
       {/* Stats Cards */}
-      <div role="group" aria-label="Statistiques de lecture" className="mb-8 grid grid-cols-3 gap-3 sm:gap-4">
-        <StatCard icon={<Bookmark className="text-amber-500" size={18} aria-hidden="true" />} label={t("stats.toRead")} count={stats.toRead} />
-        <StatCard icon={<BookOpen className="text-blue-500" size={18} aria-hidden="true" />} label={t("stats.reading")} count={stats.reading} />
-        <StatCard icon={<Check className="text-emerald-500" size={18} aria-hidden="true" />} label={t("stats.read")} count={stats.read} />
+      <div
+        role="group"
+        aria-label="Statistiques de lecture"
+        className="mb-8 grid grid-cols-3 gap-3 sm:gap-4"
+      >
+        <StatCard
+          icon={
+            <Bookmark className="text-amber-500" size={18} aria-hidden="true" />
+          }
+          label={t("stats.toRead")}
+          count={stats.toRead}
+        />
+        <StatCard
+          icon={
+            <BookOpen className="text-blue-500" size={18} aria-hidden="true" />
+          }
+          label={t("stats.reading")}
+          count={stats.reading}
+        />
+        <StatCard
+          icon={
+            <Check className="text-emerald-500" size={18} aria-hidden="true" />
+          }
+          label={t("stats.read")}
+          count={stats.read}
+        />
+      </div>
+
+      {/* Barre de recherche */}
+      <div className="relative mb-6">
+        <Search
+          className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2"
+          aria-hidden="true"
+        />
+        <Input
+          type="search"
+          placeholder="Rechercher par titre ou auteur…"
+          value={searchQuery}
+          onChange={(e) => handleSearchChange(e.target.value)}
+          className="pr-9 pl-9"
+          aria-label="Rechercher dans ma bibliothèque"
+        />
+        {searchQuery && (
+          <button
+            onClick={() => handleSearchChange("")}
+            className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
+            aria-label="Effacer la recherche"
+          >
+            <X className="h-4 w-4" aria-hidden="true" />
+          </button>
+        )}
       </div>
 
       {/* Filtres */}
       <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
-        <Button variant={activeFilter === "ALL" ? "default" : "secondary"} onClick={() => setActiveFilter("ALL")} className="h-9 rounded-full px-5 min-w-max">
+        <Button
+          variant={activeFilter === "ALL" ? "default" : "secondary"}
+          onClick={() => handleFilterChange("ALL")}
+          className="h-9 min-w-max rounded-full px-5"
+        >
           {t("filters.all", { count: stats.total })}
         </Button>
-        <Button variant={activeFilter === "TO_READ" ? "default" : "secondary"} onClick={() => setActiveFilter("TO_READ")} className="h-9 rounded-full px-5 min-w-max">
+        <Button
+          variant={activeFilter === "TO_READ" ? "default" : "secondary"}
+          onClick={() => handleFilterChange("TO_READ")}
+          className="h-9 min-w-max rounded-full px-5"
+        >
           {t("filters.toRead", { count: stats.toRead })}
         </Button>
-        <Button variant={activeFilter === "READING" ? "default" : "secondary"} onClick={() => setActiveFilter("READING")} className="h-9 rounded-full px-5 min-w-max">
+        <Button
+          variant={activeFilter === "READING" ? "default" : "secondary"}
+          onClick={() => handleFilterChange("READING")}
+          className="h-9 min-w-max rounded-full px-5"
+        >
           {t("filters.reading", { count: stats.reading })}
         </Button>
-        <Button variant={activeFilter === "READ" ? "default" : "secondary"} onClick={() => setActiveFilter("READ")} className="h-9 rounded-full px-5 min-w-max">
+        <Button
+          variant={activeFilter === "READ" ? "default" : "secondary"}
+          onClick={() => handleFilterChange("READ")}
+          className="h-9 min-w-max rounded-full px-5"
+        >
           {t("filters.read", { count: stats.read })}
         </Button>
       </div>
 
       {/* Grille livres */}
       {filteredBooks.length === 0 ? (
-        <EmptyState />
+        <EmptyState hasBooks={books.length > 0} />
       ) : (
-        <ul className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 divide-x divide-gray-200/50 -mx-4">
-          {filteredBooks.map((book) => (
+        <ul className="divide-border/50 border-border/50 *:border-border/50 2n:border-r-0 md:2n:border-r md:4n:border-r-0 grid grid-cols-2 divide-y *:border-r md:grid-cols-4">
+          {paginatedBooks.map((book) => (
             <li
               key={book.bookId}
-              className={`
-        flex flex-col px-4 py-6 bg-background
-        border-b border-gray-200/50
-        [&:nth-last-child(-n+2)]:border-b-0
-        lg:[&:nth-last-child(-n+3)]:border-b-0
-        xl:[&:nth-last-child(-n+4)]:border-b-0
-      `}
+              className="flex flex-col px-4 py-6 sm:px-8 sm:py-12"
             >
-              <div className="group relative mb-3 h-64 sm:h-80 md:h-96 lg:h-[420px] xl:h-[480px] overflow-hidden rounded-lg">
-                <Image
+              <div className="relative mb-3">
+                <BookCover
                   src={book.cover}
                   alt={`Couverture du livre ${book.title}`}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-105"
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
+                  className="aspect-2/3 w-full rounded-xl object-cover shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
                 />
                 <AlertDialog>
                   <AlertDialogTrigger
-                    className="absolute top-2 right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm"
+                    className="absolute top-2 right-2 inline-flex h-8 w-8 items-center justify-center rounded-full bg-white shadow-sm dark:bg-gray-700"
                     aria-label={t("actions.delete", { title: book.title })}
                   >
-                    <Trash2 className="h-4 w-4" aria-hidden="true" />
+                    <Trash2
+                      className="h-4 w-4 text-gray-600 dark:text-gray-200"
+                      aria-hidden="true"
+                    />
                   </AlertDialogTrigger>
 
                   <AlertDialogContent>
                     <AlertDialogHeader>
-                      <AlertDialogTitle>
-                        {t("delete.title")}
-                      </AlertDialogTitle>
+                      <AlertDialogTitle>{t("delete.title")}</AlertDialogTitle>
                       <AlertDialogDescription>
                         {t("delete.description", { title: book.title })}
                       </AlertDialogDescription>
@@ -238,26 +358,40 @@ export default function LibraryPage() {
                 </AlertDialog>
               </div>
 
-              <h3 className="line-clamp-1 text-sm sm:text-base lg:text-lg font-bold">{book.title}</h3>
-              <p className="text-muted-foreground mb-4 text-sm">{book.author}</p>
+              <h3 className="font-playfair mt-3 text-sm leading-snug font-bold">
+                {book.title}
+              </h3>
+              <p className="text-muted-foreground mt-1 mb-4 text-xs">
+                {book.author}
+              </p>
 
               <div className="mt-auto space-y-3">
-                <Select value={book.status} onValueChange={(value) => handleStatusChange(book.bookId, value as ReadingStatus)}>
-                  <label htmlFor={`status-${book.bookId}`} className="sr-only">
-                    {t("status.[status]")}
-                  </label>
+                <Select
+                  value={book.status}
+                  onValueChange={(value) =>
+                    handleStatusChange(book.bookId, value as ReadingStatus)
+                  }
+                >
                   <SelectTrigger className="bg-background w-full">
                     <SelectValue>{STATUS_LABELS[book.status]}</SelectValue>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="TO_READ">{t("status.TO_READ")}</SelectItem>
-                    <SelectItem value="READING">{t("status.READING")}</SelectItem>
+                    <SelectItem value="TO_READ">
+                      {t("status.TO_READ")}
+                    </SelectItem>
+                    <SelectItem value="READING">
+                      {t("status.READING")}
+                    </SelectItem>
                     <SelectItem value="READ">{t("status.READ")}</SelectItem>
                   </SelectContent>
                 </Select>
 
                 <Link href={`/book/${book.openLibraryId}`}>
-                  <Button className="w-full active:scale-95 active:bg-gray-100 transition-all hover:bg-[#D1D5DB] dark:bg-gray-800 dark:hover:bg-gray-700" variant="secondary" aria-label={t("actions.view")}>
+                  <Button
+                    className="w-full transition-all hover:bg-[#D1D5DB] active:scale-95 active:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
+                    variant="secondary"
+                    aria-label={t("actions.view")}
+                  >
                     {t("actions.view")}
                   </Button>
                 </Link>
@@ -266,22 +400,81 @@ export default function LibraryPage() {
           ))}
         </ul>
       )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <nav className="mt-12 flex items-center justify-center gap-6 px-4">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="border-primary hover:bg-primary/5 inline-flex h-8 items-center gap-2 rounded border px-4 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <svg
+              width="10"
+              height="13"
+              viewBox="0 0 12 10"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-primary"
+              aria-hidden="true"
+            >
+              <polyline points="6,1 1,5 6,9" />
+              <line x1="1" y1="5" x2="11" y2="5" />
+            </svg>
+            {t("pagination.previous")}
+          </button>
+
+          <span className="text-muted-foreground text-xs">
+            {t("pagination.info", { current: currentPage, total: totalPages })}
+          </span>
+
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="border-primary inline-flex h-8 items-center gap-2 rounded border px-4 text-xs font-medium disabled:opacity-40"
+          >
+            {t("pagination.next")}
+            <svg
+              width="10"
+              height="13"
+              viewBox="0 0 12 10"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="3"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-primary"
+              aria-hidden="true"
+            >
+              <polyline points="6,1 11,5 6,9" />
+              <line x1="11" y1="5" x2="1" y2="5" />
+            </svg>
+          </button>
+        </nav>
+      )}
     </div>
   );
 }
 
 // StatCard
-function StatCard({ icon, label, count }: {
+function StatCard({
+  icon,
+  label,
+  count,
+}: {
   icon: React.ReactNode;
   label: string;
   count: number;
 }) {
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-3 flex flex-col dark:bg-gray-900 dark:border-gray-700">
+    <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900">
       <div className="self-start" aria-hidden="true">
         {icon}
       </div>
-      <dl className="flex flex-col items-center justify-center text-center mt-1">
+      <dl className="mt-1 flex flex-col items-center justify-center text-center">
         <dd className="text-2xl font-bold">{count}</dd>
         <dt className="text-muted-foreground text-sm">{label}</dt>
       </dl>
@@ -290,15 +483,26 @@ function StatCard({ icon, label, count }: {
 }
 
 // EmptyState
-function EmptyState() {
+function EmptyState({ hasBooks }: { hasBooks: boolean }) {
   const t = useTranslations("library");
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed py-20 text-center">
-      <Search className="text-muted-foreground mb-4 h-10 w-10 opacity-20" aria-hidden="true" />
-      <p className="text-muted-foreground font-medium">{t("empty")}</p>
-      <Link href="/search" className="mt-4">
-        <Button variant="outline" size="sm">{t("explore")}</Button>
-      </Link>
+      <Search
+        className="text-muted-foreground mb-4 h-10 w-10 opacity-20"
+        aria-hidden="true"
+      />
+      {hasBooks ? (
+        <p className="text-muted-foreground font-medium">{t("emptySearch")}</p>
+      ) : (
+        <>
+          <p className="text-muted-foreground font-medium">{t("empty")}</p>
+          <Link href="/search" className="mt-4">
+            <Button variant="outline" size="sm">
+              {t("explore")}
+            </Button>
+          </Link>
+        </>
+      )}
     </div>
   );
 }

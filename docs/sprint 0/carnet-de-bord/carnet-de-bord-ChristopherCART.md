@@ -1033,3 +1033,82 @@ Rémi a mis à jour le backend dans la journée. Adaptation des 3 pages en cons�
 - `.max(2000)` sur le champ `description` dans `addBookToLibrary` (Zod)
 - `AuthResponse` frontend aligné : suppression des faux champs `accessToken`/`refreshToken` (tokens dans cookies httpOnly, pas dans le body)
 - Audit backlog : 4 items supplémentaires identifiés comme déjà corrigés (`req.user` typé, import Prisma intentionnel, `getProfile()` correct, cookies `secure` conditionnels)
+
+---
+
+### Séance 32 — Sprint 3 Jour 2 : fixes dev, pagination et harmonisation bibliothèque, améliorations homepage (31/03/2026)
+
+**Travail réalisé :**
+
+**Fix backend démarrage en dev**
+- `RedisStore` crashait au démarrage : `enableOfflineQueue: false` dans `redisClient.ts` rejetait les commandes envoyées par le constructeur de `RedisStore` avant que la connexion TCP Upstash soit établie. Fix en deux étapes : suppression de `enableOfflineQueue: false` dans `redisClient.ts`, puis désactivation de `RedisStore` en dev dans `rateLimit.middleware.ts` (`!isProduction → undefined`). En dev, le store mémoire est suffisant.
+- Fix Prisma : `generated/prisma/internal/` appartenait à `root` (généré via Docker) → `sudo chown` + `npx prisma generate` pour créer le binaire `debian-openssl-3.0.x` pour WSL2.
+- Fix Turbopack : `package-lock.json` non commité à la racine du repo perturbait la détection du workspace root → supprimé.
+
+**Review PR #161 (fix auth Safari — Paul)**
+- Proxy Next.js `rewrites()` : solution correcte pour les cookies cross-site bloqués par Safari.
+- Point bloquant identifié : cookie `refreshToken` posé avec `path: "/auth/refresh"` côté backend. Via le proxy, le navigateur appelle `/api/auth/refresh` → path ne correspond pas → le cookie n'est jamais envoyé pour le refresh de session. Fix recommandé : `path: process.env.NODE_ENV === "production" ? "/api/auth/refresh" : "/auth/refresh"` dans `token.ts` et `auth.controller.ts`.
+
+**Adaptation page `/library` à la nouvelle réponse paginée**
+- `GET /library` retourne désormais `{ data, total, page, totalPages }` (PR #151) au lieu d'un tableau brut.
+- `libraryService.ts` : `getLibrary()` typé sur `PaginatedLibraryResponse`, passe `limit=100` pour récupérer tous les livres en une requête.
+- `types/library.ts` : ajout du type `PaginatedLibraryResponse`.
+
+**Ajout de la recherche dans la bibliothèque**
+- `library/page.tsx` : barre de recherche (Input + icône Search + bouton X pour effacer) entre les stats et les filtres.
+- Filtre client-side sur titre et auteur (normalisation toLowerCase).
+- `EmptyState` différencié : "Aucun livre ne correspond à votre recherche" si des livres existent mais ne matchent pas, vs "Aucun livre dans cette catégorie + lien Explorer" si la liste est vide.
+
+**Pagination et harmonisation layout page `/library`**
+- Pagination client-side : 16 livres par page (même constante que la page recherche), même style de navigation (boutons Précédent/Suivant avec flèches SVG, "Page X / Y").
+- Harmonisation visuelle : grid identique à `/search` (`divide-y divide-border/50`), `px-4 py-6 sm:px-8 sm:py-12` par carte, `BookCover` avec `w-full aspect-[2/3] object-cover`, titres en `font-playfair`.
+- `handleFilterChange` et `handleSearchChange` remettent la page à 1 à chaque changement.
+
+**Fix couvertures manquantes en bibliothèque**
+- Analyse root cause : le backend upsert utilisait `update: {}` → un livre ajouté une première fois sans thumbnail gardait `thumbnail: null` en base pour toujours, même si re-ajouté avec une cover disponible.
+- Backend fix (`library.controller.ts`) : `update: thumbnailUpdate` — si le client envoie un thumbnail lors de l'ajout, il est maintenant sauvegardé même si le livre existe déjà.
+- Fallback OLID testé puis retiré : `https://covers.openlibrary.org/b/olid/${openLibraryId}-M.jpg` retournait un pixel transparent pour les work IDs (`OL...W`) sans déclencher `onError`, cachant le default cover.
+- Fix final `BookCover.tsx` : utilise un `<img>` natif pour les URLs externes au lieu de `next/image` avec `unoptimized={true}`. `next/image` avait des différences de rendu SSR vs CSR qui empêchaient l'affichage sur les pages Client Components (bibliothèque). Les images locales (`/default-cover.png`) continuent d'utiliser `next/image` pour l'optimisation.
+- Vérification en base : 80 livres en bibliothèque, 2 sans thumbnail — ces livres n'ont réellement pas de couverture sur Open Library (éditions obscures, pages auteur).
+
+**Améliorations homepage**
+- `HeroCTAs.tsx` (Client Component) : boutons hero conditionaux — connecté → "Ma bibliothèque" + "Rechercher un livre", déconnecté → "Se connecter" + "Créer un compte". Utilise `useAuth()` + `useTranslations`.
+- `HomepageAddButton.tsx` (Client Component) : bouton `+ Biblio` sur les cartes livres de la homepage, affiché uniquement pour les utilisateurs connectés.
+- `page.tsx` (homepage) : intègre `HeroCTAs` et `HomepageAddButton`. Boutons "Voir le détail" et "+ Biblio" sur la même ligne (`flex flex-col lg:flex-row`).
+- i18n : ajout des clés `hero.libraryCta` et `hero.searchCta` dans les fichiers `messages/fr/home.json` et `messages/en/home.json`.
+
+**Détection livres déjà en bibliothèque sur la page recherche**
+- `LibraryStatusContext.tsx` : charge la liste des `openLibraryId` de la bibliothèque au démarrage (quand authentifié). Expose `libraryIds` (Set), `bookIdMap` (Map openLibraryId → bookUUID), `addLocal`/`removeLocal` pour les mises à jour optimistes.
+- `AddToLibraryButton.tsx` : utilise le contexte, affiche "✓ Déjà ajouté" (badge vert) si le livre est déjà en bibliothèque.
+- `SearchBookActions.tsx` : remplace `AddToLibraryButton` sur `/search`. Quand le livre est en bibliothèque : badge "✓ Déjà ajouté" + icône poubelle avec `AlertDialog` de confirmation. Après suppression, le bouton `+ Biblio` réapparaît.
+- Synchronisation page `/library` : `handleDeleteBook` appelle `removeLocal` pour mettre à jour le contexte après suppression.
+
+**Fix contraste dark mode — bouton supprimer bibliothèque**
+- Le bouton poubelle sur les cartes de la page `/library` utilisait `bg-white` sans variante dark → icône gris clair invisible sur fond blanc. Fix : `bg-white dark:bg-gray-700` + `text-gray-600 dark:text-gray-200` pour la poubelle.
+
+**Fix conflits ports Docker / dev local**
+- Les containers Docker (`blablabook-api-1`, `blablabook-frontend-1`) occupaient les ports 3000 et 3001, empêchant les serveurs dev locaux de démarrer correctement. Le backend Docker (avec l'ancien CORS) répondait aux requêtes au lieu du process local.
+- Fix CORS : `ALLOWED_ORIGINS=http://localhost:3000,http://localhost:3002` dans `.env` backend + `config.ts` modifié pour splitter par virgule (support multi-origines).
+- Procédure documentée dans `CLAUDE.md` : toujours `docker stop` les containers avant de lancer les serveurs dev.
+
+**Algorithme de recommandation personnalisée — homepage**
+- `recommendation.ts` (~200 lignes) : moteur de recommandation hybride content-based weighted scoring.
+  - Phase 1 — Profil utilisateur : extraction des préférences genre/auteur/époque depuis la bibliothèque, pondérées par statut de lecture (READING ×1.5, READ ×1.0, TO_READ ×0.5) et rating (multiplicateur note/5).
+  - Phase 2 — Requêtes ciblées : top 2 genres + top 1 auteur + 1 genre "sérendipité" (hors préférences, anti bulle de filtre) → 4 requêtes Open Library en parallèle (~32 candidats).
+  - Phase 3 — Scoring multi-critères (0-100 pts) : genre match (0-35), auteur match (0-25), époque match (0-15), nouveauté (0-10), couverture (0-5), popularité (0-5), sérendipité (0-5).
+  - Phase 4 — Filtrage : exclusion livres déjà en bibliothèque + sans couverture, déduplication, tri par score, sélection top 4.
+  - Phase 5 — Cache Redis : clé `reco:{userId}:{bucket30min}`, TTL 30 min.
+- `optionalAuth` middleware (`auth.middleware.ts`) : comme `isAuthenticated` mais sans erreur 401 → la route `GET /books` accepte les utilisateurs connectés ET non connectés.
+- `book.controller.ts` : `getRandomBooks` branche vers `getPersonalizedBooks` si utilisateur authentifié avec ≥3 livres, sinon fallback silencieux sur la sélection aléatoire.
+- `book.router.ts` : `optionalAuth` ajouté sur `GET /books`.
+- `page.tsx` (frontend) : le Server Component transmet le cookie `accessToken` dans le fetch vers `/books` pour que le backend identifie l'utilisateur.
+- Validation : avec cookie → recommandations personnalisées (Asimov, Borges, Morrison, Baum pour un profil Fiction/Fantasy), sans cookie → aléatoire (Twain, Chesterton, Childers).
+
+**Préparation standup 01/04 — propositions UX**
+- Rédaction de 16 propositions d'améliorations UX organisées par page (homepage, recherche, bibliothèque, fiche livre, UX globale).
+- Fichier `docs/Point Projet/propositions-ux-sprint3.md` partagé à l'équipe pour prise de connaissance avant la réunion.
+- Points clés : remplacement auto cartes homepage, bouton rafraîchir, skeleton loading recherche, tri/filtre bibliothèque, mode liste/grille, stats enrichies, autocomplete, "Vous aimerez aussi", partage livre.
+
+**PR #162 — feat: cache Redis, pagination bibliothèque, améliorations homepage, recommandations**
+- Regroupe toutes les modifications de la séance dans une PR unique.
+- Reviewers ajoutés : Rémi, Ophélie, Paul.

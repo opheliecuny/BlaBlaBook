@@ -83,15 +83,17 @@ export async function addBookToLibrary(req: Request, res: Response) {
     publishedYear: bookData.publishedYear,
   };
 
+  const thumbnailUpdate = bookData.thumbnail ? { thumbnail: bookData.thumbnail } : {};
+
   const book = bookData.openLibraryId
     ? await prisma.book.upsert({
       where: { openLibraryId: bookData.openLibraryId },
-      update: {},
+      update: thumbnailUpdate,
       create: bookCreateData,
     })
     : await prisma.book.upsert({
       where: { isbn: bookData.isbn! },
-      update: {},
+      update: thumbnailUpdate,
       create: bookCreateData,
     });
 

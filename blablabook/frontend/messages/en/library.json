@@ -22,7 +22,13 @@
   "authError": "Unable to verify your session. Check your connection.",
   "retry": "Retry",
   "empty": "No books found in this category.",
+  "emptySearch": "No books match your search.",
   "explore": "Browse catalog",
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "info": "Page {current} / {total}"
+  },
   "delete": {
     "title": "Delete this book?",
     "description": "The book \"{title}\" will be permanently removed from your library.",

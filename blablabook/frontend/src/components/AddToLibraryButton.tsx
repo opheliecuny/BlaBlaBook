@@ -3,11 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLibraryStatus } from "@/contexts/LibraryStatusContext";
 import { addBookToLibrary } from "@/services/libraryService";
 import { useTranslations } from "next-intl";
 
 interface Props {
-  bookId: string;
+  bookId: string; // openLibraryId (ex: "OL12345W")
   isbn: string | null;
   title: string;
   author: string | null;
@@ -26,12 +27,25 @@ export default function AddToLibraryButton({
   category,
 }: Props) {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
+  const { libraryIds, isLoaded, addLocal } = useLibraryStatus();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [added, setAdded] = useState(false);
   const [error, setError] = useState(false);
 
+  // Utilisation des traductions de main
   const t = useTranslations("components.addToLibraryButton");
+
+  // Logique de redis-cache : si la bibliothèque est chargée et que le livre est déjà dans la bibliothèque, on affiche un état "Déjà ajouté" sans faire de requête supplémentaire
+  const isInLibrary = isLoaded && libraryIds.has(bookId);
+
+  // Si le livre est déjà présent dans la bibliothèque, on affiche un badge "Déjà ajouté" (avec traduction) et on ne rend pas le bouton d'ajout
+  if (isInLibrary) {
+    return (
+      <span className="flex shrink-0 items-center justify-center rounded-md bg-emerald-50 px-3 py-1.5 text-xs font-medium whitespace-nowrap text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400">
+        ✓ {t("added")}
+      </span>
+    );
+  }
 
   async function handleClick() {
     if (!isAuthenticated) {
@@ -41,8 +55,9 @@ export default function AddToLibraryButton({
 
     setLoading(true);
     setError(false);
+
     try {
-      await addBookToLibrary({
+      const result = await addBookToLibrary({
         isbn: isbn ?? `ol-${bookId}`,
         openLibraryId: bookId,
         title,
@@ -53,7 +68,7 @@ export default function AddToLibraryButton({
         status: "TO_READ",
       });
 
-      setAdded(true);
+      addLocal(bookId, result.bookId);
     } catch {
       setError(true);
     } finally {
@@ -65,30 +80,29 @@ export default function AddToLibraryButton({
     <button
       type="button"
       onClick={handleClick}
-      disabled={authLoading || loading || added}
-      className={`flex items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium whitespace-nowrap shrink-0 disabled:opacity-60 ${
+      disabled={authLoading || loading}
+      className={`flex shrink-0 items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium whitespace-nowrap disabled:opacity-60 ${
         error
-          ? "bg-red-500 hover:bg-red-600 text-white"
+          ? "bg-red-500 text-white hover:bg-red-600"
           : "bg-primary text-primary-foreground hover:bg-primary/90"
       }`}
     >
-      {loading
-        ? t("loading")
-        : added
-        ? t("added")
-        : error
-        ? t("error")
-        : (
-          <>
-            <span
-              className="text-sm font-black leading-none mr-1.5"
-              style={{ WebkitTextStroke: "1px currentColor" }}
-            >
-              +
-            </span>
-            {t("default")}
-          </>
-        )}
+      {loading ? (
+        t("loading")
+      ) : error ? (
+        t("error")
+      ) : (
+        <>
+          <span
+            className="mr-1.5 text-sm leading-none font-black"
+            style={{ WebkitTextStroke: "1px currentColor" }}
+            aria-hidden="true"
+          >
+            +
+          </span>
+          {t("default")}
+        </>
+      )}
     </button>
   );
 }

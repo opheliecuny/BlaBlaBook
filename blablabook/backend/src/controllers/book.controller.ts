@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import type { OpenLibraryResponse } from "../@types/index";
 import { BadRequestError, NotFoundError } from "@/errors";
 import { cacheGet, cacheSet } from "../utils/redisClient";
+import { getPersonalizedBooks } from "../utils/recommendation";
 
 const RANDOM_GENRES = [
   "novel",
@@ -22,7 +23,17 @@ const TTL_SEARCH = 60 * 60; // 1h — résultats de recherche
 const TTL_BOOK = 60 * 60 * 24; // 24h — détail d'un livre (données stables)
 const TTL_RANDOM = 60 * 10; // 10min — sélection homepage
 
-export async function getRandomBooks(_req: Request, res: Response) {
+export async function getRandomBooks(req: Request, res: Response) {
+  // Recommandations personnalisées si utilisateur authentifié
+  if (req.user?.id) {
+    try {
+      const personalized = await getPersonalizedBooks(req.user.id);
+      if (personalized) return res.send(personalized);
+    } catch {
+      // Fallback silencieux vers la sélection aléatoire
+    }
+  }
+
   const genre = RANDOM_GENRES[Math.floor(Math.random() * RANDOM_GENRES.length)];
   const page = Math.floor(Math.random() * 50);
   const limit = 4;

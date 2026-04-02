@@ -1,6 +1,22 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import express from "express";
 import request from "supertest";
+
+// Empêche les appels Redis et OpenLibrary lors des tests de routing
+vi.mock("../../../src/utils/redisClient", () => ({
+  redis: null,
+  cacheGet: vi.fn().mockResolvedValue(null),
+  cacheSet: vi.fn().mockResolvedValue(undefined),
+}));
+
+vi.stubGlobal(
+  "fetch",
+  vi.fn().mockResolvedValue({
+    ok: true,
+    json: async () => ({ docs: [], numFound: 0 }),
+  }),
+);
+
 import { router } from "../../../src/routes/index.router";
 
 /**

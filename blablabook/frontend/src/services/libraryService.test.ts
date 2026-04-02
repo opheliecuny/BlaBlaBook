@@ -1,6 +1,11 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { getLibrary, addBookToLibrary, updateReadingStatus, deleteBookFromLibrary } from "./libraryService";
-import { apiClient } from "@/lib/api";
+import {
+  getLibrary,
+  addBookToLibrary,
+  updateReadingStatus,
+  deleteBookFromLibrary,
+} from "./libraryService";
+import { apiClient } from "../lib/api";
 
 vi.mock("@/lib/api", () => ({
   apiClient: {
@@ -19,15 +24,15 @@ beforeEach(() => {
 
 describe("libraryService", () => {
   describe("getLibrary()", () => {
-    it("appelle GET /library", async () => {
-      mockApiClient.get.mockResolvedValueOnce([]);
+    it("appelle GET /library?limit=100", async () => {
+      mockApiClient.get.mockResolvedValueOnce({ data: [] });
       await getLibrary();
-      expect(mockApiClient.get).toHaveBeenCalledWith("/library");
+      expect(mockApiClient.get).toHaveBeenCalledWith("/library?limit=100");
     });
 
-    it("retourne la liste des items", async () => {
+    it("retourne la liste des items extraite de .data", async () => {
       const items = [{ id: "1", title: "Test", status: "TO_READ" }];
-      mockApiClient.get.mockResolvedValueOnce(items);
+      mockApiClient.get.mockResolvedValueOnce({ data: items });
       const result = await getLibrary();
       expect(result).toEqual(items);
     });
@@ -46,7 +51,9 @@ describe("libraryService", () => {
     it("appelle PATCH /library/:id avec le nouveau statut", async () => {
       mockApiClient.patch.mockResolvedValueOnce({ id: "1", status: "READING" });
       await updateReadingStatus("book-123", { status: "READING" });
-      expect(mockApiClient.patch).toHaveBeenCalledWith("/library/book-123", { status: "READING" });
+      expect(mockApiClient.patch).toHaveBeenCalledWith("/library/book-123", {
+        status: "READING",
+      });
     });
   });
 

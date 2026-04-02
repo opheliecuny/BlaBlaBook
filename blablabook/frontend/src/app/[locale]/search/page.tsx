@@ -1,7 +1,7 @@
 // src/app/[locale]/search/page.tsx
 import Link from "next/link";
-import AddToLibraryButton from "@/components/AddToLibraryButton";
 import BookCover from "@/components/BookCover";
+import SearchBookActions from "@/components/SearchBookActions";
 import { getTranslations } from "next-intl/server";
 
 interface SearchPageProps {
@@ -23,12 +23,12 @@ const MAX_PAGES = 50;
 
 async function fetchBooks(
   query: string,
-  page: number
+  page: number,
 ): Promise<{ results: BookResult[]; total: number }> {
   try {
     const res = await fetch(
       `${process.env.API_URL}/books/search?q=${encodeURIComponent(query)}&page=${page}`,
-      { next: { revalidate: 60 } }
+      { next: { revalidate: 60 } },
     );
     if (!res.ok) return { results: [], total: 0 };
     const data = await res.json();
@@ -54,83 +54,93 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   return (
     <div className="py-10">
-      <div className="sm:max-w-7xl mx-auto px-6 sm:px-12">
-
+      <div className="mx-auto px-6 sm:max-w-7xl sm:px-12">
         {/* Formulaire de recherche */}
         <form
           action="/search"
           method="GET"
           role="search"
-          className="flex flex-col sm:flex-row gap-2 mb-10 px-4 sm:px-12"
+          className="mb-10 flex flex-col gap-2 px-4 sm:flex-row sm:px-12"
         >
-          <label htmlFor="search-input" className="sr-only">{t("labelSearch")}</label>
+          <label htmlFor="search-input" className="sr-only">
+            {t("labelSearch")}
+          </label>
           <input
             id="search-input"
             name="q"
             type="text"
             defaultValue={q ?? ""}
             placeholder={t("placeholderSearch")}
-            className="w-full border border-border rounded-full px-4 h-10 text-sm outline-none focus:border-primary"
+            className="border-border focus:border-primary h-10 w-full rounded-full border px-4 text-sm outline-none"
             autoComplete="off"
           />
           <button
             type="submit"
-            className="h-10 rounded-full bg-[var(--accent-alt)] hover:bg-[var(--accent-alt-hover)] text-white text-xs font-medium px-8 shrink-0 w-full sm:w-auto"
+            className="h-10 w-full shrink-0 rounded-full bg-(--accent-alt) px-8 text-xs font-medium text-white hover:bg-(--accent-alt-hover) sm:w-auto"
             aria-label={t("btnSearch")}
           >
             {t("btnSearch")}
           </button>
         </form>
 
-        <h1 className="text-2xl font-bold mb-1 px-4 sm:px-12">
+        <h1 className="mb-1 px-4 text-2xl font-bold sm:px-12">
           {hasQuery ? t("resultsFor", { query }) : t("searchBooks")}
         </h1>
 
         {!hasQuery && (
-          <div className="text-center py-20">
+          <div className="py-20 text-center">
             <p className="text-muted-foreground">{t("searchPrompt")}</p>
           </div>
         )}
 
         {hasQuery && results.length > 0 && (
           <>
-            <p className="text-sm text-muted-foreground mb-4 px-4 sm:px-12">
+            <p className="text-muted-foreground mb-4 px-4 text-sm sm:px-12">
               {t("resultsCount", { count: total })}
             </p>
 
-            <ul className="grid grid-cols-2 md:grid-cols-4 divide-y divide-border/50 [&>*]:border-r [&>*]:border-border/50 [&>*:nth-child(2n)]:border-r-0 md:[&>*:nth-child(2n)]:border-r md:[&>*:nth-child(4n)]:border-r-0">
+            <ul className="divide-border/50 border-border/50 *:border-border/50 2n:border-r-0 md:2n:border-r md:4n:border-r-0 grid grid-cols-2 divide-y *:border-r md:grid-cols-4">
               {results.map((book) => {
                 const bookId = book.id.split("/").pop() ?? book.id;
                 return (
-                  <li key={book.id} className="flex flex-col px-4 py-6 sm:px-8 sm:py-12">
+                  <li
+                    key={book.id}
+                    className="flex flex-col px-4 py-6 sm:px-8 sm:py-12"
+                  >
                     <BookCover
                       src={book.coverThumbnail}
                       alt={`Couverture de ${book.title}`}
-                      className="w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
+                      className="aspect-2/3 w-full rounded-xl object-cover shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
                     />
-                    <div className="flex flex-col flex-1 mt-3">
-                      <h2 className="font-bold text-sm leading-snug font-playfair">{book.title}</h2>
-                      <p className="text-xs text-muted-foreground mt-1">{book.author ?? t("unknownAuthor")}</p>
-                      <div className="mt-auto pt-4 flex flex-col gap-2">
+                    <div className="mt-3 flex flex-1 flex-col">
+                      <h2 className="font-playfair text-sm leading-snug font-bold">
+                        {book.title}
+                      </h2>
+                      <p className="text-muted-foreground mt-1 text-xs">
+                        {book.author ?? t("unknownAuthor")}
+                      </p>
+                      <div className="mt-auto flex flex-col gap-2 pt-4">
                         {book.category && (
-                          <span className="relative group text-base border rounded px-2 py-0.5 w-fit tag-terracotta">
+                          <span className="group tag-terracotta relative w-fit rounded border px-2 py-0.5 text-base">
                             {book.category.length > 20
                               ? `${book.category.slice(0, 17)}...`
                               : book.category}
-                            <span className="absolute hidden group-hover:block left-0 -top-8 bg-white text-gray-800 text-xs px-2 py-1 rounded shadow-md border whitespace-nowrap z-10">
+                            <span className="absolute -top-8 left-0 z-10 hidden rounded border bg-white px-2 py-1 text-xs whitespace-nowrap text-gray-800 shadow-md group-hover:block">
                               {book.category}
                             </span>
                           </span>
                         )}
-                        <div className="flex flex-col lg:flex-row gap-2 w-full">
+                        <div className="flex w-full flex-col gap-2 lg:flex-row">
                           <Link
                             href={`/book/${bookId}`}
-                            className="flex items-center justify-center rounded-md bg-[var(--color-btn-subtle)] hover:bg-[var(--color-btn-subtle-hover)] active:bg-[var(--color-btn-subtle-active)] py-1.5 text-xs font-medium w-full sm:grow dark:bg-gray-800"
-                            aria-label={t("viewBookDetails", { title: book.title })}
+                            className="flex w-full items-center justify-center rounded-md bg-(--color-btn-subtle) py-1.5 text-xs font-medium hover:bg-(--color-btn-subtle-hover) active:bg-(--color-btn-subtle-active) sm:grow dark:bg-gray-800"
+                            aria-label={t("viewBookDetails", {
+                              title: book.title,
+                            })}
                           >
                             {t("viewDetails")}
                           </Link>
-                          <AddToLibraryButton
+                          <SearchBookActions
                             bookId={bookId}
                             isbn={book.isbn}
                             title={book.title}
@@ -148,21 +158,24 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             </ul>
 
             {totalPages > 1 && (
-              <nav aria-label="pagination" className="flex items-center justify-center gap-6 mt-12 px-4 sm:px-12">
+              <nav
+                aria-label="pagination"
+                className="mt-12 flex items-center justify-center gap-6 px-4 sm:px-12"
+              >
                 <Link
                   href={`/search?q=${encodeURIComponent(query)}&page=${Math.max(1, currentPage - 1)}`}
-                  className="inline-flex items-center gap-2 border border-primary rounded px-4 h-8 text-xs font-medium hover:bg-primary/5"
+                  className="border-primary hover:bg-primary/5 inline-flex h-8 items-center gap-2 rounded border px-4 text-xs font-medium"
                 >
                   <span className="text-foreground">{t("previous")}</span>
                 </Link>
 
-                <span className="text-xs text-muted-foreground">
+                <span className="text-muted-foreground text-xs">
                   {t("pageOf", { current: currentPage, total: totalPages })}
                 </span>
 
                 <Link
                   href={`/search?q=${encodeURIComponent(query)}&page=${Math.min(totalPages, currentPage + 1)}`}
-                  className="inline-flex items-center gap-2 border border-primary rounded px-4 h-8 text-xs font-medium hover:bg-primary/5"
+                  className="border-primary hover:bg-primary/5 inline-flex h-8 items-center gap-2 rounded border px-4 text-xs font-medium"
                 >
                   <span className="text-foreground">{t("next")}</span>
                 </Link>
@@ -172,12 +185,15 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         )}
 
         {hasQuery && results.length === 0 && (
-          <div className="text-center py-20">
-            <p className="text-lg font-medium mb-2">{t("noResults", { query })}</p>
-            <p className="text-sm text-muted-foreground">{t("noResultsHint")}</p>
+          <div className="py-20 text-center">
+            <p className="mb-2 text-lg font-medium">
+              {t("noResults", { query })}
+            </p>
+            <p className="text-muted-foreground text-sm">
+              {t("noResultsHint")}
+            </p>
           </div>
         )}
-
       </div>
     </div>
   );

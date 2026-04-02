@@ -22,7 +22,13 @@
   "authError": "Impossible de vérifier votre session. Vérifiez votre connexion.",
   "retry": "Réessayer",
   "empty": "Aucun livre trouvé dans cette catégorie.",
+  "emptySearch": "Aucun livre ne correspond à votre recherche.",
   "explore": "Explorer le catalogue",
+  "pagination": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "info": "Page {current} / {total}"
+  },
   "delete": {
     "title": "Supprimer ce livre ?",
     "description": "Le livre \"{title}\" sera supprimé définitivement de votre bibliothèque.",

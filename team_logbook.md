@@ -180,14 +180,14 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 
 ### 31/03/2026
 
-*Résumé*
+*Sprint 3 Jour 2 : fix backend dev (Redis/Prisma), review PR #161, adaptation pagination bibliothèque, recherche /library*
 
 #### Infos individuelles
 
 - **Ophélie :** Correction de contraste du mode sombre (variable --primary de la classe dark) qui se fondait trop par rapport au fond de l'application. Correction du fond du bouton "se connecter" sur la page d'accueil en mode dark responsive pour harmoniser le visuel. optimisation du chargement de l'image du hero sur la page d'accueil (propiété sizes était manquante, impérative selon la doc render) et ajout d'une peropriété priority sur celle-ci.
 - **Rémi :**Terminé le contenu en/fr de toutes les pages et implémenté les composants également (du effectuer une petite modification du fichier de configuration pour cela). Ajout d'une fonctionnalité de toggle pour gérer le choix de la langue d'affichage. 
 - **Paul :**
-- **Christopher :**
+- **Christopher :** Fix démarrage backend dev (RedisStore crash, Prisma binaire, Turbopack lockfile). Review PR #161 : bug cookie refreshToken via proxy. Page `/library` : réponse paginée + recherche + pagination 16/page + harmonisation layout. Fix couvertures (upsert + BookCover `<img>` natif). `LibraryStatusContext` + `SearchBookActions` (badge "Déjà ajouté" + suppression sur `/search`). Fix dark mode + conflits ports Docker/CORS. Homepage : `HeroCTAs` conditionnel, bouton `+ Biblio`. **Algorithme de recommandation personnalisée** : profil utilisateur pondéré (genre/auteur/époque × statut × rating), scoring multi-critères 0-100, requête sérendipité anti bulle de filtre, cache Redis 30min/user, fallback aléatoire si <3 livres. **Préparation standup 01/04** : 16 propositions UX rédigées et partagées à l'équipe. PR #162.
 
 ---
 
