@@ -10,5 +10,20 @@
   },
   "buttons": {
     "addToLibrary": "Ajouter à ma bibliothèque"
-  }
+  },
+  "section": {
+    "moment": {
+      "title": "Vous pourriez aussi aimer...",
+      "subtitle": "Découvrez des livres similaires à celui que vous consultez."
+    }
+  },
+  "book": {
+    "viewDetail": "Voir le détail",
+    "viewDetailAriaLabel": "Voir les détails de {title}"
+  },
+  "error": {
+    "loadingBooks": "Erreur lors du chargement des livres.",
+    "tryAgain": "Veuillez réessayer plus tard."
+  },
+  "loading": "Chargement..."
 }

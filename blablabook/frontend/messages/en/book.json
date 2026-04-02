@@ -10,5 +10,20 @@
   },
   "buttons": {
     "addToLibrary": "Add to my library"
-  }
+  },
+  "section": {
+    "moment": {
+      "title": "You might also like...",
+      "subtitle": "Discover books similar to the one you are viewing."
+    }
+  },
+  "book": {
+    "viewDetail": "View detail",
+    "viewDetailAriaLabel": "View details of {title}"
+  },
+  "error": {
+    "loadingBooks": "Error loading books.",
+    "tryAgain": "Please try again later."
+  },
+  "loading": "Loading..."
 }

@@ -3,6 +3,9 @@ import AddToLibraryPanel from "@/components/AddToLibraryPanel";
 import BookCover from "@/components/BookCover";
 import ExpandableDescription from "@/components/ExpandableDescription";
 import { getTranslations } from "next-intl/server";
+import ShareButton from "@/components/ShareButton";
+import RelatedBooks from "@/components/RelatedBooks";
+import { Suspense } from "react";
 
 interface BookPageProps {
   params: Promise<{ id: string }>;
@@ -32,9 +35,12 @@ async function fetchBook(id: string): Promise<BookData | null> {
 
 async function fetchAuthorName(authorId: string): Promise<string | null> {
   try {
-    const res = await fetch(`https://openlibrary.org/authors/${authorId}.json`, {
-      cache: "force-cache",
-    });
+    const res = await fetch(
+      `https://openlibrary.org/authors/${authorId}.json`,
+      {
+        cache: "force-cache",
+      },
+    );
     if (!res.ok) return null;
     const data = await res.json();
     return data.name ?? null;
@@ -52,11 +58,11 @@ export default async function BookPage({ params }: BookPageProps) {
 
   if (!book) {
     return (
-      <div className="sm:max-w-7xl mx-auto px-6 sm:px-12 py-20 text-center">
-        <p className="text-lg font-medium mb-2">{tBooks("notFound.title")}</p>
+      <div className="mx-auto px-6 py-20 text-center sm:max-w-7xl sm:px-12">
+        <p className="mb-2 text-lg font-medium">{tBooks("notFound.title")}</p>
         <Link
           href="/search"
-          className="text-sm text-primary hover:underline"
+          className="text-primary text-sm hover:underline"
           aria-label={tBooks("notFound.backSearch")}
         >
           {tBooks("notFound.backSearch")}
@@ -65,7 +71,9 @@ export default async function BookPage({ params }: BookPageProps) {
     );
   }
 
-  const authorName = book.authorId ? await fetchAuthorName(book.authorId) : null;
+  const authorName = book.authorId
+    ? await fetchAuthorName(book.authorId)
+    : null;
   const genre = book.category ?? null;
   const description =
     typeof book.description === "object" && book.description !== null
@@ -74,17 +82,15 @@ export default async function BookPage({ params }: BookPageProps) {
   const coverUrl = book.coverThumbnail ?? null;
 
   return (
-    <div className="sm:max-w-7xl mx-auto px-6 sm:px-12 py-8 md:py-10">
-      <div className="flex flex-col md:flex-row gap-6 md:gap-8 lg:gap-12">
-
+    <div className="mx-auto px-6 py-8 sm:max-w-7xl sm:px-12 md:py-10">
+      <div className="flex flex-col gap-6 md:flex-row md:gap-8 lg:gap-12">
         {/* Colonne gauche : couverture + actions */}
-        <div className="flex flex-col items-center md:items-start gap-5 md:shrink-0 md:w-56 lg:w-64">
-
+        <div className="flex flex-col items-center gap-5 md:w-56 md:shrink-0 md:items-start lg:w-64">
           {/* Tag genre au dessus de la cover — mobile uniquement */}
           {genre && (
             <div className="self-start md:hidden">
               <p aria-label={`${tBooks("labels.genre")} : ${genre}`}>
-                <span className="text-xs font-medium rounded-md px-3 py-1 bg-[#E2725B] text-white uppercase tracking-wide">
+                <span className="rounded-md bg-[#E2725B] px-3 py-1 text-xs font-medium tracking-wide text-white uppercase">
                   {genre}
                 </span>
               </p>
@@ -94,7 +100,7 @@ export default async function BookPage({ params }: BookPageProps) {
           <BookCover
             src={coverUrl}
             alt={`Couverture du livre ${book.title}`}
-            className="w-56 sm:w-64 md:w-full aspect-[2/3] object-cover rounded-xl shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
+            className="aspect-2/3 w-56 rounded-xl object-cover shadow-[0_4px_16px_rgba(0,0,0,0.35)] sm:w-64 md:w-full"
           />
 
           <div className="w-full">
@@ -111,25 +117,29 @@ export default async function BookPage({ params }: BookPageProps) {
         </div>
 
         {/* Colonne droite : infos livre */}
-        <div className="flex-1 min-w-0 flex flex-col gap-3">
-
+        <div className="flex min-w-0 flex-1 flex-col gap-3">
           {/* Tag genre — desktop uniquement */}
           {genre && (
             <div className="hidden md:block">
-              <span className="text-xs font-medium rounded-md px-3 py-1 bg-[var(--accent-alt)] text-white uppercase tracking-wide">
+              <span className="rounded-md bg-(--accent-alt) px-3 py-1 text-xs font-medium tracking-wide text-white uppercase">
                 {genre}
               </span>
             </div>
           )}
 
-          <h1 className="text-2xl md:text-3xl font-bold leading-snug">{book.title}</h1>
+          <div className="align-items flex items-start gap-1">
+            <h1 className="text-2xl leading-snug font-bold md:text-3xl">
+              {book.title}
+            </h1>
+            <ShareButton />
+          </div>
 
           {authorName && (
             <p>
               {tBooks("labels.author")}{" "}
               <Link
                 href={`/search?q=${encodeURIComponent(authorName)}`}
-                className="text-base text-primary hover:underline w-fit"
+                className="text-primary w-fit text-base hover:underline"
               >
                 <span className="underline">{authorName}</span>
               </Link>
@@ -137,21 +147,47 @@ export default async function BookPage({ params }: BookPageProps) {
           )}
 
           {book.publishedYear && (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {tBooks("labels.published")} {book.publishedYear}
             </p>
           )}
 
           {description && (
             <div className="mt-2">
-              <hr className="border-t border-border mb-3" aria-hidden="true" />
+              <hr className="border-border mb-3 border-t" aria-hidden="true" />
               <ExpandableDescription description={description} />
             </div>
           )}
-
         </div>
-
       </div>
+      <section
+        aria-labelledby="vous-pourriez-aimer"
+        className="py-10 sm:max-w-7xl sm:py-20"
+      >
+        <div className="mt-8 mb-8 px-2 sm:mt-0 sm:mb-0">
+          <h2
+            id="vous-pourriez-aimer"
+            className="mb-1 text-center text-2xl font-bold sm:text-left"
+          >
+            {tBooks("section.moment.title")}
+          </h2>
+          <p className="text-muted-foreground text-center text-xs tracking-widest sm:text-left">
+            {tBooks("section.moment.subtitle")}
+          </p>
+        </div>
+        <div className="mx-auto">
+          {/* Suspense permet d'afficher un état de chargement pendant que les livres sont récupérés */}
+          <Suspense
+            fallback={
+              <div className="text-muted-foreground text-center">
+                {tBooks("loading")}
+              </div>
+            }
+          >
+            <RelatedBooks authorId={book.authorId} />
+          </Suspense>
+        </div>
+      </section>
     </div>
   );
 }

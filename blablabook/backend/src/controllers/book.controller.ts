@@ -24,6 +24,47 @@ const TTL_BOOK = 60 * 60 * 24; // 24h — détail d'un livre (données stables)
 const TTL_RANDOM = 60 * 10; // 10min — sélection homepage
 
 export async function getRandomBooks(req: Request, res: Response) {
+  const { authorId } = req.query as { authorId?: string };
+
+  if (authorId) {
+    const cacheKey = `random:author:${authorId}`;
+    const cached = await cacheGet(cacheKey);
+    if (cached) return res.send(JSON.parse(cached));
+
+    const authorRes = await fetch(`https://openlibrary.org/authors/${encodeURIComponent(authorId)}.json`, { headers: { "User-Agent": USER_AGENT } });
+    if (!authorRes.ok) return res.send([]);
+
+    const authorData = await authorRes.json();
+    const authorName = authorData.name;
+
+    if (!authorName) return res.send([]);
+
+    const result = await fetch(
+      `https://openlibrary.org/search.json?author=${encodeURIComponent(
+        authorName
+      )}&limit=10&fields=key,title,author_name,author_key,cover_i,first_publish_year,isbn`
+    );
+
+    if (!result.ok) return res.send([]);
+
+    const data: OpenLibraryResponse = await result.json();
+    const { docs } = data;
+
+    const selectedDatas = docs.map((doc) => ({
+      author: doc.author_name?.[0] ?? null,
+      authorId: doc.author_key?.[0] ?? null,
+      title: doc.title,
+      id: doc.key,
+      isbn: doc.isbn?.[0] ?? null,
+      coverThumbnail: doc.cover_i
+        ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
+        : null,
+    }));
+
+    await cacheSet(cacheKey, JSON.stringify(selectedDatas), TTL_RANDOM);
+    return res.send(selectedDatas);
+  }
+
   // Recommandations personnalisées si utilisateur authentifié
   if (req.user?.id) {
     try {
