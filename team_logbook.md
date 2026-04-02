@@ -198,7 +198,7 @@ Journée de branchement sur les vraies APIs et d'ajustements suite aux mises à 
 #### Infos individuelles
 
 - **Ophélie :**
-- **Rémi :**
+- **Rémi :**Corrigé ma fonction de changement de la langue pour utiliser des drapeaux GB/FR d'une librairie externe afin d'avoir un affichage sur tous les systèmes possibles. Ajouter un robot.txt, sitemap.ts ainsi qu'un openGraph pour améliorer le SEO de notre site.
 - **Paul :**
 - **Christopher :**
 
