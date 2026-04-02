@@ -15,6 +15,16 @@ const RANDOM_GENRES = [
   "adventure",
   "biography",
   "poetry",
+  "philosophy",
+  "history",
+  "cooking",
+  "travel",
+  "science",
+  "psychology",
+  "art",
+  "music",
+  "humor",
+  "self-help",
 ];
 const USER_AGENT = "BlaBlaBook/1.0 (contact@blablabook.fr)";
 
