@@ -100,10 +100,12 @@ export default function LibraryPage() {
   }, [authLoading, isAuthenticated, authError, router, t]);
 
   useEffect(() => {
-    if (!user?.username) return;
+    // On attend que l'utilisateur soit chargé et que la bibliothèque soit récupérée
+    if (!user?.username || isLoading) return;
 
     if (sessionStorage.getItem("just_logged_in")) {
       sessionStorage.removeItem("just_logged_in");
+
       toast.success(
         t("welcomeToast", {
           username: user.username,
@@ -113,7 +115,7 @@ export default function LibraryPage() {
         { position: "top-center" },
       );
     }
-  }, [user?.username, books.length, t]);
+  }, [user?.username, books.length, isLoading, t]);
 
   const stats = useMemo(
     () => ({
