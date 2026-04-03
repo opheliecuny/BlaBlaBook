@@ -102,14 +102,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                       alt={`Couverture de ${book.title}`}
                       className="aspect-2/3 w-full rounded-xl object-cover shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
                     />
-                    <div className="mt-3 flex flex-1 flex-col">
-                      <h2 className="font-playfair text-sm leading-snug font-bold">
+                    <div className="mt-3 flex min-w-0 flex-1 flex-col">
+                      {/* line-clamp-2 et min-h assurent que le titre prend toujours 2 lignes d'espaces */}
+                      <h2 className="font-playfair line-clamp-2 h-10 text-[13px] leading-tight font-bold">
                         {book.title}
                       </h2>
-                      <p className="text-muted-foreground mt-1 text-xs">
+                      <p className="text-muted-foreground mt-1 truncate text-[11px]">
                         {book.author ?? t("unknownAuthor")}
                       </p>
-                      <div className="mt-auto flex flex-col gap-2 pt-4">
+
+                      {/* Badge de catégorie */}
+                      <div className="mt-auto flex flex-col gap-3 pt-4">
                         {book.category && (
                           <span className="group tag-terracotta relative w-fit rounded border px-2 py-0.5 text-base">
                             {book.category.length > 20
@@ -120,25 +123,32 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                             </span>
                           </span>
                         )}
-                        <div className="flex w-full flex-col gap-2 lg:flex-row">
+
+                        {/* Conteneur de boutons */}
+                        <div className="flex w-full flex-col items-stretch gap-2">
                           <Link
                             href={`/book/${bookId}`}
-                            className="flex w-full items-center justify-center rounded-md bg-(--color-btn-subtle) py-1.5 text-xs font-medium hover:bg-(--color-btn-subtle-hover) active:bg-(--color-btn-subtle-active) sm:grow dark:bg-secondary"
+                            className="dark:bg-secondary flex h-9 w-full items-center justify-center rounded-md bg-(--color-btn-subtle) px-4 text-center text-[11px] font-semibold transition-colors hover:bg-(--color-btn-subtle-hover) active:bg-(--color-btn-subtle-active)"
                             aria-label={t("viewBookDetails", {
                               title: book.title,
                             })}
                           >
-                            {t("viewDetails")}
+                            <span className="leading-none">
+                              {t("viewDetails")}
+                            </span>
                           </Link>
-                          <SearchBookActions
-                            bookId={bookId}
-                            isbn={book.isbn}
-                            title={book.title}
-                            author={book.author}
-                            publishedYear={book.publishedYear}
-                            thumbnail={book.coverThumbnail}
-                            category={book.category}
-                          />
+
+                          <div className="w-full">
+                            <SearchBookActions
+                              bookId={bookId}
+                              isbn={book.isbn}
+                              title={book.title}
+                              author={book.author}
+                              publishedYear={book.publishedYear}
+                              thumbnail={book.coverThumbnail}
+                              category={book.category}
+                            />
+                          </div>
                         </div>
                       </div>
                     </div>

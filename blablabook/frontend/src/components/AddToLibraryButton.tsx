@@ -81,10 +81,8 @@ export default function AddToLibraryButton({
       type="button"
       onClick={handleClick}
       disabled={authLoading || loading}
-      className={`flex shrink-0 items-center justify-center rounded-md px-3 py-1.5 text-xs font-medium whitespace-nowrap disabled:opacity-60 ${
-        error
-          ? "bg-red-500 text-white hover:bg-red-600"
-          : "bg-primary text-primary-foreground hover:bg-primary/90"
+      className={`flex h-9 shrink-0 items-center justify-center rounded-md px-3 text-xs font-medium whitespace-nowrap transition-colors disabled:opacity-60 ${
+        error ? "bg-red-500" : "bg-primary text-primary-foreground"
       }`}
     >
       {loading ? (
