@@ -3,7 +3,7 @@
   "toastError": "Unable to remove the book.",
   "alreadyAdded": "✓ Already added",
   "ariaLabel": "Remove {title} from library",
-  "dialogTitle": "Remove this book?",
+  "dialogTitle": "Remove this book ?",
   "dialogDescription": "The book \"{title}\" will be permanently deleted from your library.",
   "cancel": "Cancel",
   "confirm": "Delete"

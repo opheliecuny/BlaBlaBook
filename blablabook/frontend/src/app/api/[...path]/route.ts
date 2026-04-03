@@ -42,13 +42,22 @@ async function proxyRequest(
       resHeaders.append(key, value);
     });
 
-    const body = await backendRes.arrayBuffer();
+    // Si le statut est 204 No Content, ou si le Content-Length est 0, on ne lit pas le body
+    const contentLength = backendRes.headers.get("content-length");
+    if (backendRes.status === 204 || contentLength === "0") {
+      return new NextResponse(null, {
+        status: backendRes.status,
+        headers: resHeaders,
+      });
+    }
 
+    const body = await backendRes.arrayBuffer();
     return new NextResponse(body, {
       status: backendRes.status,
       headers: resHeaders,
     });
-  } catch {
+  } catch (error) {
+    console.error("Proxy error:", error);
     return NextResponse.json(
       { message: "Backend unavailable" },
       { status: 502 },
