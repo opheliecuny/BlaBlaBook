@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { prisma } from "../utils/prismaClient";
+import type { Prisma } from "../../generated/prisma/client";
+import type { LibraryBookItem } from "../@types/index";
 import z from "zod";
 
 // GET /library ; bibliothèque de l'utilisateur connecté
@@ -19,9 +21,12 @@ export async function getLibrary(req: Request, res: Response) {
   const { page, limit, sort, order } = querySchema.parse(req.query);
   const skip = (page - 1) * limit;
 
-  const orderBy = sort === "title"
-    ? { book: { title: order } }
-    : { [sort]: order };
+  const orderBy: Prisma.library_itemOrderByWithRelationInput =
+    sort === "title"
+      ? { book: { title: order } }
+      : sort === "createdAt"
+        ? { createdAt: order }
+        : { updatedAt: order };
 
   const [library, total] = await Promise.all([
     prisma.library_item.findMany({

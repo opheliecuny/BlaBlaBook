@@ -1,3 +1,13 @@
+import type { book } from "../../generated/prisma/client";
+import type { ReadingStatus } from "../../generated/prisma/enums";
+
+export type LibraryBookItem = book & {
+  bookId: string;
+  status: ReadingStatus;
+  rating: number | null;
+  review: string | null;
+};
+
 export interface IBook {
   id: string;
   isbn: string;
