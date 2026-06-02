@@ -1,5 +1,5 @@
 // src/app/[locale]/search/page.tsx
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import BookCover from "@/components/BookCover";
 import SearchBookActions from "@/components/SearchBookActions";
 import { getTranslations } from "next-intl/server";
@@ -104,7 +104,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
                     />
                     <div className="mt-3 flex min-w-0 flex-1 flex-col">
                       {/* line-clamp-2 et min-h assurent que le titre prend toujours 2 lignes d'espaces */}
-                      <h2 className="font-playfair line-clamp-2 h-10 text-[13px] leading-tight font-bold">
+                      <h2 className="font-playfair line-clamp-2 h-10 text-base leading-tight font-bold">
                         {book.title}
                       </h2>
                       <p className="text-muted-foreground mt-1 truncate text-[11px]">

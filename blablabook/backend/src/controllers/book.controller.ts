@@ -189,28 +189,50 @@ export async function getBookById(req: Request, res: Response) {
   const cached = await cacheGet(cacheKey);
   if (cached) return res.send(JSON.parse(cached));
 
-  const result = await fetch(
-    `https://openlibrary.org/search.json?q=key:/works/${id}&fields=key,title,first_publish_year,subject,isbn,author_key,author_name,description,cover_i`,
-    { headers: { "User-Agent": USER_AGENT } },
-  );
+  // Endpoint direct Works pour les données principales (titre, description, sujets, auteur, couverture)
+  // Plus fiable que search.json dont le parser Solr interprète les "/" comme des délimiteurs de regex
+  const searchUrl = new URL("https://openlibrary.org/search.json");
+  searchUrl.searchParams.set("q", `key:"/works/${id}"`);
+  searchUrl.searchParams.set("fields", "key,title,first_publish_year,subject,isbn,author_key,author_name,description,cover_i");
 
-  const data = await result.json();
-  const doc = data.docs?.[0];
+  const [workRes, searchRes] = await Promise.all([
+    fetch(`https://openlibrary.org/works/${id}.json`, {
+      headers: { "User-Agent": USER_AGENT },
+    }),
+    fetch(searchUrl.toString(), {
+      headers: { "User-Agent": USER_AGENT },
+    }),
+  ]);
 
-  if (!doc) {
+  if (!workRes.ok) {
     throw new NotFoundError("Book not found");
   }
 
+  const work = await workRes.json();
+  const searchData = searchRes.ok ? await searchRes.json() : { docs: [] };
+  const searchDoc = searchData.docs?.[0] ?? {};
+
+  const description =
+    typeof work.description === "object" && work.description !== null
+      ? (work.description.value ?? null)
+      : (work.description ?? null);
+
+  // L'endpoint works retourne authors sous forme [{ author: { key: "/authors/OL23919A" } }]
+  const rawAuthorKey = work.authors?.[0]?.author?.key as string | undefined;
+  const authorId = rawAuthorKey?.split("/").pop() ?? searchDoc.author_key?.[0] ?? null;
+
+  const coverId = work.covers?.[0] ?? null;
+
   const book = {
-    title: doc.title,
-    publishedYear: doc.first_publish_year ?? null,
-    category: pickCategory(doc.subject),
-    description: doc.description ?? null,
-    authorId: doc.author_key?.[0] ?? null,
-    author: doc.author_name?.[0] ?? null,
-    isbn: doc.isbn?.[0] ?? null,
-    coverThumbnail: doc.cover_i
-      ? `https://covers.openlibrary.org/b/id/${doc.cover_i}-M.jpg`
+    title: work.title,
+    publishedYear: searchDoc.first_publish_year ?? null,
+    category: pickCategory(work.subjects ?? searchDoc.subject),
+    description,
+    authorId,
+    author: searchDoc.author_name?.[0] ?? null,
+    isbn: searchDoc.isbn?.[0] ?? null,
+    coverThumbnail: coverId
+      ? `https://covers.openlibrary.org/b/id/${coverId}-M.jpg`
       : null,
   };
 

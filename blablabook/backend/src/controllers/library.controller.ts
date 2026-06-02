@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import { prisma } from "../utils/prismaClient";
-import type { Prisma } from "../../generated/prisma/client";
-import type { LibraryBookItem } from "../@types/index";
 import z from "zod";
 
 // GET /library ; bibliothèque de l'utilisateur connecté
@@ -21,7 +19,7 @@ export async function getLibrary(req: Request, res: Response) {
   const { page, limit, sort, order } = querySchema.parse(req.query);
   const skip = (page - 1) * limit;
 
-  const orderBy: Prisma.library_itemOrderByWithRelationInput =
+  const orderBy =
     sort === "title"
       ? { book: { title: order } }
       : sort === "createdAt"
@@ -113,7 +111,6 @@ export async function addBookToLibrary(req: Request, res: Response) {
   res.json(libraryItem);
 }
 
-//! le front devra gérer la récupéartion et le stockage de l'id du livre lors de la récupération de la bibliothèque
 // PATCH /library/:id ; modifier le statut de lecture d'un livre de la bibliothèque de l'utilisateur connecté
 
 export async function updateLibraryItem(req: Request, res: Response) {

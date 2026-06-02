@@ -18,29 +18,35 @@ export default function ThemeToggle() {
       className="group inline-flex items-center gap-2"
       data-state={isDark ? "checked" : "unchecked"}
     >
-      <span
+      <button
         id={`${id}-light`}
         className="group-data-[state=checked]:text-muted-foreground/70 cursor-pointer text-sm"
         onClick={() => setTheme("light")}
+        aria-label="Activer le thème clair"
+        aria-pressed={!isDark}
       >
         <SunIcon className="size-4" />
-      </span>
+      </button>
 
+      <label htmlFor={id} className="sr-only">Toggle theme</label>
       <Switch
         id={id}
         checked={isDark}
         onCheckedChange={(checked) =>
           setTheme(checked ? "dark" : "light")
         }
+        aria-label={isDark ? "Activer le thème clair" : "Activer le thème sombre"}
       />
 
-      <span
+      <button
         id={`${id}-dark`}
         className="group-data-[state=unchecked]:text-muted-foreground/70 cursor-pointer text-sm"
         onClick={() => setTheme("dark")}
+        aria-label="Activer le thème sombre"
+        aria-pressed={isDark}
       >
         <MoonIcon className="size-4" />
-      </span>
+      </button>
     </div>
   );
 }

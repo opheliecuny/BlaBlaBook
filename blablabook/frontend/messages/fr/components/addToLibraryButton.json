@@ -1,6 +1,6 @@
 {
   "loading": "Ajout...",
   "added": "✓ Ajouté",
-  "error": "Erreur — réessayer",
+  "error": "Erreur lors de l'ajout",
   "default": "Ajouter"
 }
