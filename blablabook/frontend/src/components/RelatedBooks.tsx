@@ -1,5 +1,5 @@
 // components/RelatedBooks.tsx
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import BookCover from "@/components/BookCover";
 import { getTranslations } from "next-intl/server";
 
@@ -55,7 +55,7 @@ export default async function RelatedBooks({
                   className="aspect-2/3 w-full rounded-xl object-cover shadow-[0_4px_16px_rgba(0,0,0,0.35)]"
                 />
                 <div className="mt-3 flex flex-1 flex-col">
-                  <h3 className="font-playfair text-base leading-snug font-bold">
+                  <h3 className="font-playfair min-h-[2.75rem] line-clamp-2 text-base leading-snug font-bold">
                     {book.title}
                   </h3>
                   <p className="text-muted-foreground mt-1 text-xs">

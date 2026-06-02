@@ -6,5 +6,5 @@
   "loading": "Ajout en cours...",
   "added": "✓ Ajouté à ma bibliothèque",
   "default": "+ Ajouter à ma bibliothèque",
-  "error": "Erreur lors de l'ajout. Veuillez réessayer."
+  "error": "Ce livre est déjà dans votre bibliothèque."
 }

@@ -174,10 +174,13 @@ export default function ProfilePage() {
                 <Input
                   type="password"
                   id="newPassword"
+                  minLength={8}
+                  maxLength={100}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder={t("newPasswordPlaceholder")}
                   autoComplete="new-password"
+                  pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[^a-zA-Z0-9]).+"
                 />
               </div>
 

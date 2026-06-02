@@ -140,8 +140,28 @@ describe("Books API Integration Tests", () => {
 
   describe("GET /books/:openLibraryId", () => {
     it("devrait retourner les détails d'un livre", async () => {
+      // Premier fetch : works/:id.json
       vi.mocked(fetch).mockResolvedValueOnce({
-        json: async () => ({ docs: [mockDoc] }),
+        ok: true,
+        json: async () => ({
+          title: "Harry Potter",
+          description: null,
+          subjects: ["Fantasy"],
+          covers: [123456],
+          authors: [{ author: { key: "/authors/OL1A" } }],
+        }),
+      } as Response);
+      // Second fetch : search.json (données complémentaires)
+      vi.mocked(fetch).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          docs: [{
+            first_publish_year: 1997,
+            isbn: ["9780747532743"],
+            author_name: ["J.K. Rowling"],
+            author_key: ["/authors/OL1A"],
+          }],
+        }),
       } as Response);
 
       const response = await request(app).get("/books/OL123W").expect(200);
@@ -157,7 +177,8 @@ describe("Books API Integration Tests", () => {
 
     it("devrait retourner 404 si le livre n'est pas trouvé", async () => {
       vi.mocked(fetch).mockResolvedValueOnce({
-        json: async () => ({ docs: [] }),
+        ok: false,
+        json: async () => ({}),
       } as Response);
 
       const response = await request(app).get("/books/OL999W").expect(404);
@@ -166,9 +187,12 @@ describe("Books API Integration Tests", () => {
 
     it("devrait retourner null pour les champs optionnels absents", async () => {
       vi.mocked(fetch).mockResolvedValueOnce({
-        json: async () => ({
-          docs: [{ key: "/works/OL1W", title: "Minimal Book" }],
-        }),
+        ok: true,
+        json: async () => ({ title: "Minimal Book" }),
+      } as Response);
+      vi.mocked(fetch).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ docs: [] }),
       } as Response);
 
       const response = await request(app).get("/books/OL1W").expect(200);
@@ -182,6 +206,14 @@ describe("Books API Integration Tests", () => {
 
     it("devrait inclure l'id Open Library dans la query appelée", async () => {
       vi.mocked(fetch).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          title: "Harry Potter",
+          authors: [{ author: { key: "/authors/OL1A" } }],
+        }),
+      } as Response);
+      vi.mocked(fetch).mockResolvedValueOnce({
+        ok: true,
         json: async () => ({ docs: [mockDoc] }),
       } as Response);
 

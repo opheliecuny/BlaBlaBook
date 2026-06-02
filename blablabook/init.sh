@@ -67,9 +67,9 @@ docker compose up -d
 
 # ─── 5. Attente que l'API soit prête ───────────────
 echo "⏳  Attente que l'API soit prête..."
-MAX_WAIT=60
+MAX_WAIT=120
 ELAPSED=0
-until curl -s --max-time 2 http://localhost:${PORT:-3001} > /dev/null 2>&1; do
+until curl -s --max-time 2 http://localhost:${PORT:-4000} > /dev/null 2>&1; do
   sleep 2
   ELAPSED=$((ELAPSED + 2))
   if [ $ELAPSED -ge $MAX_WAIT ]; then
